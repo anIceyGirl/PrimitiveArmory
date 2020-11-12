@@ -1,0 +1,17 @@
+D:\ProgramFiles\C#\RainWorldMods\PrimitiveArmory\bin\Debug\PrimitiveArmory.dll
+D:\ProgramFiles\C#\RainWorldMods\PrimitiveArmory\bin\Debug\PrimitiveArmory.pdb
+D:\ProgramFiles\C#\RainWorldMods\PrimitiveArmory\bin\Debug\Assembly-CSharp.dll
+D:\ProgramFiles\C#\RainWorldMods\PrimitiveArmory\bin\Debug\ConfigMachine.dll
+D:\ProgramFiles\C#\RainWorldMods\PrimitiveArmory\bin\Debug\EnumExtender.dll
+D:\ProgramFiles\C#\RainWorldMods\PrimitiveArmory\bin\Debug\HOOKS-Assembly-CSharp.dll
+D:\ProgramFiles\C#\RainWorldMods\PrimitiveArmory\bin\Debug\Partiality.dll
+D:\ProgramFiles\C#\RainWorldMods\PrimitiveArmory\bin\Debug\SandboxCore.dll
+D:\ProgramFiles\C#\RainWorldMods\PrimitiveArmory\bin\Debug\UnityEngine.dll
+D:\ProgramFiles\C#\RainWorldMods\PrimitiveArmory\obj\Debug\PrimitiveArmory.csprojAssemblyReference.cache
+D:\ProgramFiles\C#\RainWorldMods\PrimitiveArmory\obj\Debug\PrimitiveArmory.csproj.CoreCompileInputs.cache
+D:\ProgramFiles\C#\RainWorldMods\PrimitiveArmory\obj\Debug\PrimitiveArmory.csproj.CopyComplete
+D:\ProgramFiles\C#\RainWorldMods\PrimitiveArmory\obj\Debug\PrimitiveArmory.dll
+D:\ProgramFiles\C#\RainWorldMods\PrimitiveArmory\obj\Debug\PrimitiveArmory.pdb
+D:\ProgramFiles\C#\RainWorldMods\PrimitiveArmory\bin\Debug\CustomAssets.dll
+D:\ProgramFiles\C#\RainWorldMods\PrimitiveArmory\obj\Debug\PrimitiveArmory.csproj.GenerateResource.cache
+D:\ProgramFiles\C#\RainWorldMods\PrimitiveArmory\obj\Debug\PrimitiveArmory.PrimitiveArmoryResources.resources

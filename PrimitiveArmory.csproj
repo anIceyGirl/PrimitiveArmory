@@ -1,0 +1,110 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{E2CFD037-341B-4C9A-B59C-B903FBDAAF96}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>PrimitiveArmory</RootNamespace>
+    <AssemblyName>PrimitiveArmory</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <LangVersion>8.0</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <LangVersion>8.0</LangVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>..\..\..\SteamLibrary\steamapps\common\Rain World\Reference\Assembly-CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="ConfigMachine">
+      <HintPath>..\..\..\SteamLibrary\steamapps\common\Rain World\Reference\ConfigMachine.dll</HintPath>
+    </Reference>
+    <Reference Include="CustomAssets">
+      <HintPath>..\..\..\SteamLibrary\steamapps\common\Rain World\Reference\CustomAssets.dll</HintPath>
+    </Reference>
+    <Reference Include="EnumExtender">
+      <HintPath>..\..\..\SteamLibrary\steamapps\common\Rain World\Reference\EnumExtender.dll</HintPath>
+    </Reference>
+    <Reference Include="HOOKS-Assembly-CSharp">
+      <HintPath>..\..\..\SteamLibrary\steamapps\common\Rain World\Reference\HOOKS-Assembly-CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Partiality">
+      <HintPath>..\..\..\SteamLibrary\steamapps\common\Rain World\Reference\Partiality.dll</HintPath>
+    </Reference>
+    <Reference Include="SandboxCore">
+      <HintPath>..\..\..\SteamLibrary\steamapps\common\Rain World\Reference\SandboxCore.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="UnityEngine">
+      <HintPath>..\..\..\SteamLibrary\steamapps\common\Rain World\Reference\UnityEngine.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="enum\EnumExt_PlayerAnimation.cs" />
+    <Compile Include="PrimitiveArmoryResources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>PrimitiveArmoryResources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="util\DataManager.cs" />
+    <Compile Include="util\Exceptions.cs" />
+    <Compile Include="util\PrimitiveArmoryConfig.cs" />
+    <Compile Include="util\GlobalSuppressions.cs" />
+    <Compile Include="items\Armor.cs" />
+    <Compile Include="PlayerHooks.cs" />
+    <Compile Include="items\Club.cs" />
+    <Compile Include="enum\EnumExt_NewItems.cs" />
+    <Compile Include="Main.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="util\PublicityStuntBypass.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="resources\objectAtlas.png" />
+    <None Include="resources\arenaIconAtlas.txt" />
+    <None Include="resources\arenaIconAtlas.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="PrimitiveArmoryResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>PrimitiveArmoryResources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="resources\objectAtlas.txt" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>copy /Y "$(TargetPath)" "D:\ProgramFiles\SteamLibrary\steamapps\common\Rain World\Mods\$(TargetName).dll"
+copy /Y "$(TargetPath)" "D:\ProgramFiles\SteamLibrary\steamapps\common\Rain World\BepInEx\plugins\$(TargetName).dll"
+copy /Y "$(TargetPath)" "D:\ProgramFiles\SteamLibrary\steamapps\common\Rain World\Reference\$(TargetName).dll"</PostBuildEvent>
+  </PropertyGroup>
+</Project>
