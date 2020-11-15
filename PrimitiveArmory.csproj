@@ -83,28 +83,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="util\PublicityStuntBypass.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="resources\Arrow.png" />
-    <EmbeddedResource Include="resources\BlowGun.png" />
-    <EmbeddedResource Include="resources\Bow.png" />
-    <EmbeddedResource Include="resources\Club.png" />
-    <EmbeddedResource Include="resources\Quiver.png" />
-    <EmbeddedResource Include="resources\QuiverFade.png" />
-    <EmbeddedResource Include="resources\Satchel1A.png" />
-    <EmbeddedResource Include="resources\Satchel1B.png" />
-    <EmbeddedResource Include="resources\Satchel1C.png" />
-    <EmbeddedResource Include="resources\Satchel1Fade.png" />
-    <EmbeddedResource Include="resources\Satchel2A.png" />
-    <EmbeddedResource Include="resources\Satchel2B.png" />
-    <EmbeddedResource Include="resources\Satchel2C.png" />
-    <EmbeddedResource Include="resources\Satchel2Fade.png" />
-    <EmbeddedResource Include="resources\Symbol_Arrow.png" />
-    <EmbeddedResource Include="resources\Symbol_BlowGun.png" />
-    <EmbeddedResource Include="resources\Symbol_Bow.png" />
-    <EmbeddedResource Include="resources\Symbol_Club.png" />
-    <EmbeddedResource Include="resources\Symbol_Quiver.png" />
-    <EmbeddedResource Include="resources\Symbol_Satchel.png" />
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy /Y "$(TargetPath)" "D:\ProgramFiles\SteamLibrary\steamapps\common\Rain World\Mods\$(TargetName).dll"

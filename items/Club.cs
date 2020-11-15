@@ -107,10 +107,7 @@ namespace PrimitiveArmory
         {
             sLeaser.sprites = new FSprite[1];
 
-            sLeaser.sprites[0] = new FSprite("guardianArm")
-            {
-                scaleY = -1.0f
-            };
+            sLeaser.sprites[0] = new FSprite("Club");
 
             AddToContainer(sLeaser, rCam, null);
         }

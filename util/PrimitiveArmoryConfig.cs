@@ -109,6 +109,10 @@ namespace PrimitiveArmory
             TabList[tabNum].AddItems(TextBoxContainer);
             TabList[tabNum].AddItems(TextBoxID);
         }
+        public override bool Configuable()
+        {
+            return true;
+        }
 
         public string RandomTabHeader(bool isError = false)
         {
@@ -155,7 +159,7 @@ namespace PrimitiveArmory
                 return randomDesc[UnityEngine.Random.Range(0, randomDesc.Length - 1)];
             }
             return "This splash should never show up in-game, isn't that weird?";
-#pragma warning restore CS0162 // Unreachable code detected
+            #pragma warning restore CS0162 // Unreachable code detected
         }
 
         public void ToggleItemsTab(OpTab[] TabList, int tabNum)

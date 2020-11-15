@@ -59,7 +59,7 @@ namespace PrimitiveArmory
 
             // IceyDebug.DebugHook();
             PlayerHooks.Patch();
-            // DataPatches.Patch();
+            DataPatches.Patch();
 
             Futile.atlasManager.LogAllElementNames();
 

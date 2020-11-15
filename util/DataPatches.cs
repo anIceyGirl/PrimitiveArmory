@@ -8,52 +8,30 @@ namespace PrimitiveArmory
 {
     public class DataPatches
     {
-        public static string[] objectTextureList = new string[]
-        {
-             "BlowGun",
-             "Symbol_BlowGun",
-
-             "Arrow",
-             "Bow",
-             "Symbol_Arrow",
-             "Symbol_Bow",
-
-             "Club",
-             "Symbol_Club",
-
-             "Quiver",
-             "QuiverFade",
-             "Symbol_Quiver",
-
-             "Satchel1A",
-             "Satchel1B",
-             "Satchel1C",
-             "Satchel1Fade",
-             "Satchel2A",
-             "Satchel2B",
-             "Satchel2C",
-             "Satchel2Fade",
-             "Symbol_Satchel"
-        };
-
-        public static Texture2D[] objectTextures = new Texture2D[objectTextureList.Length];
-
         public static void Patch()
         {
             On.RainWorld.LoadResources += LoadResourcesPatch;
+            On.RainWorld.LoadResources += Load;
         }
 
-        public static void LoadResourcesPatch(On.RainWorld.orig_LoadResources orig, RainWorld self)
+        private static void LoadResourcesPatch(On.RainWorld.orig_LoadResources orig, RainWorld self)
         {
             orig(self);
-
-            for (int i = 0; i < objectTextureList.Length; i++)
+            string path = Custom.RootFolderDirectory() + "ModConfigs" + Path.DirectorySeparatorChar + Main.instance.ModID;
+            Directory.CreateDirectory(path);
+            string[] files = Directory.GetFiles(path, "*.txt", SearchOption.AllDirectories);
+            for (int i = 0; i < files.Length; i++)
             {
-                objectTextures[i] = DataManager.ReadPNG(objectTextureList[i]);
-
-                Futile.atlasManager.LoadAtlasFromTexture(objectTextureList[i], objectTextures[i]);
+                Debug.Log(i);
+                Debug.Log(File.ReadAllText(files[i]));
+                Futile.atlasManager.LoadAtlas("Atlases/" + File.ReadAllText(files[i]));
             }
 
+        }
+
+        private static void Load(On.RainWorld.orig_LoadResources orig, RainWorld self)
+        {
+            orig(self);
         }
     }
 }
