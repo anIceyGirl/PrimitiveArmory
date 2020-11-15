@@ -140,7 +140,8 @@ namespace PrimitiveArmory
                     "What fate a slugcat?",
                     "Made in C#!",
                     "Parry this, you filthy casual!",
-                    "The signals... what do they mean?!"
+                    "The signals... what do they mean?!",
+                    "Morbid!"
                 };
 
                 return randomDesc[UnityEngine.Random.Range(0, randomDesc.Length - 1)];
