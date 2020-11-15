@@ -6,79 +6,63 @@ using UnityEngine;
 namespace PrimitiveArmory
 {
     public static class DataManager
-    {
-        public static Texture2D ReadPNG(string pngName)
-        {
-            Assembly executingAssembly = Assembly.GetExecutingAssembly();
-            string name = "PrimitiveArmory." + pngName + ".txt";
-            string s;
-            using (Stream stream = executingAssembly.GetManifestResourceStream(name))
-            {
-                using StreamReader streamReader = new StreamReader(stream);
-                s = streamReader.ReadToEnd();
-            }
-            byte[] data = Convert.FromBase64String(s);
+	{
+		public static Texture2D ReadPNG(string pngName)
+		{
+			Debug.Log("Creating Texture based on " + pngName + ".png");
             Texture2D texture2D = new Texture2D(1, 1, TextureFormat.ARGB32, mipmap: false)
             {
-                wrapMode = TextureWrapMode.Clamp
+                wrapMode = TextureWrapMode.Clamp,
+                anisoLevel = 0,
+                filterMode = FilterMode.Point
             };
-            texture2D.LoadImage(data);
-            return texture2D;
-        }
+            Stream manifestResourceStream = typeof(Main).Assembly.GetManifestResourceStream("PrimitiveArmory.resources." + pngName + ".png");
+			byte[] array = new byte[manifestResourceStream.Length];
+			manifestResourceStream.Read(array, 0, (int)manifestResourceStream.Length);
+			texture2D.LoadImage(array);
 
-        public static byte[] ReadBytes(string pngName)
-        {
-            Assembly executingAssembly = Assembly.GetExecutingAssembly();
-            string name = "PrimitiveArmory.PrimitiveArmoryResources." + pngName + ".txt";
-            string s;
-            using (Stream stream = executingAssembly.GetManifestResourceStream(name))
-            {
-                using StreamReader streamReader = new StreamReader(stream);
-                s = streamReader.ReadToEnd();
-            }
-            return Convert.FromBase64String(s);
-        }
+			return texture2D;
+		}
 
-        public static void EncodeExternalPNG()
-        {
-            string[] files = Directory.GetFiles(Path.Combine(Directory.GetParent(Application.dataPath).ToString(), "encode") + Path.DirectorySeparatorChar, "*.png", SearchOption.TopDirectoryOnly);
-            string[] array = files;
-            foreach (string text in array)
-            {
-                try
-                {
-                    byte[] inArray = File.ReadAllBytes(text);
-                    string contents = Convert.ToBase64String(inArray);
-                    string path = text.Replace("png", "txt");
-                    File.WriteAllText(path, contents);
-                }
-                catch (Exception message)
-                {
-                    Debug.LogError("Error while encoding " + text);
-                    Debug.LogError(message);
-                }
-            }
-        }
+		public static string ReadTXT(string txtName)
+		{
+			Assembly executingAssembly = Assembly.GetExecutingAssembly();
+			string name = "PrimitiveArmory.resources." + txtName + ".txt";
+			using Stream stream = executingAssembly.GetManifestResourceStream(name);
+			using StreamReader streamReader = new StreamReader(stream);
+			return streamReader.ReadToEnd();
+		}
 
-        public static string ReadTXT(string txtName)
-        {
-            Assembly executingAssembly = Assembly.GetExecutingAssembly();
-            string name = "PrimitiveArmory.PrimitiveArmoryResources." + txtName + ".txt";
-            using Stream stream = executingAssembly.GetManifestResourceStream(name);
-            using StreamReader streamReader = new StreamReader(stream);
-            return streamReader.ReadToEnd();
-        }
-
-        public static void LogAllResources()
-        {
-            Assembly executingAssembly = Assembly.GetExecutingAssembly();
-            string[] manifestResourceNames = executingAssembly.GetManifestResourceNames();
-            Debug.Log("Log All Resources: ");
-            string[] array = manifestResourceNames;
-            foreach (string message in array)
-            {
-                Debug.Log(message);
-            }
-        }
-    }
+		public static void EncodeExternalPNG()
+		{
+			string[] files = Directory.GetFiles(Path.Combine(Directory.GetParent(Application.dataPath).ToString(), "encode") + Path.DirectorySeparatorChar, "*.png", SearchOption.TopDirectoryOnly);
+			string[] array = files;
+			foreach (string text in array)
+			{
+				try
+				{
+					byte[] inArray = File.ReadAllBytes(text);
+					string contents = Convert.ToBase64String(inArray);
+					string path = text.Replace("png", "txt");
+					File.WriteAllText(path, contents);
+				}
+				catch (Exception message)
+				{
+					Debug.LogError("Error while encoding " + text);
+					Debug.LogError(message);
+				}
+			}
+		}
+		public static void LogAllResources()
+		{
+			Assembly executingAssembly = Assembly.GetExecutingAssembly();
+			string[] manifestResourceNames = executingAssembly.GetManifestResourceNames();
+			Debug.Log("Log All Resources: ");
+			string[] array = manifestResourceNames;
+			foreach (string message in array)
+			{
+				Debug.Log(message);
+			}
+		}
+	}
 }

@@ -70,12 +70,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="enum\EnumExt_PlayerAnimation.cs" />
-    <Compile Include="PrimitiveArmoryResources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>PrimitiveArmoryResources.resx</DependentUpon>
-    </Compile>
     <Compile Include="util\DataManager.cs" />
+    <Compile Include="util\DataPatches.cs" />
     <Compile Include="util\Exceptions.cs" />
     <Compile Include="util\PrimitiveArmoryConfig.cs" />
     <Compile Include="util\GlobalSuppressions.cs" />
@@ -88,18 +84,26 @@
     <Compile Include="util\PublicityStuntBypass.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="resources\objectAtlas.png" />
-    <None Include="resources\arenaIconAtlas.txt" />
-    <None Include="resources\arenaIconAtlas.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="PrimitiveArmoryResources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>PrimitiveArmoryResources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="resources\objectAtlas.txt" />
+    <EmbeddedResource Include="resources\Arrow.png" />
+    <EmbeddedResource Include="resources\BlowGun.png" />
+    <EmbeddedResource Include="resources\Bow.png" />
+    <EmbeddedResource Include="resources\Club.png" />
+    <EmbeddedResource Include="resources\Quiver.png" />
+    <EmbeddedResource Include="resources\QuiverFade.png" />
+    <EmbeddedResource Include="resources\Satchel1A.png" />
+    <EmbeddedResource Include="resources\Satchel1B.png" />
+    <EmbeddedResource Include="resources\Satchel1C.png" />
+    <EmbeddedResource Include="resources\Satchel1Fade.png" />
+    <EmbeddedResource Include="resources\Satchel2A.png" />
+    <EmbeddedResource Include="resources\Satchel2B.png" />
+    <EmbeddedResource Include="resources\Satchel2C.png" />
+    <EmbeddedResource Include="resources\Satchel2Fade.png" />
+    <EmbeddedResource Include="resources\Symbol_Arrow.png" />
+    <EmbeddedResource Include="resources\Symbol_BlowGun.png" />
+    <EmbeddedResource Include="resources\Symbol_Bow.png" />
+    <EmbeddedResource Include="resources\Symbol_Club.png" />
+    <EmbeddedResource Include="resources\Symbol_Quiver.png" />
+    <EmbeddedResource Include="resources\Symbol_Satchel.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

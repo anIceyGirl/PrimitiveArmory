@@ -2,6 +2,7 @@
 using OptionalUI;
 using Partiality.Modloader;
 using RWCustom;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
@@ -28,6 +29,11 @@ namespace PrimitiveArmory
             this.author = "Icey";
         }
 
+        public static OptionInterface LoadOI()
+        {
+            return new PrimitiveArmoryConfig();
+        }
+
         public override void OnEnable()
         {
             base.OnEnable();
@@ -45,21 +51,27 @@ namespace PrimitiveArmory
 
             Debug.Log("Hooking Savestate (we'll probably crash here if we're running more than two patches without BepinEx)");
             On.SaveState.AbstractPhysicalObjectFromString += AbstractFromStringPatch;
+            Debug.Log("We haven't crashed yet? Sick.");
 
             On.RegionState.AdaptWorldToRegionState += CustomRegionLoad;
-            Debug.Log("We haven't crashed yet? Sick.");
+
+            On.RainWorld.Start += RainWorld_Start;
 
             // IceyDebug.DebugHook();
             PlayerHooks.Patch();
+            // DataPatches.Patch();
+
+            Futile.atlasManager.LogAllElementNames();
 
             Debug.Log("PrimitiveArmory Hooking Complete!");
         }
 
-        public static OptionInterface LoadOI()
+        private void RainWorld_Start(On.RainWorld.orig_Start orig, RainWorld self)
         {
-            return new PrimitiveArmoryConfig();
-        }
+            orig(self);
 
+            DataManager.LogAllResources();
+        }
 
         public static Main instance;
 

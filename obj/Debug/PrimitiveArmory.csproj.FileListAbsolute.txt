@@ -13,5 +13,3 @@ D:\ProgramFiles\C#\RainWorldMods\PrimitiveArmory\obj\Debug\PrimitiveArmory.cspro
 D:\ProgramFiles\C#\RainWorldMods\PrimitiveArmory\obj\Debug\PrimitiveArmory.dll
 D:\ProgramFiles\C#\RainWorldMods\PrimitiveArmory\obj\Debug\PrimitiveArmory.pdb
 D:\ProgramFiles\C#\RainWorldMods\PrimitiveArmory\bin\Debug\CustomAssets.dll
-D:\ProgramFiles\C#\RainWorldMods\PrimitiveArmory\obj\Debug\PrimitiveArmory.csproj.GenerateResource.cache
-D:\ProgramFiles\C#\RainWorldMods\PrimitiveArmory\obj\Debug\PrimitiveArmory.PrimitiveArmoryResources.resources

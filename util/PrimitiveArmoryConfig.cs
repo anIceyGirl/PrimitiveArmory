@@ -35,7 +35,7 @@ namespace PrimitiveArmory
 
                     Debug.Log("Setting tab text...");
                     string changelog = "v0.0.1: \nThis has no use quite yet. Get outta here.";
-                    string credits = "Bee & Garrakax, for giving me a ton of help w/ regards to coding related issues\nSedric AKA the Budgie Gamer, for the idea of the bow & arrow";
+                    string credits = "Bee & Garrakax, for putting up with my cruddy code\nSedric AKA the Budgie Gamer, for the idea of the bow & arrow";
                     string nothingHereYet = "There's nothing here yet...\n:(";
                     string knownIssues = "Known issues:\nOpening Config Screen spams ExceptionLog with NullReferenceExceptions,\nbut only once?";
 
@@ -112,7 +112,7 @@ namespace PrimitiveArmory
 
         public string RandomTabHeader(bool isError = false)
         {
-#pragma warning disable CS0162 // Unreachable code detected                        
+            #pragma warning disable CS0162 // Unreachable code detected                        
             if (!isError)
             {
                 switch (DateTime.Now.DayOfYear)
