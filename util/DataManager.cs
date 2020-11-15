@@ -2,11 +2,32 @@
 using System.IO;
 using System.Reflection;
 using UnityEngine;
+using RWCustom;
 
 namespace PrimitiveArmory
 {
     public static class DataManager
 	{
+		public static void Patch()
+		{
+			On.RainWorld.LoadResources += Load;
+
+			On.RainWorld.LoadResources += LoadResourcesPatch;
+		}
+
+		private static void LoadResourcesPatch(On.RainWorld.orig_LoadResources orig, RainWorld self)
+		{
+			orig(self);
+
+			Futile.atlasManager.LoadAtlas("Atlases/arenaIconAtlas");
+			Futile.atlasManager.LoadAtlas("Atlases/objectAtlas");
+		}
+
+		private static void Load(On.RainWorld.orig_LoadResources orig, RainWorld self)
+		{
+			orig(self);
+		}
+
 		public static Texture2D ReadPNG(string pngName)
 		{
 			Debug.Log("Creating Texture based on " + pngName + ".png");
@@ -33,26 +54,6 @@ namespace PrimitiveArmory
 			return streamReader.ReadToEnd();
 		}
 
-		public static void EncodeExternalPNG()
-		{
-			string[] files = Directory.GetFiles(Path.Combine(Directory.GetParent(Application.dataPath).ToString(), "encode") + Path.DirectorySeparatorChar, "*.png", SearchOption.TopDirectoryOnly);
-			string[] array = files;
-			foreach (string text in array)
-			{
-				try
-				{
-					byte[] inArray = File.ReadAllBytes(text);
-					string contents = Convert.ToBase64String(inArray);
-					string path = text.Replace("png", "txt");
-					File.WriteAllText(path, contents);
-				}
-				catch (Exception message)
-				{
-					Debug.LogError("Error while encoding " + text);
-					Debug.LogError(message);
-				}
-			}
-		}
 		public static void LogAllResources()
 		{
 			Assembly executingAssembly = Assembly.GetExecutingAssembly();

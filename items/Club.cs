@@ -130,7 +130,7 @@ namespace PrimitiveArmory
 
             if (this.mode != Mode.OnBack && !isSwinging)
             {
-                sLeaser.sprites[0].anchorY = 0.725f;
+                sLeaser.sprites[0].anchorY = 0.275f;
             }
 
             if (blink > 0 && UnityEngine.Random.value < 0.5f)

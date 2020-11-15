@@ -71,7 +71,6 @@
   <ItemGroup>
     <Compile Include="enum\EnumExt_PlayerAnimation.cs" />
     <Compile Include="util\DataManager.cs" />
-    <Compile Include="util\DataPatches.cs" />
     <Compile Include="util\Exceptions.cs" />
     <Compile Include="util\PrimitiveArmoryConfig.cs" />
     <Compile Include="util\GlobalSuppressions.cs" />
@@ -82,6 +81,12 @@
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="util\PublicityStuntBypass.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="resources\arenaIconAtlas.png" />
+    <EmbeddedResource Include="resources\arenaIconAtlas.txt" />
+    <EmbeddedResource Include="resources\objectAtlas.png" />
+    <EmbeddedResource Include="resources\objectAtlas.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
