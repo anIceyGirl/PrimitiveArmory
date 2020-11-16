@@ -12,4 +12,15 @@ namespace PrimitiveArmory
           System.Runtime.Serialization.SerializationInfo info,
           System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
     }
+
+    [System.SerializableAttribute]
+    public class ModDependencyNotFound : Exception
+    {
+        public ModDependencyNotFound() { }
+        public ModDependencyNotFound(string message) : base(message) { }
+        public ModDependencyNotFound(string message, Exception inner) : base(message, inner) { }
+        protected ModDependencyNotFound(
+          System.Runtime.Serialization.SerializationInfo info,
+          System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
+    }
 }

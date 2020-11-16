@@ -1,5 +1,8 @@
 ﻿using OptionalUI;
+using Partiality;
+using Partiality.Modloader;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace PrimitiveArmory
@@ -119,13 +122,19 @@ namespace PrimitiveArmory
             #pragma warning disable CS0162 // Unreachable code detected                        
             if (!isError)
             {
-                switch (DateTime.Now.DayOfYear)
+                Dictionary<int, string> specialDates = new Dictionary<int, string>()
                 {
-                    case 313:
-                        return "Happy birthday, Icey!";
-                    case 305:
-                        return "Happy birthday, Ross!";
+                    { 312, "Happy birthday, Icey!" },
+                    { 304, "Happy birthday, Ross!" },
+                    { 135, "Happy birthday, Sedric!" }
+                };
+                int currentDate = DateTime.Now.DayOfYear;
+
+                if (specialDates.ContainsKey(currentDate))
+                {
+                    return specialDates[currentDate];
                 }
+                
 
                 string[] randomDesc = new string[]
                 {
@@ -136,12 +145,13 @@ namespace PrimitiveArmory
                     "This isn't Shoreline, this is a bathtub!",
                     "haha slugcat go bonk",
                     "I have a suggestion.",
-                    "In case it wasn't obvious, scavengers aren't players.",
                     "What fate a slugcat?",
                     "Made in C#!",
                     "Parry this, you filthy casual!",
                     "The signals... what do they mean?!",
-                    "Morbid!"
+                    "Slightly morbid!",
+                    "Alpha version!",
+                    "Pre-beta!"
                 };
 
                 return randomDesc[UnityEngine.Random.Range(0, randomDesc.Length - 1)];

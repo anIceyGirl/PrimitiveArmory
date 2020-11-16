@@ -229,11 +229,32 @@ namespace PrimitiveArmory
 
                 if (actuallyViewed && player.grasps[i].grabbed is Club)
                 {
-                    if (player.bodyMode != Player.BodyModeIndex.Crawl && player.animation != Player.AnimationIndex.ClimbOnBeam && player.mainBodyChunk.vel.magnitude >= 2.5f)
+                    player.grasps[i].grabbed.firstChunk.vel = (player.graphicsModule as PlayerGraphics).hands[i].vel;
+                    player.grasps[i].grabbed.firstChunk.MoveFromOutsideMyUpdate(eu, (player.graphicsModule as PlayerGraphics).hands[i].pos);
+                    if (player.grasps[i].grabbed is Weapon)
                     {
                         Vector2 vector = Custom.DirVec(player.mainBodyChunk.pos, player.grasps[i].grabbed.bodyChunks[0].pos) * ((i != 0) ? 1f : (-1f));
+                        if (player.animation != Player.AnimationIndex.HangFromBeam)
+                        {
+                            vector = Custom.PerpendicularVector(vector);
+                        }
 
-                        vector = Vector3.Slerp(vector, Custom.DegToVec((80f + Mathf.Cos((float)(player.animationFrame + ((!player.leftFoot) ? 3 : 9)) / 12f * 2f * (float)Math.PI) * 4f * (player.graphicsModule as PlayerGraphics).spearDir) * (player.graphicsModule as PlayerGraphics).spearDir), Mathf.Abs((player.graphicsModule as PlayerGraphics).spearDir));
+                        if (player.animation != Player.AnimationIndex.ClimbOnBeam)
+                        {
+                            vector = Vector3.Slerp(vector, Custom.DegToVec((80f + Mathf.Cos((float)(player.animationFrame + ((!player.leftFoot) ? 3 : 9)) / 12f * 2f * (float)Math.PI) * 4f * (player.graphicsModule as PlayerGraphics).spearDir) * (player.graphicsModule as PlayerGraphics).spearDir), Mathf.Abs((player.graphicsModule as PlayerGraphics).spearDir));
+                        }
+
+                        if (stats[player.playerState.playerNumber].swingAnimTimer > 0)
+                        {
+                            float swingProgress = (float)stats[player.playerState.playerNumber].swingAnimTimer / (float)swingTime;
+                            float swingVector = Mathf.Lerp(90, 0, swingProgress);
+
+                            vector = Custom.DegToVec(swingVector);
+
+                            (player.graphicsModule as PlayerGraphics).hands[i].reachingForObject = true;
+                            player.grasps[i].grabbed.firstChunk.pos = player.mainBodyChunk.pos + vector * 15f;
+                            (player.graphicsModule as PlayerGraphics).hands[i].absoluteHuntPos = player.grasps[i].grabbed.firstChunk.pos;
+                        }
 
                         (player.grasps[i].grabbed as Weapon).setRotation = vector;
                         (player.grasps[i].grabbed as Weapon).rotationSpeed = 0f;
@@ -283,7 +304,6 @@ namespace PrimitiveArmory
             PhysicalObject thrownObject = player.grasps[grasp].grabbed;
             AbstractPhysicalObject.AbstractObjectType thrownType = thrownObject.abstractPhysicalObject.type;
             RWCustom.IntVector2 throwDir = new RWCustom.IntVector2(player.ThrowDirection, 0);
-            Vector2 vector = player.firstChunk.pos + throwDir.ToVector2() * 5f + new Vector2(0f, 4f);
 
             if (thrownType == EnumExt_NewItems.Club)
             {

@@ -73,7 +73,7 @@
     <Compile Include="util\DataManager.cs" />
     <Compile Include="util\Exceptions.cs" />
     <Compile Include="util\PrimitiveArmoryConfig.cs" />
-    <Compile Include="util\GlobalSuppressions.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="items\Armor.cs" />
     <Compile Include="PlayerHooks.cs" />
     <Compile Include="items\Club.cs" />
