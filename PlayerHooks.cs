@@ -563,7 +563,7 @@ namespace PrimitiveArmory
                             }
 
                             (player.graphicsModule as PlayerGraphics).hands[i].reachingForObject = true;
-                            player.grasps[i].grabbed.firstChunk.pos = player.mainBodyChunk.pos + vector * 10f;
+                            player.grasps[i].grabbed.firstChunk.pos = player.mainBodyChunk.pos + vector * 25f;
                             (player.graphicsModule as PlayerGraphics).hands[i].absoluteHuntPos = player.grasps[i].grabbed.firstChunk.pos;
                         }
                         else
