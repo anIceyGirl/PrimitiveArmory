@@ -43,6 +43,7 @@ namespace PrimitiveArmory
         public override void Update(bool eu)
         {
             base.Update(eu);
+
             switch (base.mode)
             {
                 case Mode.Free:
@@ -77,6 +78,7 @@ namespace PrimitiveArmory
                     break;
             }
         }
+
         public override void SetRandomSpin()
         {
             if (room != null)
@@ -131,6 +133,10 @@ namespace PrimitiveArmory
             if (this.mode != Mode.OnBack && !isSwinging)
             {
                 sLeaser.sprites[0].anchorY = 0.275f;
+            }
+            else if (isSwinging)
+            {
+                sLeaser.sprites[0].anchorY = 0.1f;
             }
 
             if (blink > 0 && UnityEngine.Random.value < 0.5f)

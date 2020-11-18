@@ -26,7 +26,7 @@ namespace PrimitiveArmory
         {
             instance = this;
             this.ModID = "Primitive Armory";
-            this.Version = "v0.0.1";
+            this.Version = "v0.0.2";
             this.author = "Icey";
         }
 

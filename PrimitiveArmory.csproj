@@ -69,7 +69,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="enum\EnumExt_PlayerAnimation.cs" />
+    <Compile Include="enum\EnumExt_Animation.cs" />
     <Compile Include="util\DataManager.cs" />
     <Compile Include="util\Exceptions.cs" />
     <Compile Include="util\PrimitiveArmoryConfig.cs" />

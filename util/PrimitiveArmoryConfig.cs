@@ -34,13 +34,19 @@ namespace PrimitiveArmory
                     this.Tabs[4] = new OpTab("Known Issues");
 
                     Debug.Log("Setting splash text...");
+                    int date = DateTime.Now.DayOfYear; 
                     string splash = RandomTabHeader();
 
                     Debug.Log("Setting tab text...");
-                    string changelog = "v0.0.1: \nThis has no use quite yet. Get outta here.";
-                    string credits = "Bee & Garrakax, for putting up with my cruddy code\nSedric AKA the Budgie Gamer, for the idea of the bow & arrow";
+                    string changelog = "v0.0.2: \nInitial release";
+                    string credits = "Bee & Garrakax, for putting up with my cruddy code"
+                        + "\nSedric AKA the Budgie Gamer, for the idea of the bow & arrow"
+                        + "\nAnonymous aka \"That guy who suggested mosquitos\", for the concept of the water balloon mosquito";
                     string nothingHereYet = "There's nothing here yet...\n:(";
-                    string knownIssues = "Known issues:\nOpening Config Screen spams ExceptionLog with NullReferenceExceptions,\nbut only once?";
+                    string knownIssues = "Known issues:"
+                        + "\nOpening Config Screen spams ExceptionLog with NullReferenceExceptions,\nbut only once?\n" 
+                        + "\nAttempting to pick up a spear with a club in both your backslot and\nyour hands will not let you swing your club until you exit a shortcut,\nor until you drop the club and pick it back up.\n"
+                        + "\nClub swinging is a bit glitchy when you first pick a club up, but going\nthrough a shortcut fixes it.";
 
                     for (int i = 0; i < this.Tabs.Length; i++)
                     {
@@ -56,7 +62,7 @@ namespace PrimitiveArmory
                 }
                 else
                 {
-                    throw new PrimitiveArmory.EnumExtenderNotFound();
+                    throw new PrimitiveArmory.ModDependencyNotFound();
                 }
             }
             catch (Exception e)
@@ -69,7 +75,7 @@ namespace PrimitiveArmory
 
                 switch (e.GetType().ToString())
                 {
-                    case "PrimitiveArmory.EnumExtenderNotFound":
+                    case "PrimitiveArmory.ModDependencyNotFound":
                         errorLog = "EnumExtender was not found!\nBecause of this, PrimitiveArmory is unable to add new items properly.\nPlease install EnumExtender or remove PrimitiveArmory.\n\nError: \n" + e;
                         Debug.LogError("EnumExtender not found! PrimitiveArmory cannot add new items.");
                         break;
@@ -126,7 +132,8 @@ namespace PrimitiveArmory
                 {
                     { 312, "Happy birthday, Icey!" },
                     { 304, "Happy birthday, Ross!" },
-                    { 135, "Happy birthday, Sedric!" }
+                    { 135, "Happy birthday, Sedric!" },
+                    { 80, "Happy birthday to that guy who suggested mosquitos!" }
                 };
                 int currentDate = DateTime.Now.DayOfYear;
 
@@ -151,7 +158,8 @@ namespace PrimitiveArmory
                     "The signals... what do they mean?!",
                     "Slightly morbid!",
                     "Alpha version!",
-                    "Pre-beta!"
+                    "Pre-beta!",
+                    "You brought a club to a spear fight?"
                 };
 
                 return randomDesc[UnityEngine.Random.Range(0, randomDesc.Length - 1)];
@@ -169,7 +177,6 @@ namespace PrimitiveArmory
 
                 return randomDesc[UnityEngine.Random.Range(0, randomDesc.Length - 1)];
             }
-            return "This splash should never show up in-game, isn't that weird?";
             #pragma warning restore CS0162 // Unreachable code detected
         }
 
