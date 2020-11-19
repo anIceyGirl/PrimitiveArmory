@@ -96,6 +96,8 @@ namespace PrimitiveArmory
             {
                 rotation = new Vector2(-0.4f, 0.9f);
             }
+
+            room.PlaySound(SoundID.Slugcat_Pick_Up_Spear, base.firstChunk);
         }
 
         public override void Thrown(Creature thrownBy, Vector2 thrownPos, Vector2? firstFrameTraceFromPos, IntVector2 throwDir, float frc, bool eu)

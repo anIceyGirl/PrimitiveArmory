@@ -71,6 +71,7 @@
   <ItemGroup>
     <Compile Include="enum\EnumExt_Animation.cs" />
     <Compile Include="util\DataManager.cs" />
+    <Compile Include="util\DynamicHooks.cs" />
     <Compile Include="util\Exceptions.cs" />
     <Compile Include="util\PrimitiveArmoryConfig.cs" />
     <Compile Include="GlobalSuppressions.cs" />

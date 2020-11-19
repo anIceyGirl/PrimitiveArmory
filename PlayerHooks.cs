@@ -382,7 +382,7 @@ namespace PrimitiveArmory
             Debug.Log("Patching Player.Grabability");
             On.Player.Grabability += GrababilityPatch;
             Debug.Log("Patching Player.GrabUpdate");
-            // On.Player.GrabUpdate += GrabUpdatePatch;
+            On.Player.GrabUpdate += GrabUpdatePatch;
             Debug.Log("Patching Player.Update");
             On.Player.Update += PlayerUpdatePatch;
             Debug.Log("Patching Player.ThrowObject");
@@ -518,10 +518,11 @@ namespace PrimitiveArmory
 
             orig(player, actuallyViewed, eu);
 
+            int playerNumber = player.playerState.playerNumber;
 
-            if (stats[player.playerState.playerNumber].backSlot != null)
+            if (stats[playerNumber].backSlot != null)
             {
-                stats[player.playerState.playerNumber].backSlot.GraphicsModuleUpdated(actuallyViewed, eu);
+                stats[playerNumber].backSlot.GraphicsModuleUpdated(actuallyViewed, eu);
             }
 
             for (int i = 0; i < 2; i++)
@@ -615,55 +616,14 @@ namespace PrimitiveArmory
 
         public static void GrabUpdatePatch(On.Player.orig_GrabUpdate orig, Player player, bool eu)
         {
-            int playerNumber = player.playerState.playerNumber;
-
-            bool flag5 = true;
-            if (player.animation == Player.AnimationIndex.DeepSwim)
-            {
-                if (player.grasps[0] == null && player.grasps[1] == null)
-                {
-                    flag5 = false;
-                }
-                else
-                {
-                    for (int n = 0; n < 10; n++)
-                    {
-                        if (player.input[n].y > -1 || player.input[n].x != 0)
-                        {
-                            flag5 = false;
-                            break;
-                        }
-                    }
-                }
-            }
-            else
-            {
-                for (int num7 = 0; num7 < 5; num7++)
-                {
-                    if (player.input[num7].y > -1)
-                    {
-                        flag5 = false;
-                        break;
-                    }
-                }
-            }
-            if (player.grasps[0] != null && player.HeavyCarry(player.grasps[0].grabbed))
-            {
-                flag5 = true;
-            }
-
-            if (!flag5)
-            {
-                if (player.pickUpCandidate is Weapon && CanPutWeaponToBack(player, player.grasps[0].grabbed as Weapon) && ((player.grasps[0] != null && player.Grabability(player.grasps[0].grabbed) >= Player.ObjectGrabability.BigOneHand) || (player.grasps[1] != null && player.Grabability(player.grasps[1].grabbed) >= Player.ObjectGrabability.BigOneHand) || (player.grasps[0] != null && player.grasps[1] != null)))
-                {
-
-                    Debug.Log("Club straight to back");
-                    player.room.PlaySound(SoundID.Slugcat_Switch_Hands_Init, player.mainBodyChunk);
-                    stats[playerNumber].backSlot.WeaponToBack(player.pickUpCandidate as Weapon);
-                }
-            }
-
             orig.Invoke(player, eu);
+
+            if (player.pickUpCandidate is Weapon && CanPutWeaponToBack(player, stats[player.playerState.playerNumber].backSlot.backItem as Weapon) && ((player.grasps[0] != null && player.Grabability(player.grasps[0].grabbed) >= Player.ObjectGrabability.BigOneHand) || (player.grasps[1] != null && player.Grabability(player.grasps[1].grabbed) >= Player.ObjectGrabability.BigOneHand) || (player.grasps[0] != null && player.grasps[1] != null)))
+            {
+                Debug.Log("spear straight to back");
+                player.room.PlaySound(SoundID.Slugcat_Switch_Hands_Init, player.mainBodyChunk);
+                stats[player.playerState.playerNumber].backSlot.WeaponToBack(player.pickUpCandidate as Weapon);
+            }
         }
 
         public static void ThrowPatch(On.Player.orig_ThrowObject orig, Player player, int grasp, bool eu)
@@ -671,10 +631,11 @@ namespace PrimitiveArmory
             PhysicalObject thrownObject = player.grasps[grasp].grabbed;
             AbstractPhysicalObject.AbstractObjectType thrownType = thrownObject.abstractPhysicalObject.type;
             RWCustom.IntVector2 throwDir = new RWCustom.IntVector2(player.ThrowDirection, 0);
+            int playerNumber = player.playerState.playerNumber;
 
             if (thrownType == EnumExt_NewItems.Club)
             {
-                if (stats[player.playerState.playerNumber].swingDelay <= 0 && player.animation != Player.AnimationIndex.Flip && player.animation != Player.AnimationIndex.CrawlTurn && player.animation != Player.AnimationIndex.Roll)
+                if (stats[playerNumber].swingDelay <= 0 && player.animation != Player.AnimationIndex.Flip && player.animation != Player.AnimationIndex.CrawlTurn && player.animation != Player.AnimationIndex.Roll)
                 {
 
                     player.room.PlaySound(SoundID.Slugcat_Throw_Spear, player.firstChunk);
@@ -684,20 +645,50 @@ namespace PrimitiveArmory
                     player.bodyChunks[0].vel += throwDir.ToVector2() * 4f;
                     player.bodyChunks[1].vel -= throwDir.ToVector2() * 3f;
                     // swingAnimTimer
-                    stats[player.playerState.playerNumber].comboCooldown = 30;
+                    stats[playerNumber].comboCooldown = 30;
 
-                    stats[player.playerState.playerNumber].swingAnimTimer = swingTime;
+                    stats[playerNumber].swingAnimTimer = swingTime;
 
-                    if (stats[player.playerState.playerNumber].comboCount >= maxCombo)
+                    if (stats[playerNumber].comboCount >= maxCombo)
                     {
-                        stats[player.playerState.playerNumber].swingDelay = postComboCooldown;
+                        stats[playerNumber].swingDelay = postComboCooldown;
                         player.room.AddObject(new ExplosionSpikes(player.room, thrownObject.firstChunk.pos + new Vector2((float)player.rollDirection * -40f, 0f), 15, 25f, 4f, 4.5f, 21f, new Color(1f, 0.5f, 0.75f, 0.5f)));
-                        stats[player.playerState.playerNumber].comboCount = 0;
+                        stats[playerNumber].comboCount = 0;
                     }
                     else
                     {
-                        stats[player.playerState.playerNumber].swingDelay = swingTime;
-                        stats[player.playerState.playerNumber].comboCount++;
+                        stats[playerNumber].swingDelay = swingTime;
+                        stats[playerNumber].comboCount++;
+                    }
+
+                    float swingProgress = (float)stats[playerNumber].swingAnimTimer / (float)swingTime;
+                    float swingAngle = Mathf.Lerp(90f, -22.5f, swingProgress * swingProgress);
+
+                    Vector2 vector = Custom.DegToVec(swingAngle);
+
+                    if (player.ThrowDirection > 0)
+                    {
+                        vector = new Vector2(-vector.x, vector.y);
+                    }
+
+                    Vector2 clubTip = (thrownObject.firstChunk.pos + vector * 75f);
+
+                    SharedPhysics.CollisionResult collisionResult = SharedPhysics.TraceProjectileAgainstBodyChunks((thrownObject as SharedPhysics.IProjectileTracer), player.room, thrownObject.firstChunk.pos, ref clubTip, 10f, player.collisionLayer, player, true);
+                    
+                    if (collisionResult.obj != null)
+                    {
+                        if (collisionResult.obj is Creature)
+                        {
+                            player.room.PlaySound(SoundID.Rock_Hit_Creature, collisionResult.chunk);
+
+
+
+                            (collisionResult.obj as Creature).Violence(thrownObject.firstChunk, vector * thrownObject.firstChunk.mass * 2f, collisionResult.chunk, collisionResult.onAppendagePos, Creature.DamageType.Blunt, 0.6f, 20f);
+                        }
+                        else
+                        {
+                            player.room.PlaySound(SoundID.Rock_Hit_Wall, collisionResult.chunk);
+                        }
                     }
                 }
                 return;

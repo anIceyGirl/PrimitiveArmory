@@ -22,6 +22,8 @@ namespace PrimitiveArmory
 
         public static bool CustomResources => EnumExt && enabled && customResources;
 
+        public static bool jollyCoop = false;
+
         public Main()
         {
             instance = this;
