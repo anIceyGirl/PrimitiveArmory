@@ -442,6 +442,27 @@ namespace PrimitiveArmory
                 accessorySlot = null,
                 backSlot = null
             };
+
+            switch (player.slugcatStats.name)
+            {
+                case SlugcatStats.Name.White:
+                    stats[playerNumber].meleeSkill = 1f;
+                    stats[playerNumber].rangedSkill = 1f;
+                    break;
+                case SlugcatStats.Name.Red:
+                    stats[playerNumber].meleeSkill = 1.25f;
+                    stats[playerNumber].rangedSkill = 0.75f;
+                    break;
+                case SlugcatStats.Name.Yellow:
+                    stats[playerNumber].meleeSkill = 0.75f;
+                    stats[playerNumber].rangedSkill = 1.25f;
+                    break;
+
+                default:
+                    stats[playerNumber].meleeSkill = 1f;
+                    stats[playerNumber].rangedSkill = 1f;
+                    break;
+            }
         }
 
         public static void PlayerUpdatePatch(On.Player.orig_Update orig, Player player, bool eu)
@@ -680,7 +701,7 @@ namespace PrimitiveArmory
 
 
 
-                            (collisionResult.obj as Creature).Violence(thrownObject.firstChunk, vector * thrownObject.firstChunk.mass * 2f, collisionResult.chunk, collisionResult.onAppendagePos, Creature.DamageType.Blunt, 0.6f, 20f);
+                            (collisionResult.obj as Creature).Violence(thrownObject.firstChunk, vector * thrownObject.firstChunk.mass * 2f, collisionResult.chunk, collisionResult.onAppendagePos, Creature.DamageType.Blunt, stats[playerNumber].meleeSkill* 0.6f, 20f);
                         }
                         else
                         {
