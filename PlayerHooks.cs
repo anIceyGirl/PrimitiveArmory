@@ -22,13 +22,12 @@ namespace PrimitiveArmory
             public int comboCount;
             public int comboCooldown;
             public int swingAnimTimer;
-            public float clubSkill;
+            public float rangedSkill;
+            public float meleeSkill;
             public EquippedArmor headSlot;
             public EquippedArmor bodySlot;
             public EquippedArmor accessorySlot;
             public BackSlot backSlot;
-            public bool attackIncrement;
-            public int attackCounter;
         }
 
         public class EquippedArmor
@@ -437,8 +436,6 @@ namespace PrimitiveArmory
                 swingTimer = 0,
                 comboCount = 0,
                 comboCooldown = 0,
-                attackIncrement = false,
-                attackCounter = 0,
                 swingAnimTimer = 0,
                 headSlot = null,
                 bodySlot = null,
