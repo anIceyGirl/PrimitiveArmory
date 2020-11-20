@@ -497,13 +497,11 @@ namespace PrimitiveArmory
             }
 
             stats[playerNumber].backSlot.Update(eu);
-
             
             if (stats[playerNumber].backSlot.HasAWeapon && player.spearOnBack.increment)
             {
                 player.spearOnBack.increment = false;
             }
-            
 
             if (stats[playerNumber].swingTimer > 0)
             {
@@ -679,12 +677,12 @@ namespace PrimitiveArmory
                         stats[playerNumber].comboCount++;
                     }
 
-                    Vector2 clubTip = (thrownObject.firstChunk.pos + (thrownObject as Weapon).rotation * 30f);
+                    Vector2 clubTip = (thrownObject.firstChunk.pos + (thrownObject as Weapon).rotation * 50f);
 
                     SharedPhysics.CollisionResult collisionResult = SharedPhysics.TraceProjectileAgainstBodyChunks((thrownObject as SharedPhysics.IProjectileTracer), player.room, thrownObject.firstChunk.pos, ref clubTip, 10f, player.collisionLayer, player, true);
                     
                     if (collisionResult.obj != null)
-                    {
+                    { 
                         bool flag = false;
                         if (thrownObject.abstractPhysicalObject.world.game.IsArenaSession && thrownObject.abstractPhysicalObject.world.game.GetArenaGameSession.GameTypeSetup.spearHitScore != 0 && player != null && collisionResult.obj is Creature)
                         {

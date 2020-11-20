@@ -10,15 +10,23 @@
 },
 "Symbol_BlowGun.png":
 {
-	"frame": {"x":2,"y":37,"w":18,"h":34},
+	"frame": {"x":11,"y":2,"w":18,"h":34},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":18,"h":34},
 	"sourceSize": {"w":18,"h":34}
 },
+"Symbol_Bottle.png":
+{
+	"frame": {"x":31,"y":2,"w":10,"h":14},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":10,"h":14},
+	"sourceSize": {"w":10,"h":14}
+},
 "Symbol_Bow.png":
 {
-	"frame": {"x":22,"y":2,"w":18,"h":33},
+	"frame": {"x":2,"y":38,"w":18,"h":33},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":18,"h":33},
@@ -26,7 +34,7 @@
 },
 "Symbol_Club.png":
 {
-	"frame": {"x":42,"y":2,"w":18,"h":33},
+	"frame": {"x":22,"y":38,"w":18,"h":33},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":18,"h":33},
@@ -34,7 +42,7 @@
 },
 "Symbol_Quiver.png":
 {
-	"frame": {"x":11,"y":2,"w":9,"h":15},
+	"frame": {"x":42,"y":38,"w":9,"h":15},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":9,"h":15},
@@ -42,7 +50,7 @@
 },
 "Symbol_Satchel.png":
 {
-	"frame": {"x":22,"y":37,"w":39,"h":34},
+	"frame": {"x":2,"y":73,"w":39,"h":34},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":39,"h":34},
@@ -53,8 +61,8 @@
 	"version": "1.0",
 	"image": "arenaIconAtlas.png",
 	"format": "RGBA8888",
-	"size": {"w":63,"h":73},
+	"size": {"w":53,"h":109},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:f114598f35ed50a6beebc27a48d388fe:5b57ff39bd8fd318cde0c54e1b0fcb12:ac8d287d51dac63d28268d603db80af4$"
+	"smartupdate": "$TexturePacker:SmartUpdate:2f9bcf2466691e8e49abf2fb12e995a9:3f3fb16caa6377e2c2e4eafa207d2fc8:ac8d287d51dac63d28268d603db80af4$"
 }
 }

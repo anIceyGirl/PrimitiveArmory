@@ -10,15 +10,31 @@
 },
 "BlowGun.png":
 {
-	"frame": {"x":12,"y":83,"w":14,"h":61},
+	"frame": {"x":12,"y":94,"w":14,"h":61},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":14,"h":61},
 	"sourceSize": {"w":14,"h":61}
 },
+"Bottle.png":
+{
+	"frame": {"x":17,"y":14,"w":5,"h":7},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":5,"h":7},
+	"sourceSize": {"w":5,"h":7}
+},
+"Bottle_Empty.png":
+{
+	"frame": {"x":2,"y":23,"w":5,"h":7},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":5,"h":7},
+	"sourceSize": {"w":5,"h":7}
+},
 "Bow.png":
 {
-	"frame": {"x":17,"y":52,"w":10,"h":29},
+	"frame": {"x":13,"y":63,"w":10,"h":29},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":10,"h":29},
@@ -26,7 +42,7 @@
 },
 "Club.png":
 {
-	"frame": {"x":2,"y":83,"w":8,"h":40},
+	"frame": {"x":2,"y":94,"w":8,"h":40},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":8,"h":40},
@@ -34,7 +50,7 @@
 },
 "Quiver.png":
 {
-	"frame": {"x":13,"y":42,"w":13,"h":5},
+	"frame": {"x":2,"y":7,"w":13,"h":5},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":13,"h":5},
@@ -42,7 +58,7 @@
 },
 "QuiverFade.png":
 {
-	"frame": {"x":2,"y":52,"w":13,"h":5},
+	"frame": {"x":2,"y":14,"w":13,"h":5},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":13,"h":5},
@@ -50,7 +66,7 @@
 },
 "Satchel1A.png":
 {
-	"frame": {"x":17,"y":2,"w":9,"h":8},
+	"frame": {"x":9,"y":23,"w":9,"h":8},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":9,"h":8},
@@ -58,7 +74,7 @@
 },
 "Satchel1B.png":
 {
-	"frame": {"x":2,"y":12,"w":9,"h":8},
+	"frame": {"x":2,"y":33,"w":9,"h":8},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":9,"h":8},
@@ -66,7 +82,7 @@
 },
 "Satchel1C.png":
 {
-	"frame": {"x":13,"y":12,"w":9,"h":8},
+	"frame": {"x":13,"y":33,"w":9,"h":8},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":9,"h":8},
@@ -74,7 +90,7 @@
 },
 "Satchel1Fade.png":
 {
-	"frame": {"x":2,"y":22,"w":9,"h":8},
+	"frame": {"x":2,"y":43,"w":9,"h":8},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":9,"h":8},
@@ -82,7 +98,7 @@
 },
 "Satchel2A.png":
 {
-	"frame": {"x":13,"y":22,"w":9,"h":8},
+	"frame": {"x":13,"y":43,"w":9,"h":8},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":9,"h":8},
@@ -90,7 +106,7 @@
 },
 "Satchel2B.png":
 {
-	"frame": {"x":2,"y":32,"w":9,"h":8},
+	"frame": {"x":2,"y":53,"w":9,"h":8},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":9,"h":8},
@@ -98,7 +114,7 @@
 },
 "Satchel2C.png":
 {
-	"frame": {"x":13,"y":32,"w":9,"h":8},
+	"frame": {"x":13,"y":53,"w":9,"h":8},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":9,"h":8},
@@ -106,7 +122,7 @@
 },
 "Satchel2Fade.png":
 {
-	"frame": {"x":2,"y":42,"w":9,"h":8},
+	"frame": {"x":2,"y":63,"w":9,"h":8},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":9,"h":8},
@@ -117,8 +133,8 @@
 	"version": "1.0",
 	"image": "objectAtlas.png",
 	"format": "RGBA8888",
-	"size": {"w":29,"h":146},
+	"size": {"w":28,"h":157},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:9e1532cca86eb94556ec6a2d1fba3df3:ef4be1e0e1f9cf8f989e4b6898518d3d:3059ff2b2c48bf3e6e91bdeaaf2b810d$"
+	"smartupdate": "$TexturePacker:SmartUpdate:3d8afea96c0afe48087cd00eea5e2f0f:283db0de0082cad1a4f64d0cfe7b35bc:3059ff2b2c48bf3e6e91bdeaaf2b810d$"
 }
 }

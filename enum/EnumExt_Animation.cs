@@ -7,5 +7,9 @@ namespace PrimitiveArmory
         public static Player.AnimationIndex PrepareToShoot; // When the player is preparing to shoot with a bow & arrow.
 
         public static Weapon.Mode Using;
+
+        // public static SoundID BowDraw;
+        // public static SoundID BowFire;
+        // public static SoundID BowFire_Dry;
     }
 }
