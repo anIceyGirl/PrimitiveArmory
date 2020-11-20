@@ -679,29 +679,36 @@ namespace PrimitiveArmory
                         stats[playerNumber].comboCount++;
                     }
 
-                    float swingProgress = (float)stats[playerNumber].swingAnimTimer / (float)swingTime;
-                    float swingAngle = Mathf.Lerp(90f, -22.5f, swingProgress * swingProgress);
-
-                    Vector2 vector = Custom.DegToVec(swingAngle);
-
-                    if (player.ThrowDirection > 0)
-                    {
-                        vector = new Vector2(-vector.x, vector.y);
-                    }
-
-                    Vector2 clubTip = (thrownObject.firstChunk.pos + vector * 75f);
+                    Vector2 clubTip = (thrownObject.firstChunk.pos + (thrownObject as Weapon).rotation * 30f);
 
                     SharedPhysics.CollisionResult collisionResult = SharedPhysics.TraceProjectileAgainstBodyChunks((thrownObject as SharedPhysics.IProjectileTracer), player.room, thrownObject.firstChunk.pos, ref clubTip, 10f, player.collisionLayer, player, true);
                     
                     if (collisionResult.obj != null)
                     {
+                        bool flag = false;
+                        if (thrownObject.abstractPhysicalObject.world.game.IsArenaSession && thrownObject.abstractPhysicalObject.world.game.GetArenaGameSession.GameTypeSetup.spearHitScore != 0 && player != null && collisionResult.obj is Creature)
+                        {
+                            flag = true;
+                            if ((collisionResult.obj as Creature).State is HealthState && ((collisionResult.obj as Creature).State as HealthState).health <= 0f)
+                            {
+                                flag = false;
+                            }
+                            else if (!((collisionResult.obj as Creature).State is HealthState) && (collisionResult.obj as Creature).State.dead)
+                            {
+                                flag = false;
+                            }
+                        }
+
                         if (collisionResult.obj is Creature)
                         {
                             player.room.PlaySound(SoundID.Rock_Hit_Creature, collisionResult.chunk);
 
+                            (collisionResult.obj as Creature).Violence(thrownObject.firstChunk, (thrownObject as Weapon).rotation * thrownObject.firstChunk.mass * 2f, collisionResult.chunk, collisionResult.onAppendagePos, Creature.DamageType.Blunt, stats[playerNumber].meleeSkill* 0.6f, 20f);
 
-
-                            (collisionResult.obj as Creature).Violence(thrownObject.firstChunk, vector * thrownObject.firstChunk.mass * 2f, collisionResult.chunk, collisionResult.onAppendagePos, Creature.DamageType.Blunt, stats[playerNumber].meleeSkill* 0.6f, 20f);
+                            if (flag)
+                            {
+                                thrownObject.abstractPhysicalObject.world.game.GetArenaGameSession.PlayerLandSpear(player, collisionResult.obj as Creature);
+                            }
                         }
                         else
                         {
