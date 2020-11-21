@@ -380,8 +380,6 @@ namespace PrimitiveArmory
 
             Debug.Log("Patching Player.Grabability");
             On.Player.Grabability += GrababilityPatch;
-            Debug.Log("Patching Player.GrabUpdate");
-            On.Player.GrabUpdate += GrabUpdatePatch;
             Debug.Log("Patching Player.Update");
             On.Player.Update += PlayerUpdatePatch;
             Debug.Log("Patching Player.ThrowObject");
@@ -628,18 +626,6 @@ namespace PrimitiveArmory
             // code that runs after game code
 
             return result;
-        }
-
-        public static void GrabUpdatePatch(On.Player.orig_GrabUpdate orig, Player player, bool eu)
-        {
-            orig.Invoke(player, eu);
-
-            if (player.pickUpCandidate is Weapon && CanPutWeaponToBack(player, stats[player.playerState.playerNumber].backSlot.backItem as Weapon) && ((player.grasps[0] != null && player.Grabability(player.grasps[0].grabbed) >= Player.ObjectGrabability.BigOneHand) || (player.grasps[1] != null && player.Grabability(player.grasps[1].grabbed) >= Player.ObjectGrabability.BigOneHand) || (player.grasps[0] != null && player.grasps[1] != null)))
-            {
-                Debug.Log("spear straight to back");
-                player.room.PlaySound(SoundID.Slugcat_Switch_Hands_Init, player.mainBodyChunk);
-                stats[player.playerState.playerNumber].backSlot.WeaponToBack(player.pickUpCandidate as Weapon);
-            }
         }
 
         public static void ThrowPatch(On.Player.orig_ThrowObject orig, Player player, int grasp, bool eu)
