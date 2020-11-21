@@ -1,5 +1,4 @@
-﻿
-using OptionalUI;
+﻿using OptionalUI;
 using Partiality;
 using Partiality.Modloader;
 using RWCustom;
@@ -61,9 +60,9 @@ namespace PrimitiveArmory
 
             On.RainWorld.Start += RainWorld_Start;
 
-            // IceyDebug.DebugHook();
             PlayerHooks.Patch();
             DataManager.Patch();
+            ItemSpawner.Patch();
 
             Futile.atlasManager.LogAllElementNames();
 

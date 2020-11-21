@@ -70,6 +70,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="enum\EnumExt_Animation.cs" />
+    <Compile Include="items\ItemSpawner.cs" />
     <Compile Include="util\DataManager.cs" />
     <Compile Include="util\DynamicHooks.cs" />
     <Compile Include="util\Exceptions.cs" />
@@ -89,6 +90,12 @@
     <EmbeddedResource Include="resources\objectAtlas.png" />
     <EmbeddedResource Include="resources\objectAtlas.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="resources\sfx\BowDraw.wav" />
+    <EmbeddedResource Include="resources\sfx\BowFire.wav" />
+    <EmbeddedResource Include="resources\sfx\BowFire_Dry.wav" />
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy /Y "$(TargetPath)" "D:\ProgramFiles\SteamLibrary\steamapps\common\Rain World\Mods\$(TargetName).dll"
