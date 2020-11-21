@@ -10,7 +10,7 @@ namespace PrimitiveArmory
 {
     public class ItemSpawner
     {
-        public float clubReplaceChance = 0.1f;
+        public static float clubReplaceChance = 0.1f;
 
         public struct RoomStates
         {
@@ -34,7 +34,7 @@ namespace PrimitiveArmory
 			{
 				if (!room.abstractRoom.shelter && !room.abstractRoom.gate && room.game != null && (!room.game.IsArenaSession || room.game.GetArenaGameSession.GameTypeSetup.levelItems))
 				{
-					for (int i = (int)((float)room.TileWidth * (float)room.TileHeight * Mathf.Pow(room.roomSettings.RandomItemDensity * room.roomSettings.RandomItemSpearChance, 2f) / 5f); i >= 0; i--)
+					for (int i = (int)((float)room.TileWidth * (float)room.TileHeight * Mathf.Pow(room.roomSettings.RandomItemDensity * room.roomSettings.RandomItemSpearChance * clubReplaceChance, 2f) / 5f); i >= 0; i--)
 					{
 						IntVector2 spawnTile = room.RandomTile();
 						if (!room.GetTile(spawnTile).Solid)
