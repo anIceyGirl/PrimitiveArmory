@@ -612,9 +612,9 @@ namespace PrimitiveArmory
 
                             vector = Vector3.Slerp(vector, Custom.DegToVec((80f + Mathf.Cos((float)(player.animationFrame + ((!player.leftFoot) ? 3 : 9)) / 12f * 2f * (float)Math.PI) * 4f * (player.graphicsModule as PlayerGraphics).spearDir) * (player.graphicsModule as PlayerGraphics).spearDir), Mathf.Abs((player.graphicsModule as PlayerGraphics).spearDir));
 
-                            if (player.mainBodyChunk.vel.magnitude < 2f)
+                            if (player.mainBodyChunk.vel.magnitude < 4f)
                             {
-                                vector = Custom.RotateAroundOrigo(vector, Mathf.Lerp(0f, -90f, Mathf.Pow(player.mainBodyChunk.vel.magnitude / 2f, 2)));
+                                vector = Custom.RotateAroundOrigo(vector, Mathf.Lerp(0f, -90f, player.mainBodyChunk.vel.magnitude / 4f));
                             }
 
                             (player.grasps[i].grabbed as Weapon).setRotation = vector;
@@ -747,6 +747,12 @@ namespace PrimitiveArmory
                 }
                 return;
             }
+
+            if (thrownType == EnumExt_NewItems.Bow)
+            {
+                return;
+            }
+
             orig(player, grasp, eu);
         }
 
