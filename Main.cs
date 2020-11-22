@@ -10,7 +10,7 @@ namespace PrimitiveArmory
 {
     public class Main : PartialityMod
     {
-        private bool made;
+        private bool startupHooks;
 
         public static bool enabled;
         public static bool customResources;
@@ -47,9 +47,9 @@ namespace PrimitiveArmory
 
             Debug.Log("Ready for hooking for PrimitiveArmory...");
 
+            On.RainWorld.Update += StartupHooks;
             On.AbstractPhysicalObject.Realize += RealizePatch;
             On.MultiplayerUnlocks.SymbolDataForSandboxUnlock += SandboxIconPatch;
-            On.RainWorld.Update += MakeMe;
             On.ItemSymbol.SpriteNameForItem += ItemSymbol_SpriteNameForItem;
 
             Debug.Log("Hooking Savestate (we'll probably crash here if we're running more than two patches without BepinEx)");
@@ -175,14 +175,15 @@ namespace PrimitiveArmory
             }
         }
 
-        public void MakeMe(On.RainWorld.orig_Update orig, RainWorld self)
+        public void StartupHooks(On.RainWorld.orig_Update orig, RainWorld self)
         {
             orig(self);
 
-            if (!made)
+            if (!startupHooks)
             {
-                made = true;
+                startupHooks = true;
                 AddItems();
+                DynamicHooks.SearchAndAdd();
             }
         }
 

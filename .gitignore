@@ -19,3 +19,6 @@ bin/Debug/Assembly-CSharp.dll
 .vs/VSWorkspaceState.json
 .vs/slnx.sqlite
 .vs/PrimitiveArmory/v16/.suo
+obj/Debug/PrimitiveArmory.csprojAssemblyReference.cache
+obj/Debug/PrimitiveArmory.dll
+obj/Debug/PrimitiveArmory.pdb

@@ -5,9 +5,6 @@ namespace PrimitiveArmory
 {
     public class Bow : Weapon, IDrawable
     {
-        public bool pivotAtTip;
-
-        public bool lastPivotAtTip;
 
         public bool spinning;
 
@@ -28,8 +25,6 @@ namespace PrimitiveArmory
             base.waterFriction = 0.98f;
             base.buoyancy = 0.4f;
             spinning = false;
-            pivotAtTip = false;
-            lastPivotAtTip = false;
             base.firstChunk.loudness = 7f;
             soundLoop = new ChunkDynamicSoundLoop(base.firstChunk);
         }
@@ -106,8 +101,16 @@ namespace PrimitiveArmory
             {
                 sLeaser.sprites[num].x = vector.x - camPos.x;
                 sLeaser.sprites[num].y = vector.y - camPos.y;
-                sLeaser.sprites[num].anchorY = Mathf.Lerp((!lastPivotAtTip) ? 0.5f : 0.85f, (!pivotAtTip) ? 0.5f : 0.85f, timeStacker);
                 sLeaser.sprites[num].rotation = Custom.AimFromOneVectorToAnother(new Vector2(0f, 0f), v);
+            }
+
+            if(mode != Weapon.Mode.OnBack)
+            {
+                sLeaser.sprites[0].anchorX = 0.1f;
+            }
+            else
+            {
+                sLeaser.sprites[0].anchorX = 0.5f;
             }
 
             if (blink > 0 && UnityEngine.Random.value < 0.5f)
