@@ -12,11 +12,6 @@ namespace PrimitiveArmory
     {
         public static float clubReplaceChance = 0.1f;
 
-        public struct RoomStates
-        {
-
-        }
-
         public static void Patch()
         {
             On.Room.ctor += RoomConstructorPatch;

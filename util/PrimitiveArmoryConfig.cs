@@ -45,7 +45,8 @@ namespace PrimitiveArmory
                     string nothingHereYet = "There's nothing here yet...\n:(";
                     string knownIssues = "Known issues:"
                         + "\nOpening Config Screen spams ExceptionLog with NullReferenceExceptions,\nbut only once?\n" 
-                        + "\nClub swinging is a bit glitchy when you first pick a club up, but going\nthrough a shortcut fixes it.";
+                        + "\nClub swinging is a bit glitchy when you first pick a club up, but going\nthrough a shortcut fixes it."
+                        + "\nKilling creatures with the club do not register as a kill in Arena mode.";
 
                     for (int i = 0; i < this.Tabs.Length; i++)
                     {
@@ -117,6 +118,7 @@ namespace PrimitiveArmory
             TabList[tabNum].AddItems(TextBoxContainer);
             TabList[tabNum].AddItems(TextBoxID);
         }
+
         public override bool Configuable()
         {
             return true;

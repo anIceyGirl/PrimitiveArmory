@@ -460,7 +460,6 @@ namespace PrimitiveArmory
                     stats[playerNumber].meleeSkill = 0.75f;
                     stats[playerNumber].rangedSkill = 1.25f;
                     break;
-
                 default:
                     stats[playerNumber].meleeSkill = 1f;
                     stats[playerNumber].rangedSkill = 1f;
