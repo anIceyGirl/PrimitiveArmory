@@ -75,6 +75,10 @@ namespace PrimitiveArmory
             {
                 return "Symbol_Club";
             }
+            if (itemType == EnumExt_NewItems.Bow)
+            {
+                return "Symbol_Bow";
+            }
 
             return orig.Invoke(itemType, intData);
         }
@@ -103,10 +107,17 @@ namespace PrimitiveArmory
                 goto StuckRealize;
             }
 
+            if (self.type == EnumExt_NewItems.Bow)
+            {
+                self.realizedObject = new Bow(self, self.world);
+
+                goto StuckRealize;
+            }
+
             orig(self);
 
 
-        StuckRealize:
+            StuckRealize:
             for (int i = 0; i < self.stuckObjects.Count; i++)
             {
                 if (self.stuckObjects[i].A.realizedObject == null && self.stuckObjects[i].A != self)
@@ -127,6 +138,10 @@ namespace PrimitiveArmory
             if (unlockID == EnumExt_NewItems.ClubUnlock)
             {
                 return new IconSymbol.IconSymbolData(CreatureTemplate.Type.StandardGroundCreature, EnumExt_NewItems.Club, 0);
+            }
+            if (unlockID == EnumExt_NewItems.BowUnlock)
+            {
+                return new IconSymbol.IconSymbolData(CreatureTemplate.Type.StandardGroundCreature, EnumExt_NewItems.Bow, 0);
             }
 
             return orig(unlockID);
@@ -174,6 +189,7 @@ namespace PrimitiveArmory
         private void AddItems()
         {
             SandboxUnlockCore.Main.items.Add(EnumExt_NewItems.ClubUnlock);
+            SandboxUnlockCore.Main.items.Add(EnumExt_NewItems.BowUnlock);
         }
 
         private static void CustomRegionLoad(On.RegionState.orig_AdaptWorldToRegionState orig, RegionState self)

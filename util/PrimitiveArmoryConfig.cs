@@ -123,8 +123,7 @@ namespace PrimitiveArmory
         }
 
         public string RandomTabHeader(bool isError = false)
-        {
-            #pragma warning disable CS0162 // Unreachable code detected                        
+        {                      
             if (!isError)
             {
                 Dictionary<int, string> specialDates = new Dictionary<int, string>()
@@ -176,7 +175,6 @@ namespace PrimitiveArmory
 
                 return randomDesc[UnityEngine.Random.Range(0, randomDesc.Length - 1)];
             }
-            #pragma warning restore CS0162 // Unreachable code detected
         }
 
         public void ToggleItemsTab(OpTab[] TabList, int tabNum)

@@ -338,6 +338,11 @@ namespace PrimitiveArmory
                 return !stats[playerNumber].backSlot.HasAWeapon && (player.grasps[0]?.grabbed is Club || player.grasps[1]?.grabbed is Club) && !player.spearOnBack.HasASpear;
             }
 
+            if (weapon is Bow)
+            {
+                return !stats[playerNumber].backSlot.HasAWeapon && (player.grasps[0]?.grabbed is Bow || player.grasps[1]?.grabbed is Bow) && !player.spearOnBack.HasASpear;
+            }
+
             return false;
         }
 
@@ -546,48 +551,74 @@ namespace PrimitiveArmory
                     continue;
                 }
 
-                if (actuallyViewed && player.grasps[i].grabbed is Club)
+                if (actuallyViewed)
                 {
-                    player.grasps[i].grabbed.firstChunk.vel = (player.graphicsModule as PlayerGraphics).hands[i].vel;
-                    player.grasps[i].grabbed.firstChunk.MoveFromOutsideMyUpdate(eu, (player.graphicsModule as PlayerGraphics).hands[i].pos);
-                    if (player.grasps[i].grabbed is Weapon)
+                    Vector2 vector = Custom.DirVec(player.mainBodyChunk.pos, player.grasps[i].grabbed.bodyChunks[0].pos) * ((i != 0) ? 1f : (-1f));
+
+                    switch (player.grasps[i].grabbed)
                     {
-                        Vector2 vector = Custom.DirVec(player.mainBodyChunk.pos, player.grasps[i].grabbed.bodyChunks[0].pos) * ((i != 0) ? 1f : (-1f));
-                        if (player.animation != Player.AnimationIndex.HangFromBeam)
-                        {
-                            vector = Custom.PerpendicularVector(vector);
-                        }
-
-                        if (player.animation != Player.AnimationIndex.ClimbOnBeam)
-                        {
-                            vector = Vector3.Slerp(vector, Custom.DegToVec((80f + Mathf.Cos((float)(player.animationFrame + ((!player.leftFoot) ? 3 : 9)) / 12f * 2f * (float)Math.PI) * 4f * (player.graphicsModule as PlayerGraphics).spearDir) * (player.graphicsModule as PlayerGraphics).spearDir), Mathf.Abs((player.graphicsModule as PlayerGraphics).spearDir));
-                        }
-
-                        if (stats[player.playerState.playerNumber].swingAnimTimer > 0)
-                        {
-                            float swingProgress = (float)stats[player.playerState.playerNumber].swingAnimTimer / (float)swingTime;
-                            float swingAngle = Mathf.Lerp(110f, -20f, swingProgress * swingProgress);
-                            vector = Custom.DegToVec(swingAngle);
-
-                            (player.grasps[i].grabbed as Club).isSwinging = true;
-
-
-                            if (player.ThrowDirection < 0)
+                        case Club club:
+                            player.grasps[i].grabbed.firstChunk.vel = (player.graphicsModule as PlayerGraphics).hands[i].vel;
+                            player.grasps[i].grabbed.firstChunk.MoveFromOutsideMyUpdate(eu, (player.graphicsModule as PlayerGraphics).hands[i].pos);
+                            if (player.animation != Player.AnimationIndex.HangFromBeam)
                             {
-                                vector = new Vector2(-vector.x, vector.y);
+                                vector = Custom.PerpendicularVector(vector);
+                            }
+                            
+                            if (player.animation != Player.AnimationIndex.ClimbOnBeam)
+                            {
+                                vector = Vector3.Slerp(vector, Custom.DegToVec((80f + Mathf.Cos((float)(player.animationFrame + ((!player.leftFoot) ? 3 : 9)) / 12f * 2f * (float)Math.PI) * 4f * (player.graphicsModule as PlayerGraphics).spearDir) * (player.graphicsModule as PlayerGraphics).spearDir), Mathf.Abs((player.graphicsModule as PlayerGraphics).spearDir));
+                            }
+                            
+                            if (stats[player.playerState.playerNumber].swingAnimTimer > 0)
+                            {
+                                float swingProgress = (float)stats[player.playerState.playerNumber].swingAnimTimer / (float)swingTime;
+                                float swingAngle = Mathf.Lerp(110f, -20f, swingProgress * swingProgress);
+                                vector = Custom.DegToVec(swingAngle);
+                            
+                                (player.grasps[i].grabbed as Club).isSwinging = true;
+                            
+                            
+                                if (player.ThrowDirection < 0)
+                                {
+                                    vector = new Vector2(-vector.x, vector.y);
+                                }
+                            
+                                (player.graphicsModule as PlayerGraphics).hands[i].reachingForObject = true;
+                                player.grasps[i].grabbed.firstChunk.pos = player.mainBodyChunk.pos + vector * 25f;
+                                (player.graphicsModule as PlayerGraphics).hands[i].absoluteHuntPos = player.grasps[i].grabbed.firstChunk.pos;
+                            }
+                            else
+                            {
+                                (player.grasps[i].grabbed as Club).isSwinging = false;
+                            }
+                            
+                            (player.grasps[i].grabbed as Weapon).setRotation = vector;
+                            (player.grasps[i].grabbed as Weapon).rotationSpeed = 0f;
+                            
+                            break;
+                        case Bow bow:
+                            player.grasps[i].grabbed.firstChunk.vel = (player.graphicsModule as PlayerGraphics).hands[i].vel;
+                            player.grasps[i].grabbed.firstChunk.MoveFromOutsideMyUpdate(eu, (player.graphicsModule as PlayerGraphics).hands[i].pos);
+
+                            if (player.bodyMode == Player.BodyModeIndex.Crawl)
+                            {
+                                vector = Custom.DirVec(player.bodyChunks[1].pos, Vector2.Lerp(player.grasps[i].grabbed.bodyChunks[0].pos, player.bodyChunks[0].pos, 0.8f));
+                            }
+                            else if (player.animation == Player.AnimationIndex.ClimbOnBeam)
+                            {
+                                vector.y = Mathf.Abs(vector.y);
+                                vector = Vector3.Slerp(vector, Custom.DirVec(player.bodyChunks[1].pos, player.bodyChunks[0].pos), 0.75f);
                             }
 
-                            (player.graphicsModule as PlayerGraphics).hands[i].reachingForObject = true;
-                            player.grasps[i].grabbed.firstChunk.pos = player.mainBodyChunk.pos + vector * 25f;
-                            (player.graphicsModule as PlayerGraphics).hands[i].absoluteHuntPos = player.grasps[i].grabbed.firstChunk.pos;
-                        }
-                        else
-                        {
-                            (player.grasps[i].grabbed as Club).isSwinging = false;
-                        }
+                            vector = Vector3.Slerp(vector, Custom.DegToVec((80f + Mathf.Cos((float)(player.animationFrame + ((!player.leftFoot) ? 3 : 9)) / 12f * 2f * (float)Math.PI) * 4f * (player.graphicsModule as PlayerGraphics).spearDir) * (player.graphicsModule as PlayerGraphics).spearDir), Mathf.Abs((player.graphicsModule as PlayerGraphics).spearDir));
+                            
 
-                        (player.grasps[i].grabbed as Weapon).setRotation = vector;
-                        (player.grasps[i].grabbed as Weapon).rotationSpeed = 0f;
+                            (player.grasps[i].grabbed as Weapon).setRotation = vector;
+                            (player.grasps[i].grabbed as Weapon).rotationSpeed = 0f;
+
+                            break;
+
                     }
                 }
             }
@@ -611,6 +642,17 @@ namespace PrimitiveArmory
         public static Player.ObjectGrabability GrababilityPatch(On.Player.orig_Grabability orig, Player player, PhysicalObject obj)
         {
             // code that runs before game code
+
+            switch (obj)
+            {
+                case Club club:
+                case Bow bow:
+                    if ((obj as Weapon).mode == Weapon.Mode.OnBack)
+                    {
+                        return Player.ObjectGrabability.CantGrab;
+                    }
+                    return Player.ObjectGrabability.BigOneHand;
+            }
 
             if (obj is Club)
             {

@@ -9,3 +9,4 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("EditAndContinue", "ENC1003", Justification = "Does it really matter if I'm making edits to my project while it's running?")]
 [assembly: SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Every parameter is required for a hook to work properly, even if it's not used in the hook itself.")]
 [assembly: SuppressMessage("Style", "IDE0044:Add readonly modifier", Justification = "Who uses Readonly anyways")]
+[assembly: SuppressMessage("Style", "IDE0059:Unnecessary assignment of a value", Justification = "<Pending>")]

@@ -70,6 +70,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="enum\EnumExt_Animation.cs" />
+    <Compile Include="items\Bow.cs" />
     <Compile Include="items\ItemSpawner.cs" />
     <Compile Include="util\DataManager.cs" />
     <Compile Include="util\DynamicHooks.cs" />
@@ -91,9 +92,9 @@
     <EmbeddedResource Include="resources\objectAtlas.txt" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="resources\sfx\BowDraw.wav" />
-    <EmbeddedResource Include="resources\sfx\BowFire.wav" />
-    <EmbeddedResource Include="resources\sfx\BowFire_Dry.wav" />
+    <EmbeddedResource Include="resources\BowDraw.wav" />
+    <EmbeddedResource Include="resources\BowFire.wav" />
+    <EmbeddedResource Include="resources\BowFire_Dry.wav" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

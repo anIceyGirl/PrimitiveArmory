@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace PrimitiveArmory
 {
-    public class Club : Weapon, IDrawable
+    public class Bow : Weapon, IDrawable
     {
         public bool pivotAtTip;
 
@@ -13,13 +13,9 @@ namespace PrimitiveArmory
 
         public int stillCounter;
 
-        public bool isSwinging = false;
-
-        public float clubDamageBonus = 1f;
-
         public override bool HeavyWeapon => true;
 
-        public Club(AbstractPhysicalObject abstractPhysicalObject, World world) : base(abstractPhysicalObject, world)
+        public Bow(AbstractPhysicalObject abstractPhysicalObject, World world) : base(abstractPhysicalObject, world)
         {
             base.bodyChunks = new BodyChunk[1];
             base.bodyChunks[0] = new BodyChunk(this, 0, new Vector2(0f, 0f), 5f, 0.07f);
@@ -35,7 +31,6 @@ namespace PrimitiveArmory
             pivotAtTip = false;
             lastPivotAtTip = false;
             base.firstChunk.loudness = 7f;
-            tailPos = base.firstChunk.pos;
             soundLoop = new ChunkDynamicSoundLoop(base.firstChunk);
         }
 
@@ -87,30 +82,14 @@ namespace PrimitiveArmory
             spinning = true;
         }
 
-        public override void PickedUp(Creature upPicker)
-        {
-            base.PickedUp(upPicker);
-
-            if (upPicker is Player)
-            {
-                rotation = new Vector2(-0.4f, 0.9f);
-            }
-
-            room.PlaySound(SoundID.Slugcat_Pick_Up_Spear, base.firstChunk);
-        }
-
-        public override void Thrown(Creature thrownBy, Vector2 thrownPos, Vector2? firstFrameTraceFromPos, IntVector2 throwDir, float frc, bool eu)
-        {
-            base.Thrown(thrownBy, thrownPos, firstFrameTraceFromPos, throwDir, frc, eu);
-
-            room.PlaySound(SoundID.Slugcat_Throw_Spear, base.firstChunk);
-        }
-
         public override void InitiateSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam)
         {
             sLeaser.sprites = new FSprite[1];
 
-            sLeaser.sprites[0] = new FSprite("Club");
+            sLeaser.sprites[0] = new FSprite("Bow")
+            {
+                scale = 1.25f
+            };
 
             AddToContainer(sLeaser, rCam, null);
         }
@@ -131,15 +110,6 @@ namespace PrimitiveArmory
                 sLeaser.sprites[num].rotation = Custom.AimFromOneVectorToAnother(new Vector2(0f, 0f), v);
             }
 
-            if (this.mode != Mode.OnBack && !isSwinging)
-            {
-                sLeaser.sprites[0].anchorY = 0.275f;
-            }
-            else if (isSwinging)
-            {
-                sLeaser.sprites[0].anchorY = 0.1f;
-            }
-
             if (blink > 0 && UnityEngine.Random.value < 0.5f)
             {
                 sLeaser.sprites[0].color = base.blinkColor;
@@ -148,6 +118,7 @@ namespace PrimitiveArmory
             {
                 sLeaser.sprites[0].color = color;
             }
+
             if (base.slatedForDeletetion || room != rCam.room)
             {
                 sLeaser.CleanSpritesAndRemove();
