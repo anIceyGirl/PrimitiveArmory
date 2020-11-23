@@ -10,3 +10,4 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Every parameter is required for a hook to work properly, even if it's not used in the hook itself.")]
 [assembly: SuppressMessage("Style", "IDE0044:Add readonly modifier", Justification = "Who uses Readonly anyways")]
 [assembly: SuppressMessage("Style", "IDE0059:Unnecessary assignment of a value", Justification = "<Pending>")]
+[assembly: SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Reserved for later.")]

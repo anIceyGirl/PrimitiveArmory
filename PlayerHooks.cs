@@ -77,7 +77,7 @@ namespace PrimitiveArmory
                     {
                         for (int i = 0; i < 2; i++)
                         {
-                            if (owner.grasps[i] != null && owner.grasps[i].grabbed is Weapon)
+                            if (owner.grasps[i] != null && owner.grasps[i].grabbed is Weapon && CanIStashThis(owner.grasps[i].grabbed as Weapon))
                             {
                                 owner.bodyChunks[0].pos += Custom.DirVec(owner.grasps[i].grabbed.firstChunk.pos, owner.bodyChunks[0].pos) * 2f;
                                 WeaponToBack(owner.grasps[i].grabbed as Weapon);
@@ -328,6 +328,7 @@ namespace PrimitiveArmory
         public static bool CanPutWeaponToBack(Player player, Weapon weapon)
         {
             int playerNumber = player.playerState.playerNumber;
+
             if (player.spearOnBack.HasASpear)
             {
                 return false;
@@ -344,6 +345,18 @@ namespace PrimitiveArmory
             }
 
             return false;
+        }
+
+        public static bool CanIStashThis(Weapon weapon)
+        {
+            switch (weapon)
+            {
+                case Bow bow:
+                case Club club:
+                    return true;
+                default:
+                    return false;
+            }
         }
 
         public static bool CanRetrieveWeaponFromBack(Player player)
@@ -604,19 +617,15 @@ namespace PrimitiveArmory
                             {
                                 vector = Custom.DirVec(player.bodyChunks[1].pos, Vector2.Lerp(player.grasps[i].grabbed.bodyChunks[0].pos, player.bodyChunks[0].pos, 0.8f));
                             }
-                            else if (player.animation == Player.AnimationIndex.ClimbOnBeam)
+                            
+                            if (player.animation == Player.AnimationIndex.ClimbOnBeam)
                             {
                                 vector.y = Mathf.Abs(vector.y);
                                 vector = Vector3.Slerp(vector, Custom.DirVec(player.bodyChunks[1].pos, player.bodyChunks[0].pos), 0.75f);
                             }
 
                             vector = Vector3.Slerp(vector, Custom.DegToVec((80f + Mathf.Cos((float)(player.animationFrame + ((!player.leftFoot) ? 3 : 9)) / 12f * 2f * (float)Math.PI) * 4f * (player.graphicsModule as PlayerGraphics).spearDir) * (player.graphicsModule as PlayerGraphics).spearDir), Mathf.Abs((player.graphicsModule as PlayerGraphics).spearDir));
-
-                            if (player.mainBodyChunk.vel.magnitude < 4f)
-                            {
-                                vector = Custom.RotateAroundOrigo(vector, Mathf.Lerp(0f, -90f, player.mainBodyChunk.vel.magnitude / 4f));
-                            }
-
+                            
                             (player.grasps[i].grabbed as Weapon).setRotation = vector;
                             (player.grasps[i].grabbed as Weapon).rotationSpeed = 0f;
 
@@ -642,6 +651,16 @@ namespace PrimitiveArmory
             }
         }
 
+        private static int GetOppositeHand(int grasp)
+        {
+            return grasp switch
+            {
+                0 => 1,
+                1 => 0,
+                _ => -1,
+            };
+        }
+
         public static Player.ObjectGrabability GrababilityPatch(On.Player.orig_Grabability orig, Player player, PhysicalObject obj)
         {
             // code that runs before game code
@@ -655,22 +674,13 @@ namespace PrimitiveArmory
                         return Player.ObjectGrabability.CantGrab;
                     }
                     return Player.ObjectGrabability.BigOneHand;
+                default:
+                    Player.ObjectGrabability result = orig.Invoke(player, obj);
+
+                    // code that runs after game code
+
+                    return result;
             }
-
-            if (obj is Club)
-            {
-                if ((obj as Weapon).mode == Weapon.Mode.OnBack) {
-                    return Player.ObjectGrabability.CantGrab;
-                }
-
-                return Player.ObjectGrabability.BigOneHand;
-            }
-
-            Player.ObjectGrabability result = orig.Invoke(player, obj);
-
-            // code that runs after game code
-
-            return result;
         }
 
         public static void ThrowPatch(On.Player.orig_ThrowObject orig, Player player, int grasp, bool eu)
@@ -714,17 +724,17 @@ namespace PrimitiveArmory
                     
                     if (collisionResult.obj != null)
                     { 
-                        bool flag = false;
+                        bool arenaHit = false;
                         if (thrownObject.abstractPhysicalObject.world.game.IsArenaSession && thrownObject.abstractPhysicalObject.world.game.GetArenaGameSession.GameTypeSetup.spearHitScore != 0 && player != null && collisionResult.obj is Creature)
                         {
-                            flag = true;
+                            arenaHit = true;
                             if ((collisionResult.obj as Creature).State is HealthState && ((collisionResult.obj as Creature).State as HealthState).health <= 0f)
                             {
-                                flag = false;
+                                arenaHit = false;
                             }
                             else if (!((collisionResult.obj as Creature).State is HealthState) && (collisionResult.obj as Creature).State.dead)
                             {
-                                flag = false;
+                                arenaHit = false;
                             }
                         }
 
@@ -734,7 +744,7 @@ namespace PrimitiveArmory
 
                             (collisionResult.obj as Creature).Violence(thrownObject.firstChunk, (thrownObject as Weapon).rotation * thrownObject.firstChunk.mass * 2f, collisionResult.chunk, collisionResult.onAppendagePos, Creature.DamageType.Blunt, stats[playerNumber].meleeSkill* 0.6f, 20f);
 
-                            if (flag)
+                            if (arenaHit)
                             {
                                 thrownObject.abstractPhysicalObject.world.game.GetArenaGameSession.PlayerLandSpear(player, collisionResult.obj as Creature);
                             }

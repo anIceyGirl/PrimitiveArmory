@@ -69,7 +69,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CreatureHooks.cs" />
     <Compile Include="enum\EnumExt_Animation.cs" />
+    <Compile Include="items\Arrow.cs" />
     <Compile Include="items\Bow.cs" />
     <Compile Include="items\ItemSpawner.cs" />
     <Compile Include="util\DataManager.cs" />
