@@ -327,21 +327,24 @@ namespace PrimitiveArmory
 
         public static bool CanPutWeaponToBack(Player player, Weapon weapon)
         {
-            int playerNumber = player.playerState.playerNumber;
-
-            if (player.spearOnBack.HasASpear)
+            if (player.spearOnBack != null)
             {
-                return false;
-            }
+                int playerNumber = player.playerState.playerNumber;
 
-            switch (weapon)
-            {
-                case Club club:
-                    return !stats[playerNumber].backSlot.HasAWeapon && (player.grasps[0]?.grabbed is Club || player.grasps[1]?.grabbed is Club) && !player.spearOnBack.HasASpear;
-                case Bow bow:
-                    return !stats[playerNumber].backSlot.HasAWeapon && (player.grasps[0]?.grabbed is Bow || player.grasps[1]?.grabbed is Bow) && !player.spearOnBack.HasASpear;
-                default:
-                    break;
+                if (player.spearOnBack.HasASpear)
+                {
+                    return false;
+                }
+
+                switch (weapon)
+                {
+                    case Club club:
+                        return !stats[playerNumber].backSlot.HasAWeapon && (player.grasps[0]?.grabbed is Club || player.grasps[1]?.grabbed is Club) && !player.spearOnBack.HasASpear;
+                    case Bow bow:
+                        return !stats[playerNumber].backSlot.HasAWeapon && (player.grasps[0]?.grabbed is Bow || player.grasps[1]?.grabbed is Bow) && !player.spearOnBack.HasASpear;
+                    default:
+                        break;
+                }
             }
 
             return false;
