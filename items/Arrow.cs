@@ -65,7 +65,7 @@ namespace PrimitiveArmory
 
 		public BodyChunk stuckInChunk => stuckInObject.bodyChunks[stuckInChunkIndex];
 
-		public override bool HeavyWeapon => true;
+		public override bool HeavyWeapon => false;
 
 		public Arrow(AbstractPhysicalObject abstractPhysicalObject, World world)
 			: base(abstractPhysicalObject, world)
@@ -88,7 +88,101 @@ namespace PrimitiveArmory
 			soundLoop = new ChunkDynamicSoundLoop(base.firstChunk);
 		}
 
-		public override void InitiateSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam)
+        public override void Update(bool eu)
+        {
+            base.Update(eu);
+
+
+			switch (base.mode)
+			{
+				case Mode.Free:
+					if (spinning)
+					{
+						if (Custom.DistLess(base.firstChunk.pos, base.firstChunk.lastPos, 4f * room.gravity))
+						{
+							stillCounter++;
+						}
+						else
+						{
+							stillCounter = 0;
+						}
+						if (base.firstChunk.ContactPoint.y < 0 || stillCounter > 20)
+						{
+							spinning = false;
+							rotationSpeed = 0f;
+							rotation = Custom.DegToVec(Mathf.Lerp(-90, 90f, Random.value) + 180f);
+							base.firstChunk.vel *= 0f;
+							room.PlaySound(SoundID.Spear_Stick_In_Ground, base.firstChunk);
+						}
+					}
+					else if (!Custom.DistLess(base.firstChunk.lastPos, base.firstChunk.pos, 6f))
+					{
+						SetRandomSpin();
+					}
+					break;
+				case Mode.StuckInCreature:
+					if (!stuckInWall.HasValue)
+					{
+						if (stuckInAppendage != null)
+						{
+							setRotation = Custom.DegToVec(stuckRotation + Custom.VecToDeg(stuckInAppendage.appendage.OnAppendageDirection(stuckInAppendage)));
+							base.firstChunk.pos = stuckInAppendage.appendage.OnAppendagePosition(stuckInAppendage);
+						}
+						else
+						{
+							base.firstChunk.vel = stuckInChunk.vel;
+							if (stuckBodyPart == -1 || !room.BeingViewed || (stuckInChunk.owner as Creature).BodyPartByIndex(stuckBodyPart) == null)
+							{
+								setRotation = Custom.DegToVec(stuckRotation + Custom.VecToDeg(stuckInChunk.Rotation));
+								base.firstChunk.MoveWithOtherObject(eu, stuckInChunk, new Vector2(0f, 0f));
+							}
+							else
+							{
+								setRotation = Custom.DegToVec(stuckRotation + Custom.AimFromOneVectorToAnother(stuckInChunk.pos, (stuckInChunk.owner as Creature).BodyPartByIndex(stuckBodyPart).pos));
+								base.firstChunk.MoveWithOtherObject(eu, stuckInChunk, Vector2.Lerp(stuckInChunk.pos, (stuckInChunk.owner as Creature).BodyPartByIndex(stuckBodyPart).pos, 0.5f) - stuckInChunk.pos);
+							}
+						}
+					}
+					else
+					{
+						if (pinToWallCounter > 0)
+						{
+							pinToWallCounter--;
+						}
+						if (stuckInChunk.vel.magnitude * stuckInChunk.mass > Custom.LerpMap(pinToWallCounter, 160f, 0f, 7f, 2f))
+						{
+							setRotation = (Custom.DegToVec(stuckRotation) + Vector2.ClampMagnitude(stuckInChunk.vel * stuckInChunk.mass * 0.005f, 0.1f)).normalized;
+						}
+						else
+						{
+							setRotation = Custom.DegToVec(stuckRotation);
+						}
+						base.firstChunk.vel *= 0f;
+						base.firstChunk.pos = stuckInWall.Value;
+						if ((stuckInChunk.owner is Creature && (stuckInChunk.owner as Creature).enteringShortCut.HasValue) || (pinToWallCounter < 160 && Random.value < 0.025f && stuckInChunk.vel.magnitude > Custom.LerpMap(pinToWallCounter, 160f, 0f, 140f, 30f / (1f + stuckInChunk.owner.TotalMass * 0.2f))))
+						{
+							stuckRotation = Custom.Angle(setRotation.Value, stuckInChunk.Rotation);
+							stuckInWall = null;
+						}
+						else
+						{
+							stuckInChunk.MoveFromOutsideMyUpdate(eu, stuckInWall.Value);
+							stuckInChunk.vel *= 0f;
+						}
+					}
+					if (stuckInChunk.owner.slatedForDeletetion)
+					{
+						ChangeMode(Mode.Free);
+					}
+					break;
+				case Mode.StuckInWall:
+					base.firstChunk.pos = stuckInWall.Value;
+					base.firstChunk.vel *= 0f;
+					break;
+			}
+		}
+
+        public override void InitiateSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam)
 		{
 			sLeaser.sprites = new FSprite[1];
 			sLeaser.sprites[0] = new FSprite("Arrow")

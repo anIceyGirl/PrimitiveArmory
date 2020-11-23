@@ -83,7 +83,8 @@ namespace PrimitiveArmory
 
             sLeaser.sprites[0] = new FSprite("Bow")
             {
-                scale = 1.5f
+                scale = 1.5f,
+                
             };
 
             AddToContainer(sLeaser, rCam, null);
@@ -111,7 +112,6 @@ namespace PrimitiveArmory
             else
             {
                 sLeaser.sprites[0].anchorY = 0.5f;
-                sLeaser.sprites[0].rotation += 0.25f;
             }
 
             if (blink > 0 && UnityEngine.Random.value < 0.5f)
