@@ -677,13 +677,13 @@ namespace PrimitiveArmory
                         return Player.ObjectGrabability.CantGrab;
                     }
                     return Player.ObjectGrabability.BigOneHand;
-                default:
-                    Player.ObjectGrabability result = orig.Invoke(player, obj);
-
-                    // code that runs after game code
-
-                    return result;
             }
+
+            Player.ObjectGrabability result = orig.Invoke(player, obj);
+
+            // code that runs after game code
+
+            return result;
         }
 
         public static void ThrowPatch(On.Player.orig_ThrowObject orig, Player player, int grasp, bool eu)

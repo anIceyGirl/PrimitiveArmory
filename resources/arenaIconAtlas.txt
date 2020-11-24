@@ -2,11 +2,11 @@
 
 "Symbol_Arrow.png":
 {
-	"frame": {"x":2,"y":2,"w":7,"h":15},
+	"frame": {"x":2,"y":2,"w":7,"h":20},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":7,"h":15},
-	"sourceSize": {"w":7,"h":15}
+	"spriteSourceSize": {"x":0,"y":0,"w":7,"h":20},
+	"sourceSize": {"w":7,"h":20}
 },
 "Symbol_BlowGun.png":
 {
@@ -63,6 +63,6 @@
 	"format": "RGBA8888",
 	"size": {"w":53,"h":109},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:2f9bcf2466691e8e49abf2fb12e995a9:3f3fb16caa6377e2c2e4eafa207d2fc8:ac8d287d51dac63d28268d603db80af4$"
+	"smartupdate": "$TexturePacker:SmartUpdate:02b7905297beba2c9419c8a0f181f50d:b50150216dc215ef826aa33c8146f30c:ac8d287d51dac63d28268d603db80af4$"
 }
 }
