@@ -340,8 +340,6 @@ namespace PrimitiveArmory
                 {
                     case Club club:
                         return !stats[playerNumber].backSlot.HasAWeapon && (player.grasps[0]?.grabbed is Club || player.grasps[1]?.grabbed is Club) && !player.spearOnBack.HasASpear;
-                    case Bow bow:
-                        return !stats[playerNumber].backSlot.HasAWeapon && (player.grasps[0]?.grabbed is Bow || player.grasps[1]?.grabbed is Bow) && !player.spearOnBack.HasASpear;
                     default:
                         break;
                 }
@@ -354,7 +352,6 @@ namespace PrimitiveArmory
         {
             switch (weapon)
             {
-                case Bow bow:
                 case Club club:
                     return true;
                 default:
@@ -612,27 +609,6 @@ namespace PrimitiveArmory
                             (player.grasps[i].grabbed as Weapon).rotationSpeed = 0f;
                             
                             break;
-                        case Bow bow:
-                            player.grasps[i].grabbed.firstChunk.vel = (player.graphicsModule as PlayerGraphics).hands[i].vel;
-                            player.grasps[i].grabbed.firstChunk.MoveFromOutsideMyUpdate(eu, (player.graphicsModule as PlayerGraphics).hands[i].pos);
-
-                            if (player.bodyMode == Player.BodyModeIndex.Crawl)
-                            {
-                                vector = Custom.DirVec(player.bodyChunks[1].pos, Vector2.Lerp(player.grasps[i].grabbed.bodyChunks[0].pos, player.bodyChunks[0].pos, 0.8f));
-                            }
-                            
-                            if (player.animation == Player.AnimationIndex.ClimbOnBeam)
-                            {
-                                vector.y = Mathf.Abs(vector.y);
-                                vector = Vector3.Slerp(vector, Custom.DirVec(player.bodyChunks[1].pos, player.bodyChunks[0].pos), 0.75f);
-                            }
-
-                            vector = Vector3.Slerp(vector, Custom.DegToVec((80f + Mathf.Cos((float)(player.animationFrame + ((!player.leftFoot) ? 3 : 9)) / 12f * 2f * (float)Math.PI) * 4f * (player.graphicsModule as PlayerGraphics).spearDir) * (player.graphicsModule as PlayerGraphics).spearDir), Mathf.Abs((player.graphicsModule as PlayerGraphics).spearDir));
-                            
-                            (player.grasps[i].grabbed as Weapon).setRotation = vector;
-                            (player.grasps[i].grabbed as Weapon).rotationSpeed = 0f;
-
-                            break;
 
                     }
                 }
@@ -671,7 +647,6 @@ namespace PrimitiveArmory
             switch (obj)
             {
                 case Club club:
-                case Bow bow:
                     if ((obj as Weapon).mode == Weapon.Mode.OnBack)
                     {
                         return Player.ObjectGrabability.CantGrab;
