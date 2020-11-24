@@ -6,7 +6,17 @@ The primary goal of this mod is to introduce a small suite of new items to Rain 
 
 ## INSTALLATION
 You will need either Partiality or Bepinex, as well as a legally acquired copy of Rain World.  
-You will also need CustomAssets, EnumExtender, Config Machine, and Sandbox Unlock Core, all of which can be downloaded via [RainDB](https://www.raindb.net/), underneath the "tools" section.
+You will also need CustomAssets, EnumExtender, Config Machine, and Sandbox Unlock Core, all of which can be downloaded via [RainDB](https://www.raindb.net/), underneath the "tools" section.  
+### Installing via Bepinex (recommended)
+1. Download [Bepinex](https://drive.google.com/file/d/1WcCCsS3ABBdO1aX-iJGeqeE07YE4Qv88/view) via the provided link.
+2. Navigate to your Rain World installation folder. By default, it should be located under "C:\Program Files (x86)\Steam\steamapps\common\Rain World".
+3. Extract the contents of the folder directly to your Rain World install folder.
+4. Download CustomAssets, EnumExtender, Config Machine, and Sandbox Unlock Core from RainDB (linked above). Also download the latest version of PrimitiveArmory via the [releases](https://github.com/Penguixia/PrimitiveArmory/releases) section of this Github page.
+5. Extract the contents of CustomAssets.zip, Config Machine.zip, and Sandbox Unlock Core.zip to somewhere safe.
+6. Move ConfigMachine.dll, EnumExtender.dll, PrimitiveArmory.dll, and SandboxCore.dll into the plugins folder, located inside the Bepinex folder. 
+7. Rename CustomAssets.dll to Assembly-CSharp.CustomAssets.mm.dll. Drop this file into the monomod folder, also located inside the Bepinex folder.
+	- Alternatively you could just use a BepinEx mod manager such as [BIEMM](https://github.com/PaperRonin/BIEMM/releases/) or [BOI](https://github.com/thalber/BOI/releases), which does all the renaming and mod moving for you.
+8. You're all set! Launch the game via Steam.  
 ### Installing Via Partiality
 1. Download the latest version of [Partiality Launcher](https://github.com/PartialityModding/PartialityLauncher/releases) via github.
 2. Extract the contents of PartialityLauncher.zip to your desktop or somewhere else you can easily access it.
@@ -18,17 +28,6 @@ You will also need CustomAssets, EnumExtender, Config Machine, and Sandbox Unloc
 8. Click "Save & Reload Mod List" in the Partiality Launcher. Your mods should appear on the list.
 9. Click the checkmark under "Is Active" next to each of your mods, then click "Apply Mods and Patches."
 10. You're all set! Launch the game via Steam or via the Partiality Launcher.
-
-### Installing via Bepinex (recommended)
-1. Download [Bepinex](https://drive.google.com/file/d/1WcCCsS3ABBdO1aX-iJGeqeE07YE4Qv88/view) via the provided link.
-2. Navigate to your Rain World installation folder. By default, it should be located under "C:\Program Files (x86)\Steam\steamapps\common\Rain World".
-3. Extract the contents of the folder directly to your Rain World install folder.
-4. Download CustomAssets, EnumExtender, Config Machine, and Sandbox Unlock Core from RainDB (linked above). Also download the latest version of PrimitiveArmory via the [releases](https://github.com/Penguixia/PrimitiveArmory/releases) section of this Github page.
-5. Extract the contents of CustomAssets.zip, Config Machine.zip, and Sandbox Unlock Core.zip to somewhere safe.
-6. Move ConfigMachine.dll, EnumExtender.dll, PrimitiveArmory.dll, and SandboxCore.dll into the plugins folder, located inside the Bepinex folder. 
-7. Rename CustomAssets.dll to Assembly-CSharp.CustomAssets.mm.dll. Drop this file into the monomod folder, also located inside the Bepinex folder.
-	- Alternatively you could just use a BepinEx mod manager such as [BIEMM](https://github.com/PaperRonin/BIEMM/releases/) or [BOI](https://github.com/thalber/BOI/releases), which does all the renaming and mod moving for you.
-8. You're all set! Launch the game via Steam.
 
 ## Known issues  
 If you find a bug, please let me know about it through the [issues tab.](https://github.com/Penguixia/PrimitiveArmory/issues)  
