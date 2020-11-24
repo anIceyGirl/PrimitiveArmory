@@ -30,7 +30,8 @@ You will also need CustomAssets, EnumExtender, Config Machine, and Sandbox Unloc
 	- Alternatively you could just use a BepinEx mod manager such as [BIEMM](https://github.com/PaperRonin/BIEMM/releases/) or [BOI](https://github.com/thalber/BOI/releases), which does all the renaming and mod moving for you.
 8. You're all set! Launch the game via Steam.
 
-## Known issues
+## Known issues  
+If you find a bug, please let me know about it through the [issues tab.](https://github.com/Penguixia/PrimitiveArmory/issues)  
 - Launching the game with two or more patch mods installed will crash the game. This is an issue with Partiality, unfortunately, and I'm unable to do anything to fix it. Use Bepinex instead.
 
 ## Licensing
