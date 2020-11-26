@@ -123,12 +123,12 @@ namespace PrimitiveArmory
                 vector += Custom.DegToVec(UnityEngine.Random.value * 360f) * 2f * UnityEngine.Random.value;
             }
             Vector3 v = Vector3.Slerp(lastRotation, rotation, timeStacker);
-            for (int num = 0; num >= 0; num--)
+            for (int i = 0; i >= 0; i--)
             {
-                sLeaser.sprites[num].x = vector.x - camPos.x;
-                sLeaser.sprites[num].y = vector.y - camPos.y;
-                sLeaser.sprites[num].anchorY = Mathf.Lerp((!lastPivotAtTip) ? 0.5f : 0.85f, (!pivotAtTip) ? 0.5f : 0.85f, timeStacker);
-                sLeaser.sprites[num].rotation = Custom.AimFromOneVectorToAnother(new Vector2(0f, 0f), v);
+                sLeaser.sprites[i].x = vector.x - camPos.x;
+                sLeaser.sprites[i].y = vector.y - camPos.y;
+                sLeaser.sprites[i].anchorY = Mathf.Lerp((!lastPivotAtTip) ? 0.5f : 0.85f, (!pivotAtTip) ? 0.5f : 0.85f, timeStacker);
+                sLeaser.sprites[i].rotation = Custom.AimFromOneVectorToAnother(new Vector2(0f, 0f), v);
             }
 
             if (this.mode != Mode.OnBack && !isSwinging)
