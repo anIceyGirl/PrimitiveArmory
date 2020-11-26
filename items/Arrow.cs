@@ -43,6 +43,7 @@ namespace PrimitiveArmory
         {
 			public enum ArrowType
             {
+				Normal,
 				Fire,
 				Explosive,
 				Electric
@@ -187,7 +188,7 @@ namespace PrimitiveArmory
 			sLeaser.sprites = new FSprite[1];
 			sLeaser.sprites[0] = new FSprite("Arrow")
 			{
-				scale = 1.5f
+				scale = 1.1f
 			};
 			AddToContainer(sLeaser, rCam, null);
 		}

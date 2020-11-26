@@ -6,6 +6,8 @@ namespace PrimitiveArmory
     public class Bow : Weapon, IDrawable
     {
 
+        public float arrowDrawn;
+
         public bool spinning;
 
         public int stillCounter;
@@ -67,6 +69,10 @@ namespace PrimitiveArmory
                     break;
             }
         }
+        public Vector2 StringAttachPos(float timeStacker)
+        {
+            return Vector2.Lerp(base.firstChunk.lastPos, base.firstChunk.pos, timeStacker) + (Vector2)Vector3.Slerp(lastRotation, rotation, timeStacker) * 15f;
+        }
 
         public override void SetRandomSpin()
         {
@@ -83,8 +89,7 @@ namespace PrimitiveArmory
 
             sLeaser.sprites[0] = new FSprite("Bow")
             {
-                scale = 1.5f,
-                
+                scale = 1.1f,
             };
 
             AddToContainer(sLeaser, rCam, null);
@@ -107,11 +112,11 @@ namespace PrimitiveArmory
 
             if(mode != Weapon.Mode.OnBack)
             {
-                sLeaser.sprites[0].anchorX = 0.9f;
+                sLeaser.sprites[0].anchorY = 0.1f;
             }
             else
             {
-                sLeaser.sprites[0].anchorX = 0.5f;
+                sLeaser.sprites[0].anchorY = 0.5f;
             }
 
             if (blink > 0 && UnityEngine.Random.value < 0.5f)
