@@ -50,7 +50,7 @@ namespace PrimitiveArmory
             On.RainWorld.Update += StartupHooks;
             On.AbstractPhysicalObject.Realize += RealizePatch;
             On.MultiplayerUnlocks.SymbolDataForSandboxUnlock += SandboxIconPatch;
-            On.ItemSymbol.SpriteNameForItem += ItemSymbol_SpriteNameForItem;
+            On.ItemSymbol.SpriteNameForItem += SpriteNameForItemPatch;
 
             Debug.Log("Hooking Savestate (we'll probably crash here if we're running more than two patches without BepinEx)");
             On.SaveState.AbstractPhysicalObjectFromString += AbstractFromStringPatch;
@@ -64,12 +64,10 @@ namespace PrimitiveArmory
             DataManager.Patch();
             ItemSpawner.Patch();
 
-            Futile.atlasManager.LogAllElementNames();
-
             Debug.Log("PrimitiveArmory Hooking Complete!");
         }
 
-        private string ItemSymbol_SpriteNameForItem(On.ItemSymbol.orig_SpriteNameForItem orig, AbstractPhysicalObject.AbstractObjectType itemType, int intData)
+        private string SpriteNameForItemPatch(On.ItemSymbol.orig_SpriteNameForItem orig, AbstractPhysicalObject.AbstractObjectType itemType, int intData)
         {
             if (itemType == EnumExt_NewItems.Club)
             {
