@@ -14,6 +14,7 @@ namespace PrimitiveArmory
         private static int postComboCooldown = (int)(swingTime * comboTimeMultiplier); // Time after a successful combo until the player can swing again.
         public static int maxCombo = 2; // The maximum combo a player can attain.
         public static float comboCancelMultiplier = 2.5f;
+        public static Vector2 playerAimDir;
 
         public struct ArmoryState
         {
@@ -21,7 +22,7 @@ namespace PrimitiveArmory
             public int swingDelay;
             public int comboCount;
             public int comboCooldown;
-            public int swingAnimTimer;
+            public int animTimer;
             public float rangedSkill;
             public float meleeSkill;
             public EquippedArmor headSlot;
@@ -34,15 +35,17 @@ namespace PrimitiveArmory
         {
             public Player owner;
             public Armor armor;
+            public Armor.ArmorSlot slot;
             public bool increment;
             public int counter;
             public float flip;
             public bool interactionLocked;
             public AbstractArmorStick abstractStick;
 
-            public EquippedArmor(Player owner)
+            public EquippedArmor(Player owner, Armor.ArmorSlot slot)
             {
                 this.owner = owner;
+                this.slot = slot;
             }
         }
 
@@ -179,15 +182,15 @@ namespace PrimitiveArmory
                     }
                 }
                 int targetHand = -1;
-                for (int j = 0; j < 2; j++)
+                for (int i = 0; i < 2; i++)
                 {
                     if (targetHand != -1)
                     {
                         break;
                     }
-                    if (owner.grasps[j] == null)
+                    if (owner.grasps[i] == null)
                     {
-                        targetHand = j;
+                        targetHand = i;
                     }
                 }
                 if (targetHand != -1)
@@ -398,7 +401,6 @@ namespace PrimitiveArmory
             stats = new ArmoryState[totalPlayerNum];
             Debug.Log("Patching Player Constructor");
             On.Player.ctor += (PlayerPatch);
-
             Debug.Log("Patching Player.Grabability");
             On.Player.Grabability += GrababilityPatch;
             Debug.Log("Patching Player.Update");
@@ -407,16 +409,15 @@ namespace PrimitiveArmory
             On.Player.ThrowObject += ThrowPatch;
             Debug.Log("Patching Player.GraphicsModuleUpdated");
             On.Player.GraphicsModuleUpdated += GraphicsModulePatch;
-
+            Debug.Log("Patching Player.Die");
             On.Player.Die += DeathPatch;
-
+            Debug.Log("Patching Player.SpearOnBack.SpearToBack");
             On.Player.SpearOnBack.SpearToBack += SpearOnBack_SpearToBack;
         }
 
         private static void SpearOnBack_SpearToBack(On.Player.SpearOnBack.orig_SpearToBack orig, Player.SpearOnBack spear, Spear spr)
         {
-            Player owner = spear.owner;
-            int playerNumber = owner.playerState.playerNumber;
+            int playerNumber = spear.owner.playerState.playerNumber;
 
             if (stats[playerNumber].backSlot.backItem is Weapon)
             {
@@ -455,7 +456,7 @@ namespace PrimitiveArmory
                 swingTimer = 0,
                 comboCount = 0,
                 comboCooldown = 0,
-                swingAnimTimer = 0,
+                animTimer = 0,
                 headSlot = null,
                 bodySlot = null,
                 accessorySlot = null,
@@ -485,6 +486,13 @@ namespace PrimitiveArmory
 
         public static void PlayerUpdatePatch(On.Player.orig_Update orig, Player player, bool eu)
         {
+
+            Vector2 aimDir = ((!player.room.world.game.rainWorld.options.controls[0].gamePad) ? new Vector2(player.input[0].x, player.input[0].y).normalized : player.input[0].analogueDir);
+            if (aimDir.magnitude > 0.5f)
+            {
+                playerAimDir = aimDir.normalized;
+            }
+
             orig(player, eu);
 
             int playerNumber = player.playerState.playerNumber;
@@ -536,9 +544,9 @@ namespace PrimitiveArmory
                 stats[playerNumber].comboCooldown--;
             }
 
-            if (stats[playerNumber].swingAnimTimer > 0)
+            if (stats[playerNumber].animTimer > 0)
             {
-                stats[playerNumber].swingAnimTimer--;
+                stats[playerNumber].animTimer--;
             }
 
             if (stats[playerNumber].comboCooldown == 1)
@@ -585,9 +593,9 @@ namespace PrimitiveArmory
                                 vector = Vector3.Slerp(vector, Custom.DegToVec((80f + Mathf.Cos((float)(player.animationFrame + ((!player.leftFoot) ? 3 : 9)) / 12f * 2f * (float)Math.PI) * 4f * (player.graphicsModule as PlayerGraphics).spearDir) * (player.graphicsModule as PlayerGraphics).spearDir), Mathf.Abs((player.graphicsModule as PlayerGraphics).spearDir));
                             }
                             
-                            if (stats[player.playerState.playerNumber].swingAnimTimer > 0)
+                            if (stats[player.playerState.playerNumber].animTimer > 0)
                             {
-                                float swingProgress = (float)stats[player.playerState.playerNumber].swingAnimTimer / (float)swingTime;
+                                float swingProgress = (float)stats[player.playerState.playerNumber].animTimer / (float)swingTime;
                                 float swingAngle = Mathf.Lerp(110f, -20f, swingProgress * swingProgress);
                                 vector = Custom.DegToVec(swingAngle);
                             
@@ -627,8 +635,29 @@ namespace PrimitiveArmory
                                 vector = Vector3.Slerp(vector, Custom.DirVec(player.bodyChunks[1].pos, player.bodyChunks[0].pos), 0.75f);
                             }
 
-                            vector = Vector3.Slerp(vector, Custom.DegToVec((80f + Mathf.Cos((float)(player.animationFrame + ((!player.leftFoot) ? 3 : 9)) / 12f * 2f * (float)Math.PI) * 4f * (player.graphicsModule as PlayerGraphics).spearDir) * (player.graphicsModule as PlayerGraphics).spearDir), Mathf.Abs((player.graphicsModule as PlayerGraphics).spearDir));
+                            vector = Vector3.Slerp(vector, Custom.DegToVec((35f + Mathf.Cos((float)(player.animationFrame + ((!player.leftFoot) ? 3 : 9)) / 12f * 2f * (float)Math.PI) * 4f * (player.graphicsModule as PlayerGraphics).spearDir) * (player.graphicsModule as PlayerGraphics).spearDir), Mathf.Abs((player.graphicsModule as PlayerGraphics).spearDir));
                             
+                            (player.grasps[i].grabbed as Weapon).setRotation = vector;
+                            (player.grasps[i].grabbed as Weapon).rotationSpeed = 0f;
+
+                            break;
+                        case Arrow arrow:
+                            player.grasps[i].grabbed.firstChunk.vel = (player.graphicsModule as PlayerGraphics).hands[i].vel;
+                            player.grasps[i].grabbed.firstChunk.MoveFromOutsideMyUpdate(eu, (player.graphicsModule as PlayerGraphics).hands[i].pos);
+
+                            if (player.bodyMode == Player.BodyModeIndex.Crawl)
+                            {
+                                vector = Custom.DirVec(player.bodyChunks[1].pos, Vector2.Lerp(player.grasps[i].grabbed.bodyChunks[0].pos, player.bodyChunks[0].pos, 0.8f));
+                            }
+
+                            if (player.animation == Player.AnimationIndex.ClimbOnBeam)
+                            {
+                                vector.y = Mathf.Abs(vector.y);
+                                vector = Vector3.Slerp(vector, Custom.DirVec(player.bodyChunks[1].pos, player.bodyChunks[0].pos), 0.75f);
+                            }
+
+                            vector = Vector3.Slerp(vector, Custom.DegToVec((80f + Mathf.Cos((float)(player.animationFrame + ((!player.leftFoot) ? 3 : 9)) / 12f * 2f * (float)Math.PI) * 4f * (player.graphicsModule as PlayerGraphics).spearDir) * (player.graphicsModule as PlayerGraphics).spearDir), Mathf.Abs((player.graphicsModule as PlayerGraphics).spearDir));
+
                             (player.grasps[i].grabbed as Weapon).setRotation = vector;
                             (player.grasps[i].grabbed as Weapon).rotationSpeed = 0f;
 
@@ -704,10 +733,10 @@ namespace PrimitiveArmory
 
                     player.bodyChunks[0].vel += throwDir.ToVector2() * 4f;
                     player.bodyChunks[1].vel -= throwDir.ToVector2() * 3f;
-                    // swingAnimTimer
+                    // animTimer
                     stats[playerNumber].comboCooldown = 30;
 
-                    stats[playerNumber].swingAnimTimer = swingTime;
+                    stats[playerNumber].animTimer = swingTime;
 
                     if (stats[playerNumber].comboCount >= maxCombo)
                     {
@@ -724,7 +753,7 @@ namespace PrimitiveArmory
                     Vector2 clubTip = (thrownObject.firstChunk.pos + (thrownObject as Weapon).rotation * 50f);
 
                     SharedPhysics.CollisionResult collisionResult = SharedPhysics.TraceProjectileAgainstBodyChunks((thrownObject as SharedPhysics.IProjectileTracer), player.room, thrownObject.firstChunk.pos, ref clubTip, 10f, player.collisionLayer, player, true);
-                    
+
                     if (collisionResult.obj != null)
                     { 
                         bool arenaHit = false;
@@ -743,9 +772,22 @@ namespace PrimitiveArmory
 
                         if (collisionResult.obj is Creature)
                         {
+                            player.room.socialEventRecognizer.WeaponAttack(thrownObject as Club, player, collisionResult.obj as Creature, hit : true);
                             player.room.PlaySound(SoundID.Rock_Hit_Creature, collisionResult.chunk);
 
+                            bool iKilledThis = false;
+
+                            if (((collisionResult.obj as Creature).State as HealthState).health > 0f)
+                            {
+                                iKilledThis = true;
+                            }
+
                             (collisionResult.obj as Creature).Violence(thrownObject.firstChunk, (thrownObject as Weapon).rotation * thrownObject.firstChunk.mass * 2f, collisionResult.chunk, collisionResult.onAppendagePos, Creature.DamageType.Blunt, stats[playerNumber].meleeSkill* 0.6f, 20f);
+
+                            if (((collisionResult.obj as Creature).State as HealthState).health <= 0f && iKilledThis)
+                            {
+                                player.room.socialEventRecognizer.Killing(player, collisionResult.obj as Creature);
+                            }
 
                             if (arenaHit)
                             {
@@ -763,6 +805,14 @@ namespace PrimitiveArmory
 
             if (thrownType == EnumExt_NewItems.Bow)
             {
+                int offGrasp = GetOppositeHand(grasp);
+                PhysicalObject offObject = player.grasps[offGrasp].grabbed;
+
+                if (offObject.abstractPhysicalObject.type == EnumExt_NewItems.Arrow)
+                {
+                    orig(player, offGrasp, eu);
+                }
+
                 return;
             }
 
@@ -772,6 +822,11 @@ namespace PrimitiveArmory
         public static void ThrownSpearPatch(On.Player.orig_ThrownSpear orig, Player player, Spear spear)
         {
             orig(player, spear);
+        }
+
+        public static Vector2 GetAimDir(Player player, int playerNumber)
+        {
+            return player.input[playerNumber].analogueDir;
         }
     }
 }
