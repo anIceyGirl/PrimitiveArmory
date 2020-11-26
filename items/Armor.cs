@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using RWCustom;
 
 namespace PrimitiveArmory
 {
@@ -8,8 +9,7 @@ namespace PrimitiveArmory
         {
             Head,
             Body,
-            Accessory,
-            None
+            Accessory
         }
 
         public enum Mode
@@ -20,6 +20,12 @@ namespace PrimitiveArmory
         }
 
         public Creature equippedBy;
+
+        public Vector2 rotation;
+        public Vector2 lastRotation;
+        public float rotationSpeed;
+
+        public DynamicSoundLoop soundLoop;
 
         public Mode mode
         {
@@ -41,9 +47,47 @@ namespace PrimitiveArmory
         {
             mode = Mode.Free;
             isEquipped = false;
+            rotation = Custom.DegToVec(Random.value * 360f);
+            lastRotation = rotation;
             inFrontOfObjects = -1;
-            armorSlot = ArmorSlot.None;
             equippedBy = null;
+            rotationSpeed = 0f;
+            inFrontOfObjects = -1;
+        }
+
+        public override void NewRoom(Room newRoom)
+        {
+            base.NewRoom(newRoom);
+            inFrontOfObjects = -1;
+        }
+        public override void Grabbed(Creature.Grasp grasp)
+        {
+            ChangeMode(Mode.Carried);
+            base.Grabbed(grasp);
+        }
+
+        public void ChangeOverlap(bool newOverlap)
+        {
+            if (inFrontOfObjects != (newOverlap ? 1 : 0) && room != null)
+            {
+                for (int i = 0; i < room.game.cameras.Length; i++)
+                {
+                    room.game.cameras[i].MoveObjectToContainer(this, room.game.cameras[i].ReturnFContainer((!newOverlap) ? "Background" : "Items"));
+                }
+                inFrontOfObjects = (newOverlap ? 1 : 0);
+            }
+        }
+
+        public virtual void ChangeMode(Mode newMode)
+        {
+            if (newMode != mode)
+            {
+                base.firstChunk.collideWithObjects = newMode != Mode.Carried;
+                base.firstChunk.collideWithTerrain = newMode == Mode.Free;
+                base.firstChunk.goThroughFloors = true;
+
+                mode = newMode;
+            }
         }
 
         public virtual void InitiateSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam)
