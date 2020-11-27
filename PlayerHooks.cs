@@ -14,7 +14,6 @@ namespace PrimitiveArmory
         private static int postComboCooldown = (int)(swingTime * comboTimeMultiplier); // Time after a successful combo until the player can swing again.
         public static int maxCombo = 2; // The maximum combo a player can attain.
         public static float comboCancelMultiplier = 2.5f;
-        public static Vector2 playerAimDir;
 
         public struct ArmoryState
         {
@@ -23,8 +22,11 @@ namespace PrimitiveArmory
             public int comboCount;
             public int comboCooldown;
             public int animTimer;
+            public float drawSpeed;
+            public float drawTime;
             public float rangedSkill;
             public float meleeSkill;
+            public Vector2 aimDir;
             public EquippedArmor headSlot;
             public EquippedArmor bodySlot;
             public EquippedArmor accessorySlot;
@@ -457,6 +459,8 @@ namespace PrimitiveArmory
                 comboCount = 0,
                 comboCooldown = 0,
                 animTimer = 0,
+                drawTime = 0.0f,
+                aimDir = new Vector2(0, 0),
                 headSlot = null,
                 bodySlot = null,
                 accessorySlot = null,
@@ -471,31 +475,33 @@ namespace PrimitiveArmory
                     break;
                 case SlugcatStats.Name.Red:
                     stats[playerNumber].meleeSkill = 1.25f;
-                    stats[playerNumber].rangedSkill = 0.75f;
+                    stats[playerNumber].rangedSkill = 0.8f;
                     break;
                 case SlugcatStats.Name.Yellow:
                     stats[playerNumber].meleeSkill = 0.75f;
-                    stats[playerNumber].rangedSkill = 1.25f;
+                    stats[playerNumber].rangedSkill = 1.45f;
                     break;
                 default:
                     stats[playerNumber].meleeSkill = 1f;
                     stats[playerNumber].rangedSkill = 1f;
                     break;
             }
+
+            stats[playerNumber].drawSpeed = stats[playerNumber].rangedSkill * 1f;
+
         }
 
         public static void PlayerUpdatePatch(On.Player.orig_Update orig, Player player, bool eu)
         {
+            int playerNumber = player.playerState.playerNumber;
 
-            Vector2 aimDir = ((!player.room.world.game.rainWorld.options.controls[0].gamePad) ? new Vector2(player.input[0].x, player.input[0].y).normalized : player.input[0].analogueDir);
+            Vector2 aimDir = ((!player.room.world.game.rainWorld.options.controls[playerNumber].gamePad) ? new Vector2(player.input[playerNumber].x, player.input[playerNumber].y).normalized : player.input[playerNumber].analogueDir);
             if (aimDir.magnitude > 0.5f)
             {
-                playerAimDir = aimDir.normalized;
+                stats[playerNumber].aimDir = aimDir.normalized;
             }
 
             orig(player, eu);
-
-            int playerNumber = player.playerState.playerNumber;
 
             if (stats[playerNumber].backSlot == null)
             {
@@ -637,11 +643,71 @@ namespace PrimitiveArmory
 
                             vector = Vector3.Slerp(vector, Custom.DegToVec((35f + Mathf.Cos((float)(player.animationFrame + ((!player.leftFoot) ? 3 : 9)) / 12f * 2f * (float)Math.PI) * 4f * (player.graphicsModule as PlayerGraphics).spearDir) * (player.graphicsModule as PlayerGraphics).spearDir), Mathf.Abs((player.graphicsModule as PlayerGraphics).spearDir));
                             
+                            if (i == 1)
+                            {
+                                vector = Vector2.Lerp(-vector, vector, Mathf.Abs(player.mainBodyChunk.vel.x) / 4.5f);
+                            }
+
                             (player.grasps[i].grabbed as Weapon).setRotation = vector;
+
+                            if( player.bodyMode == Player.BodyModeIndex.Stand)
+                            {
+                                (player.grasps[i].grabbed as Weapon).firstChunk.pos = Vector2.Lerp((player.grasps[i].grabbed as Weapon).firstChunk.pos, (player.grasps[i].grabbed as Weapon).firstChunk.pos - (vector * 10), Mathf.Abs(player.mainBodyChunk.vel.x) / 4.5f);
+                            }
+
                             (player.grasps[i].grabbed as Weapon).rotationSpeed = 0f;
+
+                            if (i == 0)
+                            {
+                                int offGrasp = GetOppositeHand(i);
+                                PhysicalObject offObject;
+                                try
+                                {
+                                    offObject = player.grasps[offGrasp].grabbed;
+                                }
+                                catch
+                                {
+                                    offObject = null;
+                                }
+
+                                if (offObject != null && offObject.abstractPhysicalObject.type == EnumExt_NewItems.Arrow)
+                                {
+                                    offObject.firstChunk.pos = player.grasps[i].grabbed.firstChunk.pos;
+                                    (player.graphicsModule as PlayerGraphics).hands[offGrasp].reachingForObject = true;
+                                    (player.graphicsModule as PlayerGraphics).hands[offGrasp].absoluteHuntPos = player.grasps[offGrasp].grabbed.firstChunk.pos;
+
+                                    (offObject as Weapon).setRotation = -vector;
+                                }
+                                else if (offObject == null)
+                                {
+
+                                    (player.graphicsModule as PlayerGraphics).hands[offGrasp].reachingForObject = true;
+                                    (player.graphicsModule as PlayerGraphics).hands[offGrasp].absoluteHuntPos = player.grasps[i].grabbed.firstChunk.pos;
+                                }
+                            }
 
                             break;
                         case Arrow arrow:
+
+                            if (i == 1)
+                            {
+                                int offGrasp = GetOppositeHand(i);
+                                PhysicalObject offObject;
+                                try
+                                {
+                                    offObject = player.grasps[offGrasp].grabbed;
+                                }
+                                catch
+                                {
+                                    offObject = null;
+                                }
+
+                                if (offObject != null && offObject.abstractPhysicalObject.type == EnumExt_NewItems.Bow)
+                                {
+                                    break;
+                                }
+                            }
+
                             player.grasps[i].grabbed.firstChunk.vel = (player.graphicsModule as PlayerGraphics).hands[i].vel;
                             player.grasps[i].grabbed.firstChunk.MoveFromOutsideMyUpdate(eu, (player.graphicsModule as PlayerGraphics).hands[i].pos);
 
@@ -721,6 +787,8 @@ namespace PrimitiveArmory
             AbstractPhysicalObject.AbstractObjectType thrownType = thrownObject.abstractPhysicalObject.type;
             RWCustom.IntVector2 throwDir = new RWCustom.IntVector2(player.ThrowDirection, 0);
             int playerNumber = player.playerState.playerNumber;
+
+            Debug.Log(grasp);
 
             if (thrownType == EnumExt_NewItems.Club)
             {
@@ -806,13 +874,16 @@ namespace PrimitiveArmory
             if (thrownType == EnumExt_NewItems.Bow)
             {
                 int offGrasp = GetOppositeHand(grasp);
-                PhysicalObject offObject = player.grasps[offGrasp].grabbed;
-
-                if (offObject.abstractPhysicalObject.type == EnumExt_NewItems.Arrow)
+                PhysicalObject offObject;
+                try
                 {
-                    orig(player, offGrasp, eu);
+                    offObject = player.grasps[offGrasp].grabbed;
                 }
-
+                catch
+                {
+                    offObject = null;
+                }
+                
                 return;
             }
 

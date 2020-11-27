@@ -68,6 +68,8 @@ namespace PrimitiveArmory
 
 		public override bool HeavyWeapon => false;
 
+		public Bow nockedBy;
+
 		public Arrow(AbstractPhysicalObject abstractPhysicalObject, World world)
 			: base(abstractPhysicalObject, world)
 		{

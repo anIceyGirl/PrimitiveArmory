@@ -85,11 +85,16 @@ namespace PrimitiveArmory
 
         public override void InitiateSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam)
         {
-            sLeaser.sprites = new FSprite[1];
+            sLeaser.sprites = new FSprite[2];
 
             sLeaser.sprites[0] = new FSprite("Bow")
             {
                 scale = 1.1f,
+            };
+            sLeaser.sprites[1] = new FSprite("BowStringA01")
+            {
+                scale = 1.0f,
+                anchorY = -0.55f
             };
 
             AddToContainer(sLeaser, rCam, null);
@@ -103,11 +108,11 @@ namespace PrimitiveArmory
                 vector += Custom.DegToVec(UnityEngine.Random.value * 360f) * 2f * UnityEngine.Random.value;
             }
             Vector3 v = Vector3.Slerp(lastRotation, rotation, timeStacker);
-            for (int num = 0; num >= 0; num--)
+            for (int i = 1; i >= 0; i--)
             {
-                sLeaser.sprites[num].x = vector.x - camPos.x;
-                sLeaser.sprites[num].y = vector.y - camPos.y;
-                sLeaser.sprites[num].rotation = Custom.AimFromOneVectorToAnother(new Vector2(0f, 0f), v);
+                sLeaser.sprites[i].x = vector.x - camPos.x;
+                sLeaser.sprites[i].y = vector.y - camPos.y;
+                sLeaser.sprites[i].rotation = Custom.AimFromOneVectorToAnother(new Vector2(0f, 0f), v);
             }
 
             if(mode != Weapon.Mode.OnBack)
@@ -138,6 +143,7 @@ namespace PrimitiveArmory
         {
             color = palette.blackColor;
             sLeaser.sprites[0].color = color;
+            sLeaser.sprites[1].color = color;
         }
     }
 }
