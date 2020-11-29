@@ -12,6 +12,8 @@ namespace PrimitiveArmory
 
         public int stillCounter;
 
+        public int drawProgress;
+
         public override bool HeavyWeapon => true;
 
         public Bow(AbstractPhysicalObject abstractPhysicalObject, World world) : base(abstractPhysicalObject, world)

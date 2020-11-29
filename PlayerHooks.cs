@@ -28,6 +28,7 @@ namespace PrimitiveArmory
             public float drawSpeed;
             public float drawTime;
             public bool isDrawing;
+            public bool released;
             public Vector2 aimDir;
         }
 
@@ -419,7 +420,8 @@ namespace PrimitiveArmory
             {
                 drawTime = 0.0f,
                 aimDir = new Vector2(0, 0),
-                isDrawing = false
+                isDrawing = false,
+                released = false
             };
 
             globalStats[playerNumber] = new GlobalState
@@ -589,6 +591,12 @@ namespace PrimitiveArmory
                     Player.InputPackage[] input = player.input;
                     int x = 0;
                     player.input[x].analogueDir = input[x].analogueDir * 0f;
+
+                    bowStats[playerNumber].isDrawing = true;
+                }
+                else
+                {
+                    bowStats[playerNumber].isDrawing = false;
                 }
             }
         }

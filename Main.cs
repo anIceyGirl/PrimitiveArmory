@@ -170,6 +170,13 @@ namespace PrimitiveArmory
                 AbstractPhysicalObject.AbstractObjectType abstractObjectType = Custom.ParseEnum<AbstractPhysicalObject.AbstractObjectType>(array[1]);
                 WorldCoordinate pos = new WorldCoordinate(int.Parse(array[2].Split('.')[0]), int.Parse(array[2].Split('.')[1]), int.Parse(array[2].Split('.')[2]), int.Parse(array[2].Split('.')[3]));
 
+                if (abstractObjectType == EnumExt_NewItems.Arrow)
+                {
+                    Arrow.AbstractArrow abstractArrow = new Arrow.AbstractArrow(world, null, pos, ID);
+                    abstractArrow.stuckInWallCycles = int.Parse(array[3]);
+                    return abstractArrow;
+                }
+
                 if (result == null)
                 {
                     return null;

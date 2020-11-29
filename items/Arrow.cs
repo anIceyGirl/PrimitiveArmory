@@ -57,10 +57,10 @@ namespace PrimitiveArmory
 
 			public bool stuckInWall => stuckInWallCycles != 0;
 
-			public AbstractArrow(World world, Spear realizedObject, WorldCoordinate pos, EntityID ID, ArrowType arrowType = ArrowType.Normal)
+			public AbstractArrow(World world, Arrow realizedObject, WorldCoordinate pos, EntityID ID, int arrowType = 0)
 				: base(world, EnumExt_NewItems.Arrow, realizedObject, pos, ID)
 			{
-				this.arrowType = arrowType;
+				this.arrowType = (ArrowType)(arrowType);
 			}
 			public void StuckInWallTick(int ticks)
 			{
@@ -76,7 +76,7 @@ namespace PrimitiveArmory
 
 			public override string ToString()
 			{
-				return ID.ToString() + "<oA>" + type.ToString() + "<oA>" + pos.room + "." + pos.x + "." + pos.y + "." + pos.abstractNode + "<oA>" + stuckInWallCycles.ToString() + "<oA>" + ((arrowType));
+				return ID.ToString() + "<oA>" + type.ToString() + "<oA>" + pos.room + "." + pos.x + "." + pos.y + "." + pos.abstractNode + "<oA>" + stuckInWallCycles.ToString() + "<oA>" + ((int)(arrowType)).ToString();
 			}
 		}
 
@@ -137,6 +137,43 @@ namespace PrimitiveArmory
 						SetRandomSpin();
 					}
 					break;
+				case Mode.Thrown:
+					{
+						base.firstChunk.vel.y += 0.45f;
+						if (!Custom.DistLess(thrownPos, base.firstChunk.pos, 560f * Mathf.Max(1f, arrowDamageBonus)) || !(base.firstChunk.ContactPoint == throwDir) || room.GetTile(base.firstChunk.pos).Terrain != 0 || room.GetTile(base.firstChunk.pos + throwDir.ToVector2() * 20f).Terrain != Room.Tile.TerrainType.Solid || ((!Custom.DistLess(thrownPos, base.firstChunk.pos, 140f) && !alwaysStickInWalls))) 
+						{
+							break;
+						}
+						bool flag = true;
+						foreach (AbstractWorldEntity entity in room.abstractRoom.entities)
+						{
+							if (entity is AbstractArrow && (entity as AbstractArrow).realizedObject != null && ((entity as AbstractArrow).realizedObject as Weapon).mode == Mode.StuckInWall && entity.pos.Tile == abstractPhysicalObject.pos.Tile)
+							{
+								flag = false;
+								break;
+							}
+						}
+						if (flag)
+						{
+							for (int k = 0; k < room.roomSettings.placedObjects.Count; k++)
+							{
+								if (room.roomSettings.placedObjects[k].type == PlacedObject.Type.NoSpearStickZone && Custom.DistLess(room.MiddleOfTile(base.firstChunk.pos), room.roomSettings.placedObjects[k].pos, (room.roomSettings.placedObjects[k].data as PlacedObject.ResizableObjectData).Rad))
+								{
+									flag = false;
+									break;
+								}
+							}
+						}
+						if (flag)
+						{
+							stuckInWall = room.MiddleOfTile(base.firstChunk.pos);
+							vibrate = 10;
+							ChangeMode(Mode.StuckInWall);
+							room.PlaySound(SoundID.Spear_Stick_In_Wall, base.firstChunk);
+							base.firstChunk.collideWithTerrain = false;
+						}
+						break;
+					}
 				case Mode.StuckInCreature:
 					if (!stuckInWall.HasValue)
 					{
