@@ -40,11 +40,10 @@ namespace PrimitiveArmory
                     Debug.Log("Setting tab text...");
                     string changelog = "v0.0.2: \nPre-release";
                     string credits = "Bee & Garrakax, for putting up with my cruddy code"
-                        + "\nSedric AKA the Budgie Gamer, for the idea of the bow & arrow"
-                        + "\nAnonymous aka \"That guy who suggested mosquitos\", for the concept of the water balloon mosquito";
+                        + "\nSedric AKA the Budgie Gamer, for the idea of the bow & arrow";
+                        // + "\nAnonymous aka \"That guy who suggested mosquitos\", for the concept of the water balloon mosquito";
                     string nothingHereYet = "There's nothing here yet...\n:(";
                     string knownIssues = "Known issues:"
-                        + "\nOpening Config Screen spams ExceptionLog with NullReferenceExceptions,\nbut only once?\n" 
                         + "\nClub swinging is a bit glitchy when you first pick a club up, but going\nthrough a shortcut fixes it."
                         + "\nKilling creatures with the club do not register as a kill in Arena mode.";
 
@@ -133,7 +132,7 @@ namespace PrimitiveArmory
                     { 312, "Happy birthday, Icey!" },
                     { 304, "Happy birthday, Ross!" },
                     { 135, "Happy birthday, Sedric!" },
-                    { 80, "Happy birthday to that guy who suggested mosquitos!" }
+                    // { 80, "Happy birthday to that guy who suggested mosquitos!" }
                 };
                 int currentDate = DateTime.Now.DayOfYear;
 
