@@ -15,18 +15,27 @@ namespace PrimitiveArmory
         public static int maxCombo = 2; // The maximum combo a player can attain.
         public static float comboCancelMultiplier = 2.5f;
 
-        public struct ArmoryState
+        public struct ClubState
         {
             public int swingTimer;
             public int swingDelay;
             public int comboCount;
             public int comboCooldown;
-            public int animTimer;
+        }
+
+        public struct BowState
+        {
             public float drawSpeed;
             public float drawTime;
+            public bool isDrawing;
+            public Vector2 aimDir;
+        }
+
+        public struct GlobalState
+        {
             public float rangedSkill;
             public float meleeSkill;
-            public Vector2 aimDir;
+            public int animTimer;
             public EquippedArmor headSlot;
             public EquippedArmor bodySlot;
             public EquippedArmor accessorySlot;
@@ -344,15 +353,175 @@ namespace PrimitiveArmory
                 switch (weapon)
                 {
                     case Club club:
-                        return !stats[playerNumber].backSlot.HasAWeapon && (player.grasps[0]?.grabbed is Club || player.grasps[1]?.grabbed is Club) && !player.spearOnBack.HasASpear;
+                        return !globalStats[playerNumber].backSlot.HasAWeapon && (player.grasps[0]?.grabbed is Club || player.grasps[1]?.grabbed is Club) && !player.spearOnBack.HasASpear;
                     case Bow bow:
-                        return !stats[playerNumber].backSlot.HasAWeapon && (player.grasps[0]?.grabbed is Bow || player.grasps[1]?.grabbed is Bow) && !player.spearOnBack.HasASpear;
+                        return !globalStats[playerNumber].backSlot.HasAWeapon && (player.grasps[0]?.grabbed is Bow || player.grasps[1]?.grabbed is Bow) && !player.spearOnBack.HasASpear;
                     default:
                         break;
                 }
             }
 
             return false;
+        }
+
+        public static ClubState[] clubStats;
+        public static GlobalState[] globalStats;
+        public static Player.InputPackage[] playerInput;
+        public static BowState[] bowStats;
+
+        public static int totalPlayerNum = 4;
+
+        public static void Patch()
+        {
+            Debug.Log("Patching Player Constructor");
+            On.Player.ctor += (PlayerPatch);
+            Debug.Log("Patching Player.Grabability");
+            On.Player.Grabability += GrababilityPatch;
+            Debug.Log("Patching Player.Update");
+            On.Player.Update += PlayerUpdatePatch;
+            Debug.Log("Patching Player.ThrowObject");
+            On.Player.ThrowObject += ThrowPatch;
+            Debug.Log("Patching Player.GraphicsModuleUpdated");
+            On.Player.GraphicsModuleUpdated += GraphicsModulePatch;
+            Debug.Log("Patching Player.Die");
+            On.Player.Die += DeathPatch;
+            Debug.Log("Patching Player.SpearOnBack.SpearToBack");
+            On.Player.SpearOnBack.SpearToBack += SpearToBackPatch;
+            Debug.Log("Patching Player.checkInput");
+            On.Player.checkInput += CheckInputPatch;
+
+            clubStats = new ClubState[totalPlayerNum];
+            bowStats = new BowState[totalPlayerNum];
+            globalStats = new GlobalState[totalPlayerNum];
+            playerInput = new Player.InputPackage[totalPlayerNum];
+        }
+
+        public static void PlayerPatch(On.Player.orig_ctor orig, Player player, AbstractCreature abstractCreature, World world)
+        {
+            orig(player, abstractCreature, world);
+
+            int playerNumber = player.playerState.playerNumber;
+            if (playerNumber >= totalPlayerNum)
+            {
+                Debug.Log("Extra slugcats detected: " + playerNumber);
+                MoreSlugcat(playerNumber);
+            }
+
+            clubStats[playerNumber] = new ClubState
+            {
+                swingDelay = 0,
+                swingTimer = 0,
+                comboCount = 0,
+                comboCooldown = 0
+            };
+
+            bowStats[playerNumber] = new BowState
+            {
+                drawTime = 0.0f,
+                aimDir = new Vector2(0, 0),
+                isDrawing = false
+            };
+
+            globalStats[playerNumber] = new GlobalState
+            {
+                headSlot = null,
+                bodySlot = null,
+                accessorySlot = null,
+                backSlot = null
+            };
+
+            switch (player.slugcatStats.name)
+            {
+                case SlugcatStats.Name.White:
+                    globalStats[playerNumber].meleeSkill = 1f;
+                    globalStats[playerNumber].rangedSkill = 1f;
+                    break;
+                case SlugcatStats.Name.Red:
+                    globalStats[playerNumber].meleeSkill = 1.25f;
+                    globalStats[playerNumber].rangedSkill = 0.8f;
+                    break;
+                case SlugcatStats.Name.Yellow:
+                    globalStats[playerNumber].meleeSkill = 0.75f;
+                    globalStats[playerNumber].rangedSkill = 1.45f;
+                    break;
+                default:
+                    globalStats[playerNumber].meleeSkill = 1f;
+                    globalStats[playerNumber].rangedSkill = 1f;
+                    break;
+            }
+
+            bowStats[playerNumber].drawSpeed = globalStats[playerNumber].rangedSkill * 1f;
+
+        }
+
+        public static void PlayerUpdatePatch(On.Player.orig_Update orig, Player player, bool eu)
+        {
+            int playerNumber = player.playerState.playerNumber;
+
+            Vector2 aimDir = ((!player.room.world.game.rainWorld.options.controls[playerNumber].gamePad) ? new Vector2(player.input[playerNumber].x, player.input[playerNumber].y).normalized : player.input[playerNumber].analogueDir);
+            if (aimDir.magnitude > 0.5f)
+            {
+                bowStats[playerNumber].aimDir = aimDir.normalized;
+            }
+
+            orig(player, eu);
+
+            if (globalStats[playerNumber].backSlot == null)
+            {
+                globalStats[playerNumber].backSlot = new BackSlot(player);
+            }
+
+            if (player.input[0].pckp && !globalStats[playerNumber].backSlot.interactionLocked && ((CanPutWeaponToBack(player, (player.grasps[0]?.grabbed as Weapon)) || CanPutWeaponToBack(player, (player.grasps[1]?.grabbed as Weapon))) || CanRetrieveWeaponFromBack(player)) && player.CanPutSpearToBack)
+            {
+                globalStats[playerNumber].backSlot.increment = true;
+            }
+            else
+            {
+                globalStats[playerNumber].backSlot.increment = false;
+            }
+
+            if (player.input[0].pckp && player.grasps[0] != null && player.grasps[0].grabbed is Creature && player.CanEatMeat(player.grasps[0].grabbed as Creature) && (player.grasps[0].grabbed as Creature).Template.meatPoints > 0)
+            {
+                globalStats[playerNumber].backSlot.increment = false;
+                globalStats[playerNumber].backSlot.interactionLocked = true;
+            }
+            else if (player.swallowAndRegurgitateCounter > 90)
+            {
+                globalStats[playerNumber].backSlot.increment = false;
+                globalStats[playerNumber].backSlot.interactionLocked = true;
+            }
+
+            globalStats[playerNumber].backSlot.Update(eu);
+            
+            if (globalStats[playerNumber].backSlot.HasAWeapon && player.spearOnBack.increment)
+            {
+                player.spearOnBack.increment = false;
+            }
+
+            if (clubStats[playerNumber].swingTimer > 0)
+            {
+                clubStats[playerNumber].swingTimer--;
+            }
+
+            if (clubStats[playerNumber].swingDelay > 0)
+            {
+                clubStats[playerNumber].swingDelay--;
+            }
+
+            if (clubStats[playerNumber].comboCooldown > 0)
+            {
+                clubStats[playerNumber].comboCooldown--;
+            }
+
+            if (globalStats[playerNumber].animTimer > 0)
+            {
+                globalStats[playerNumber].animTimer--;
+            }
+
+            if (clubStats[playerNumber].comboCooldown == 1)
+            {
+                clubStats[playerNumber].comboCount = 0;
+            }
         }
 
         public static bool CanIStashThis(Weapon weapon)
@@ -392,36 +561,43 @@ namespace PrimitiveArmory
                 return false;
             }
 
-            return stats[playerNumber].backSlot.HasAWeapon && activeHand > -1;
+            return globalStats[playerNumber].backSlot.HasAWeapon && activeHand > -1;
         }
 
-        public static ArmoryState[] stats;
-        public static int totalPlayerNum = 4;
-
-        public static void Patch()
+        private static void CheckInputPatch(On.Player.orig_checkInput orig, Player player)
         {
-            stats = new ArmoryState[totalPlayerNum];
-            Debug.Log("Patching Player Constructor");
-            On.Player.ctor += (PlayerPatch);
-            Debug.Log("Patching Player.Grabability");
-            On.Player.Grabability += GrababilityPatch;
-            Debug.Log("Patching Player.Update");
-            On.Player.Update += PlayerUpdatePatch;
-            Debug.Log("Patching Player.ThrowObject");
-            On.Player.ThrowObject += ThrowPatch;
-            Debug.Log("Patching Player.GraphicsModuleUpdated");
-            On.Player.GraphicsModuleUpdated += GraphicsModulePatch;
-            Debug.Log("Patching Player.Die");
-            On.Player.Die += DeathPatch;
-            Debug.Log("Patching Player.SpearOnBack.SpearToBack");
-            On.Player.SpearOnBack.SpearToBack += SpearOnBack_SpearToBack;
+            int playerNumber = player.playerState.playerNumber;
+            orig(player);
+            if (player.stun == 0 && !player.dead)
+            {
+                PhysicalObject objectChecked;
+
+                try
+                {
+                    objectChecked = player.grasps[0].grabbed;
+                }
+                catch
+                {
+                    return;
+                }
+
+                if (player.input[playerNumber].thrw && objectChecked.abstractPhysicalObject.type == EnumExt_NewItems.Bow)
+                {
+                    playerInput[playerNumber] = player.input[0];
+                    player.input[0].x = 0;
+                    player.input[0].y = 0;
+                    Player.InputPackage[] input = player.input;
+                    int x = 0;
+                    player.input[x].analogueDir = input[x].analogueDir * 0f;
+                }
+            }
         }
 
-        private static void SpearOnBack_SpearToBack(On.Player.SpearOnBack.orig_SpearToBack orig, Player.SpearOnBack spear, Spear spr)
+        private static void SpearToBackPatch(On.Player.SpearOnBack.orig_SpearToBack orig, Player.SpearOnBack spear, Spear spr)
         {
             int playerNumber = spear.owner.playerState.playerNumber;
 
-            if (stats[playerNumber].backSlot.backItem is Weapon)
+            if (globalStats[playerNumber].backSlot.backItem is Weapon)
             {
                 return;
             }
@@ -433,132 +609,12 @@ namespace PrimitiveArmory
         {
             int playerNumber = player.playerState.playerNumber;
 
-            if (stats[playerNumber].backSlot != null && stats[playerNumber].backSlot.backItem != null)
+            if (globalStats[playerNumber].backSlot != null && globalStats[playerNumber].backSlot.backItem != null)
             {
-                stats[playerNumber].backSlot.DropItem();
+                globalStats[playerNumber].backSlot.DropItem();
             }
 
             orig(player);
-        }
-
-        public static void PlayerPatch(On.Player.orig_ctor orig, Player player, AbstractCreature abstractCreature, World world)
-        {
-            orig(player, abstractCreature, world);
-
-            int playerNumber = player.playerState.playerNumber;
-            if (playerNumber >= totalPlayerNum)
-            {
-                Debug.Log("Extra slugcats detected: " + playerNumber);
-                MoreSlugcat(playerNumber);
-            }
-
-            stats[playerNumber] = new ArmoryState
-            {
-                swingDelay = 0,
-                swingTimer = 0,
-                comboCount = 0,
-                comboCooldown = 0,
-                animTimer = 0,
-                drawTime = 0.0f,
-                aimDir = new Vector2(0, 0),
-                headSlot = null,
-                bodySlot = null,
-                accessorySlot = null,
-                backSlot = null
-            };
-
-            switch (player.slugcatStats.name)
-            {
-                case SlugcatStats.Name.White:
-                    stats[playerNumber].meleeSkill = 1f;
-                    stats[playerNumber].rangedSkill = 1f;
-                    break;
-                case SlugcatStats.Name.Red:
-                    stats[playerNumber].meleeSkill = 1.25f;
-                    stats[playerNumber].rangedSkill = 0.8f;
-                    break;
-                case SlugcatStats.Name.Yellow:
-                    stats[playerNumber].meleeSkill = 0.75f;
-                    stats[playerNumber].rangedSkill = 1.45f;
-                    break;
-                default:
-                    stats[playerNumber].meleeSkill = 1f;
-                    stats[playerNumber].rangedSkill = 1f;
-                    break;
-            }
-
-            stats[playerNumber].drawSpeed = stats[playerNumber].rangedSkill * 1f;
-
-        }
-
-        public static void PlayerUpdatePatch(On.Player.orig_Update orig, Player player, bool eu)
-        {
-            int playerNumber = player.playerState.playerNumber;
-
-            Vector2 aimDir = ((!player.room.world.game.rainWorld.options.controls[playerNumber].gamePad) ? new Vector2(player.input[playerNumber].x, player.input[playerNumber].y).normalized : player.input[playerNumber].analogueDir);
-            if (aimDir.magnitude > 0.5f)
-            {
-                stats[playerNumber].aimDir = aimDir.normalized;
-            }
-
-            orig(player, eu);
-
-            if (stats[playerNumber].backSlot == null)
-            {
-                stats[playerNumber].backSlot = new BackSlot(player);
-            }
-
-            if (player.input[0].pckp && !stats[playerNumber].backSlot.interactionLocked && ((CanPutWeaponToBack(player, (player.grasps[0]?.grabbed as Weapon)) || CanPutWeaponToBack(player, (player.grasps[1]?.grabbed as Weapon))) || CanRetrieveWeaponFromBack(player)) && player.CanPutSpearToBack)
-            {
-                stats[playerNumber].backSlot.increment = true;
-            }
-            else
-            {
-                stats[playerNumber].backSlot.increment = false;
-            }
-
-            if (player.input[0].pckp && player.grasps[0] != null && player.grasps[0].grabbed is Creature && player.CanEatMeat(player.grasps[0].grabbed as Creature) && (player.grasps[0].grabbed as Creature).Template.meatPoints > 0)
-            {
-                stats[playerNumber].backSlot.increment = false;
-                stats[playerNumber].backSlot.interactionLocked = true;
-            }
-            else if (player.swallowAndRegurgitateCounter > 90)
-            {
-                stats[playerNumber].backSlot.increment = false;
-                stats[playerNumber].backSlot.interactionLocked = true;
-            }
-
-            stats[playerNumber].backSlot.Update(eu);
-            
-            if (stats[playerNumber].backSlot.HasAWeapon && player.spearOnBack.increment)
-            {
-                player.spearOnBack.increment = false;
-            }
-
-            if (stats[playerNumber].swingTimer > 0)
-            {
-                stats[playerNumber].swingTimer--;
-            }
-
-            if (stats[playerNumber].swingDelay > 0)
-            {
-                stats[playerNumber].swingDelay--;
-            }
-
-            if (stats[playerNumber].comboCooldown > 0)
-            {
-                stats[playerNumber].comboCooldown--;
-            }
-
-            if (stats[playerNumber].animTimer > 0)
-            {
-                stats[playerNumber].animTimer--;
-            }
-
-            if (stats[playerNumber].comboCooldown == 1)
-            {
-                stats[playerNumber].comboCount = 0;
-            }
         }
 
         public static void GraphicsModulePatch(On.Player.orig_GraphicsModuleUpdated orig, Player player, bool actuallyViewed, bool eu)
@@ -568,9 +624,9 @@ namespace PrimitiveArmory
 
             int playerNumber = player.playerState.playerNumber;
 
-            if (stats[playerNumber].backSlot != null)
+            if (globalStats[playerNumber].backSlot != null)
             {
-                stats[playerNumber].backSlot.GraphicsModuleUpdated(actuallyViewed, eu);
+                globalStats[playerNumber].backSlot.GraphicsModuleUpdated(actuallyViewed, eu);
             }
 
             for (int i = 0; i < 2; i++)
@@ -599,9 +655,9 @@ namespace PrimitiveArmory
                                 vector = Vector3.Slerp(vector, Custom.DegToVec((80f + Mathf.Cos((float)(player.animationFrame + ((!player.leftFoot) ? 3 : 9)) / 12f * 2f * (float)Math.PI) * 4f * (player.graphicsModule as PlayerGraphics).spearDir) * (player.graphicsModule as PlayerGraphics).spearDir), Mathf.Abs((player.graphicsModule as PlayerGraphics).spearDir));
                             }
                             
-                            if (stats[player.playerState.playerNumber].animTimer > 0)
+                            if (globalStats[playerNumber].animTimer > 0)
                             {
-                                float swingProgress = (float)stats[player.playerState.playerNumber].animTimer / (float)swingTime;
+                                float swingProgress = (float)globalStats[playerNumber].animTimer / (float)swingTime;
                                 float swingAngle = Mathf.Lerp(110f, -20f, swingProgress * swingProgress);
                                 vector = Custom.DegToVec(swingAngle);
                             
@@ -627,8 +683,8 @@ namespace PrimitiveArmory
                             
                             break;
                         case Bow bow:
-                            player.grasps[i].grabbed.firstChunk.vel = (player.graphicsModule as PlayerGraphics).hands[i].vel;
-                            player.grasps[i].grabbed.firstChunk.MoveFromOutsideMyUpdate(eu, (player.graphicsModule as PlayerGraphics).hands[i].pos);
+                            // player.grasps[i].grabbed.firstChunk.vel = (player.graphicsModule as PlayerGraphics).hands[i].vel;
+                            // player.grasps[i].grabbed.firstChunk.MoveFromOutsideMyUpdate(eu, (player.graphicsModule as PlayerGraphics).hands[i].pos);
 
                             if (player.bodyMode == Player.BodyModeIndex.Crawl)
                             {
@@ -649,26 +705,12 @@ namespace PrimitiveArmory
                             }
 
                             (player.grasps[i].grabbed as Weapon).setRotation = vector;
-
-                            if( player.bodyMode == Player.BodyModeIndex.Stand)
-                            {
-                                (player.grasps[i].grabbed as Weapon).firstChunk.pos = Vector2.Lerp((player.grasps[i].grabbed as Weapon).firstChunk.pos, (player.grasps[i].grabbed as Weapon).firstChunk.pos - (vector * 10), Mathf.Abs(player.mainBodyChunk.vel.x) / 4.5f);
-                            }
-
                             (player.grasps[i].grabbed as Weapon).rotationSpeed = 0f;
 
                             if (i == 0)
                             {
                                 int offGrasp = GetOppositeHand(i);
-                                PhysicalObject offObject;
-                                try
-                                {
-                                    offObject = player.grasps[offGrasp].grabbed;
-                                }
-                                catch
-                                {
-                                    offObject = null;
-                                }
+                                PhysicalObject offObject = GetOppositeObject(player, i);
 
                                 if (offObject != null && offObject.abstractPhysicalObject.type == EnumExt_NewItems.Arrow)
                                 {
@@ -692,18 +734,12 @@ namespace PrimitiveArmory
                             if (i == 1)
                             {
                                 int offGrasp = GetOppositeHand(i);
-                                PhysicalObject offObject;
-                                try
-                                {
-                                    offObject = player.grasps[offGrasp].grabbed;
-                                }
-                                catch
-                                {
-                                    offObject = null;
-                                }
+                                PhysicalObject offObject = GetOppositeObject(player, i);
 
                                 if (offObject != null && offObject.abstractPhysicalObject.type == EnumExt_NewItems.Bow)
                                 {
+                                    (player.grasps[i].grabbed as Weapon).ChangeOverlap((offObject as Weapon).inFrontOfObjects == 1);
+
                                     break;
                                 }
                             }
@@ -736,16 +772,29 @@ namespace PrimitiveArmory
 
         public static void MoreSlugcat(int slugcatNum)
         {
-            List<ArmoryState> list = new List<ArmoryState>();
-            for (int i = 0; i < stats.Length; i++)
+            List<ClubState> clubState = new List<ClubState>();
+            List<BowState> bowState = new List<BowState>();
+            List<GlobalState> globalState = new List<GlobalState>();
+            List<Player.InputPackage> inputList = new List<Player.InputPackage>();
+            for (int i = 0; i < clubStats.Length; i++)
             {
-                list.Add(stats[i]);
+                clubState.Add(clubStats[i]);
+                globalState.Add(globalStats[i]);
+                bowState.Add(bowStats[i]);
+                inputList.Add(inputList[i]);
             }
             totalPlayerNum = slugcatNum + 1;
-            stats = new ArmoryState[totalPlayerNum];
-            for (int j = 0; j < stats.Length; j++)
+            clubStats = new ClubState[totalPlayerNum];
+            bowStats = new BowState[totalPlayerNum];
+            globalStats = new GlobalState[totalPlayerNum];
+            playerInput = new Player.InputPackage[totalPlayerNum];
+
+            for (int j = 0; j < clubStats.Length; j++)
             {
-                stats[j] = list[j];
+                clubStats[j] = clubState[j];
+                bowStats[j] = bowState[j];
+                globalStats[j] = globalState[j];
+                playerInput[j] = inputList[j];
             }
         }
 
@@ -757,6 +806,22 @@ namespace PrimitiveArmory
                 1 => 0,
                 _ => -1,
             };
+        }
+
+        private static PhysicalObject GetOppositeObject(Player player, int grasp)
+        {
+            int offGrasp = GetOppositeHand(grasp);
+            PhysicalObject offObject;
+            try
+            {
+                offObject = player.grasps[offGrasp].grabbed;
+            }
+            catch
+            {
+                offObject = null;
+            }
+
+            return offObject;
         }
 
         public static Player.ObjectGrabability GrababilityPatch(On.Player.orig_Grabability orig, Player player, PhysicalObject obj)
@@ -788,11 +853,9 @@ namespace PrimitiveArmory
             RWCustom.IntVector2 throwDir = new RWCustom.IntVector2(player.ThrowDirection, 0);
             int playerNumber = player.playerState.playerNumber;
 
-            Debug.Log(grasp);
-
             if (thrownType == EnumExt_NewItems.Club)
             {
-                if (stats[playerNumber].swingDelay <= 0 && player.animation != Player.AnimationIndex.Flip && player.animation != Player.AnimationIndex.CrawlTurn && player.animation != Player.AnimationIndex.Roll)
+                if (clubStats[playerNumber].swingDelay <= 0 && player.animation != Player.AnimationIndex.Flip && player.animation != Player.AnimationIndex.CrawlTurn && player.animation != Player.AnimationIndex.Roll)
                 {
 
                     player.room.PlaySound(SoundID.Slugcat_Throw_Spear, player.firstChunk);
@@ -802,20 +865,20 @@ namespace PrimitiveArmory
                     player.bodyChunks[0].vel += throwDir.ToVector2() * 4f;
                     player.bodyChunks[1].vel -= throwDir.ToVector2() * 3f;
                     // animTimer
-                    stats[playerNumber].comboCooldown = 30;
+                    clubStats[playerNumber].comboCooldown = 30;
 
-                    stats[playerNumber].animTimer = swingTime;
+                    globalStats[playerNumber].animTimer = swingTime;
 
-                    if (stats[playerNumber].comboCount >= maxCombo)
+                    if (clubStats[playerNumber].comboCount >= maxCombo)
                     {
-                        stats[playerNumber].swingDelay = postComboCooldown;
+                        clubStats[playerNumber].swingDelay = postComboCooldown;
                         player.room.AddObject(new ExplosionSpikes(player.room, thrownObject.firstChunk.pos + new Vector2((float)player.rollDirection * -40f, 0f), 15, 25f, 4f, 4.5f, 21f, new Color(1f, 0.5f, 0.75f, 0.5f)));
-                        stats[playerNumber].comboCount = 0;
+                        clubStats[playerNumber].comboCount = 0;
                     }
                     else
                     {
-                        stats[playerNumber].swingDelay = swingTime;
-                        stats[playerNumber].comboCount++;
+                        clubStats[playerNumber].swingDelay = swingTime;
+                        clubStats[playerNumber].comboCount++;
                     }
 
                     Vector2 clubTip = (thrownObject.firstChunk.pos + (thrownObject as Weapon).rotation * 50f);
@@ -850,7 +913,7 @@ namespace PrimitiveArmory
                                 iKilledThis = true;
                             }
 
-                            (collisionResult.obj as Creature).Violence(thrownObject.firstChunk, (thrownObject as Weapon).rotation * thrownObject.firstChunk.mass * 2f, collisionResult.chunk, collisionResult.onAppendagePos, Creature.DamageType.Blunt, stats[playerNumber].meleeSkill* 0.6f, 20f);
+                            (collisionResult.obj as Creature).Violence(thrownObject.firstChunk, (thrownObject as Weapon).rotation * thrownObject.firstChunk.mass * 2f, collisionResult.chunk, collisionResult.onAppendagePos, Creature.DamageType.Blunt, globalStats[playerNumber].meleeSkill* 0.6f, 20f);
 
                             if (((collisionResult.obj as Creature).State as HealthState).health <= 0f && iKilledThis)
                             {

@@ -74,6 +74,7 @@
     <Compile Include="items\Arrow.cs" />
     <Compile Include="items\Bow.cs" />
     <Compile Include="items\ItemSpawner.cs" />
+    <Compile Include="items\Quiver.cs" />
     <Compile Include="util\DataManager.cs" />
     <Compile Include="util\DynamicHooks.cs" />
     <Compile Include="util\Exceptions.cs" />

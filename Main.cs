@@ -140,8 +140,6 @@ namespace PrimitiveArmory
                     self.stuckObjects[i].B.Realize();
                 }
             }
-
-
         }
 
         private static IconSymbol.IconSymbolData SandboxIconPatch(On.MultiplayerUnlocks.orig_SymbolDataForSandboxUnlock orig, MultiplayerUnlocks.SandboxUnlockID unlockID)

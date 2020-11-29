@@ -10,7 +10,7 @@ namespace PrimitiveArmory
 {
     public class ItemSpawner
     {
-        public static float clubReplaceChance = 0.1f;
+        public static float clubReplaceChance = 0.333f;
 
         public static void Patch()
         {

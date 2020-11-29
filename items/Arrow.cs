@@ -57,18 +57,32 @@ namespace PrimitiveArmory
 
 			public bool stuckInWall => stuckInWallCycles != 0;
 
-			public AbstractArrow(World world, Spear realizedObject, WorldCoordinate pos, EntityID ID, ArrowType arrowType)
+			public AbstractArrow(World world, Spear realizedObject, WorldCoordinate pos, EntityID ID, ArrowType arrowType = ArrowType.Normal)
 				: base(world, EnumExt_NewItems.Arrow, realizedObject, pos, ID)
 			{
 				this.arrowType = arrowType;
+			}
+			public void StuckInWallTick(int ticks)
+			{
+				if (stuckInWallCycles > 0)
+				{
+					stuckInWallCycles = System.Math.Max(0, stuckInWallCycles - ticks);
+				}
+				else if (stuckInWallCycles < 0)
+				{
+					stuckInWallCycles = System.Math.Min(0, stuckInWallCycles + ticks);
+				}
+			}
+
+			public override string ToString()
+			{
+				return ID.ToString() + "<oA>" + type.ToString() + "<oA>" + pos.room + "." + pos.x + "." + pos.y + "." + pos.abstractNode + "<oA>" + stuckInWallCycles.ToString() + "<oA>" + ((arrowType));
 			}
 		}
 
 		public BodyChunk stuckInChunk => stuckInObject.bodyChunks[stuckInChunkIndex];
 
 		public override bool HeavyWeapon => false;
-
-		public Bow nockedBy;
 
 		public Arrow(AbstractPhysicalObject abstractPhysicalObject, World world)
 			: base(abstractPhysicalObject, world)

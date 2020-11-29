@@ -108,10 +108,10 @@ namespace PrimitiveArmory
             {
                 newContatiner = rCam.ReturnFContainer("Items");
             }
-            for (int num = sLeaser.sprites.Length - 1; num >= 0; num--)
+            for (int i = sLeaser.sprites.Length - 1; i >= 0; i--)
             {
-                sLeaser.sprites[num].RemoveFromContainer();
-                newContatiner.AddChild(sLeaser.sprites[num]);
+                sLeaser.sprites[i].RemoveFromContainer();
+                newContatiner.AddChild(sLeaser.sprites[i]);
             }
         }
     }
