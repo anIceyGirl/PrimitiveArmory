@@ -27,7 +27,7 @@ namespace PrimitiveArmory
         {
             instance = this;
             this.ModID = "Primitive Armory";
-            this.Version = "v0.1.2";
+            this.Version = "v0.1.3";
             this.author = "Icey";
         }
 
@@ -51,6 +51,7 @@ namespace PrimitiveArmory
             On.AbstractPhysicalObject.Realize += RealizePatch;
             On.MultiplayerUnlocks.SymbolDataForSandboxUnlock += SandboxIconPatch;
             On.ItemSymbol.SpriteNameForItem += SpriteNameForItemPatch;
+            On.ItemSymbol.ColorForItem += ItemSymbol_ColorForItem;
 
             Debug.Log("Hooking Savestate (we'll probably crash here if we're running more than two patches without BepinEx)");
             On.SaveState.AbstractPhysicalObjectFromString += AbstractFromStringPatch;
@@ -81,10 +82,23 @@ namespace PrimitiveArmory
 
             if (itemType == EnumExt_NewItems.Arrow)
             {
-                return "Symbol_Arrow";
+                return intData switch
+                {
+                    0 => "Symbol_Arrow",
+                    1 => "Symbol_FireArrow",
+                    2 => "Symbol_ExplosiveArrow",
+                    _ => "Symbol_Arrow"
+                };
             }
 
             return orig.Invoke(itemType, intData);
+        }
+
+        private Color ItemSymbol_ColorForItem(On.ItemSymbol.orig_ColorForItem orig, AbstractPhysicalObject.AbstractObjectType itemType, int intData)
+        {
+
+
+            return orig(itemType, intData);
         }
 
         private void RainWorld_Start(On.RainWorld.orig_Start orig, RainWorld self)
@@ -127,7 +141,6 @@ namespace PrimitiveArmory
 
             orig(self);
 
-
             StuckRealize:
             for (int i = 0; i < self.stuckObjects.Count; i++)
             {
@@ -148,10 +161,12 @@ namespace PrimitiveArmory
             {
                 return new IconSymbol.IconSymbolData(CreatureTemplate.Type.StandardGroundCreature, EnumExt_NewItems.Club, 0);
             }
+
             if (unlockID == EnumExt_NewItems.BowUnlock)
             {
                 return new IconSymbol.IconSymbolData(CreatureTemplate.Type.StandardGroundCreature, EnumExt_NewItems.Bow, 0);
             }
+
             if (unlockID == EnumExt_NewItems.ArrowUnlock)
             {
                 return new IconSymbol.IconSymbolData(CreatureTemplate.Type.StandardGroundCreature, EnumExt_NewItems.Arrow, 0);
@@ -165,15 +180,15 @@ namespace PrimitiveArmory
             AbstractPhysicalObject result = orig(world, objString);
             try
             {
-                string[] array = Regex.Split(objString, "<oA>");
-                EntityID ID = EntityID.FromString(array[0]);
-                AbstractPhysicalObject.AbstractObjectType abstractObjectType = Custom.ParseEnum<AbstractPhysicalObject.AbstractObjectType>(array[1]);
-                WorldCoordinate pos = new WorldCoordinate(int.Parse(array[2].Split('.')[0]), int.Parse(array[2].Split('.')[1]), int.Parse(array[2].Split('.')[2]), int.Parse(array[2].Split('.')[3]));
+                string[] objectData = Regex.Split(objString, "<oA>");
+                EntityID ID = EntityID.FromString(objectData[0]);
+                AbstractPhysicalObject.AbstractObjectType abstractObjectType = Custom.ParseEnum<AbstractPhysicalObject.AbstractObjectType>(objectData[1]);
+                WorldCoordinate pos = new WorldCoordinate(int.Parse(objectData[2].Split('.')[0]), int.Parse(objectData[2].Split('.')[1]), int.Parse(objectData[2].Split('.')[2]), int.Parse(objectData[2].Split('.')[3]));
 
                 if (abstractObjectType == EnumExt_NewItems.Arrow)
                 {
-                    Arrow.AbstractArrow abstractArrow = new Arrow.AbstractArrow(world, null, pos, ID, array[4]);
-                    abstractArrow.stuckInWallCycles = int.Parse(array[3]);
+                    Arrow.AbstractArrow abstractArrow = new Arrow.AbstractArrow(world, null, pos, ID, int.Parse(objectData[4]));
+                    abstractArrow.stuckInWallCycles = int.Parse(objectData[3]);
                     return abstractArrow;
                 }
 
