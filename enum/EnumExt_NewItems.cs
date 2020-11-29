@@ -19,6 +19,9 @@
         public static SLOracleBehaviorHasMark.MiscItemType QuiverDialogue;
         public static SLOracleBehaviorHasMark.MiscItemType BowDialogue;
         public static SLOracleBehaviorHasMark.MiscItemType ArrowDialogue;
+        public static SLOracleBehaviorHasMark.MiscItemType FireArrowDialogue;
+        public static SLOracleBehaviorHasMark.MiscItemType ExplosiveArrowDialogue;
+        public static SLOracleBehaviorHasMark.MiscItemType ElectricArrowDialogue;
         public static SLOracleBehaviorHasMark.MiscItemType LizardSkullDialogue;
         public static SLOracleBehaviorHasMark.MiscItemType ShieldDialogue;
 

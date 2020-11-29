@@ -453,7 +453,6 @@ namespace PrimitiveArmory
             }
 
             bowStats[playerNumber].drawSpeed = globalStats[playerNumber].rangedSkill * 1f;
-
         }
 
         public static void PlayerUpdatePatch(On.Player.orig_Update orig, Player player, bool eu)
@@ -515,6 +514,15 @@ namespace PrimitiveArmory
                 clubStats[playerNumber].comboCooldown--;
             }
 
+            if (bowStats[playerNumber].isDrawing)
+            {
+                bowStats[playerNumber].drawTime += bowStats[playerNumber].drawSpeed;
+            }
+            else
+            {
+                bowStats[playerNumber].drawTime = 0;
+            }
+
             if (globalStats[playerNumber].animTimer > 0)
             {
                 globalStats[playerNumber].animTimer--;
@@ -523,6 +531,34 @@ namespace PrimitiveArmory
             if (clubStats[playerNumber].comboCooldown == 1)
             {
                 clubStats[playerNumber].comboCount = 0;
+            }
+        }
+
+        public static void MoreSlugcat(int slugcatNum)
+        {
+            List<ClubState> clubState = new List<ClubState>();
+            List<BowState> bowState = new List<BowState>();
+            List<GlobalState> globalState = new List<GlobalState>();
+            List<Player.InputPackage> inputList = new List<Player.InputPackage>();
+            for (int i = 0; i < clubStats.Length; i++)
+            {
+                clubState.Add(clubStats[i]);
+                globalState.Add(globalStats[i]);
+                bowState.Add(bowStats[i]);
+                inputList.Add(inputList[i]);
+            }
+            totalPlayerNum = slugcatNum + 1;
+            clubStats = new ClubState[totalPlayerNum];
+            bowStats = new BowState[totalPlayerNum];
+            globalStats = new GlobalState[totalPlayerNum];
+            playerInput = new Player.InputPackage[totalPlayerNum];
+
+            for (int j = 0; j < clubStats.Length; j++)
+            {
+                clubStats[j] = clubState[j];
+                bowStats[j] = bowState[j];
+                globalStats[j] = globalState[j];
+                playerInput[j] = inputList[j];
             }
         }
 
@@ -775,34 +811,6 @@ namespace PrimitiveArmory
 
                     }
                 }
-            }
-        }
-
-        public static void MoreSlugcat(int slugcatNum)
-        {
-            List<ClubState> clubState = new List<ClubState>();
-            List<BowState> bowState = new List<BowState>();
-            List<GlobalState> globalState = new List<GlobalState>();
-            List<Player.InputPackage> inputList = new List<Player.InputPackage>();
-            for (int i = 0; i < clubStats.Length; i++)
-            {
-                clubState.Add(clubStats[i]);
-                globalState.Add(globalStats[i]);
-                bowState.Add(bowStats[i]);
-                inputList.Add(inputList[i]);
-            }
-            totalPlayerNum = slugcatNum + 1;
-            clubStats = new ClubState[totalPlayerNum];
-            bowStats = new BowState[totalPlayerNum];
-            globalStats = new GlobalState[totalPlayerNum];
-            playerInput = new Player.InputPackage[totalPlayerNum];
-
-            for (int j = 0; j < clubStats.Length; j++)
-            {
-                clubStats[j] = clubState[j];
-                bowStats[j] = bowState[j];
-                globalStats[j] = globalState[j];
-                playerInput[j] = inputList[j];
             }
         }
 
