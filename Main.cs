@@ -172,7 +172,7 @@ namespace PrimitiveArmory
 
                 if (abstractObjectType == EnumExt_NewItems.Arrow)
                 {
-                    Arrow.AbstractArrow abstractArrow = new Arrow.AbstractArrow(world, null, pos, ID);
+                    Arrow.AbstractArrow abstractArrow = new Arrow.AbstractArrow(world, null, pos, ID, array[4]);
                     abstractArrow.stuckInWallCycles = int.Parse(array[3]);
                     return abstractArrow;
                 }
