@@ -120,10 +120,12 @@ namespace PrimitiveArmory
             if(mode != Weapon.Mode.OnBack)
             {
                 sLeaser.sprites[0].anchorY = 0.1f;
+                sLeaser.sprites[1].anchorY = -0.55f;
             }
             else
             {
                 sLeaser.sprites[0].anchorY = 0.5f;
+                sLeaser.sprites[1].anchorY = -0.15f;
             }
 
             if (blink > 0 && UnityEngine.Random.value < 0.5f)

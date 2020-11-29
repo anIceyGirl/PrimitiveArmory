@@ -57,11 +57,18 @@ namespace PrimitiveArmory
 
 			public bool stuckInWall => stuckInWallCycles != 0;
 
-			public AbstractArrow(World world, Arrow realizedObject, WorldCoordinate pos, EntityID ID, int arrowType = 0)
+			public AbstractArrow(World world, Arrow realizedObject, WorldCoordinate pos, EntityID ID, string arrowType = "NA")
 				: base(world, EnumExt_NewItems.Arrow, realizedObject, pos, ID)
 			{
-				this.arrowType = (ArrowType)(arrowType);
-			}
+                this.arrowType = arrowType switch
+                {
+                    "NA" => ArrowType.Normal,
+                    "FI" => ArrowType.Fire,
+                    "EX" => ArrowType.Explosive,
+                    "EL" => ArrowType.Electric,
+                    _ => ArrowType.Normal,
+                };
+            }
 			public void StuckInWallTick(int ticks)
 			{
 				if (stuckInWallCycles > 0)
@@ -76,7 +83,7 @@ namespace PrimitiveArmory
 
 			public override string ToString()
 			{
-				return ID.ToString() + "<oA>" + type.ToString() + "<oA>" + pos.room + "." + pos.x + "." + pos.y + "." + pos.abstractNode + "<oA>" + stuckInWallCycles.ToString() + "<oA>" + ((int)(arrowType)).ToString();
+				return ID.ToString() + "<oA>" + type.ToString() + "<oA>" + pos.room + "." + pos.x + "." + pos.y + "." + pos.abstractNode + "<oA>" + stuckInWallCycles.ToString() + "<oA>" + arrowType;
 			}
 		}
 

@@ -11,3 +11,4 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("Style", "IDE0044:Add readonly modifier", Justification = "Who uses Readonly anyways")]
 [assembly: SuppressMessage("Style", "IDE0059:Unnecessary assignment of a value", Justification = "<Pending>")]
 [assembly: SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Reserved for later.")]
+[assembly: SuppressMessage("Style", "IDE0017:Simplify object initialization", Justification = "<Pending>")]
