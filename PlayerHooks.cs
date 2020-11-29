@@ -574,19 +574,16 @@ namespace PrimitiveArmory
             {
                 PhysicalObject objectChecked;
 
-                bool allowedModes;
-
                 try
                 {
                     objectChecked = player.grasps[0].grabbed;
-                    allowedModes = player.bodyMode == Player.BodyModeIndex.Stand && player.bodyMode == Player.BodyModeIndex.Default && player.bodyMode == Player.BodyModeIndex.Swimming && player.bodyMode == Player.BodyModeIndex.ZeroG;
                 }
                 catch
                 {
                     return;
                 }
 
-                if (player.input[playerNumber].thrw && objectChecked.abstractPhysicalObject.type == EnumExt_NewItems.Bow && allowedModes)
+                if (player.input[playerNumber].thrw && objectChecked.abstractPhysicalObject.type == EnumExt_NewItems.Bow)
                 {
                     playerInput[playerNumber] = player.input[0];
                     player.input[0].x = 0;
