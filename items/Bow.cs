@@ -91,7 +91,7 @@ namespace PrimitiveArmory
             {
                 scale = 1.1f,
             };
-            sLeaser.sprites[1] = new FSprite("BowStringA01")
+            sLeaser.sprites[1] = new FSprite("BowStringA1")
             {
                 scale = 1.0f,
                 anchorY = -0.55f
