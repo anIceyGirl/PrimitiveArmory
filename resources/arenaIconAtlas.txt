@@ -2,7 +2,7 @@
 
 "Symbol_Arrow.png":
 {
-	"frame": {"x":2,"y":2,"w":7,"h":20},
+	"frame": {"x":0,"y":0,"w":7,"h":20},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":7,"h":20},
@@ -10,7 +10,7 @@
 },
 "Symbol_BlowGun.png":
 {
-	"frame": {"x":11,"y":2,"w":18,"h":34},
+	"frame": {"x":7,"y":0,"w":18,"h":34},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":18,"h":34},
@@ -18,7 +18,7 @@
 },
 "Symbol_Bottle.png":
 {
-	"frame": {"x":31,"y":2,"w":10,"h":14},
+	"frame": {"x":25,"y":0,"w":10,"h":14},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":10,"h":14},
@@ -26,7 +26,7 @@
 },
 "Symbol_Bow.png":
 {
-	"frame": {"x":2,"y":38,"w":18,"h":33},
+	"frame": {"x":35,"y":0,"w":18,"h":33},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":18,"h":33},
@@ -34,15 +34,31 @@
 },
 "Symbol_Club.png":
 {
-	"frame": {"x":22,"y":38,"w":18,"h":33},
+	"frame": {"x":0,"y":34,"w":18,"h":33},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":18,"h":33},
 	"sourceSize": {"w":18,"h":33}
 },
+"Symbol_ExplosiveArrow.png":
+{
+	"frame": {"x":18,"y":34,"w":7,"h":20},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":7,"h":20},
+	"sourceSize": {"w":7,"h":20}
+},
+"Symbol_FireArrow.png":
+{
+	"frame": {"x":25,"y":34,"w":10,"h":25},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":10,"h":25},
+	"sourceSize": {"w":10,"h":25}
+},
 "Symbol_Quiver.png":
 {
-	"frame": {"x":42,"y":38,"w":9,"h":15},
+	"frame": {"x":35,"y":34,"w":9,"h":15},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":9,"h":15},
@@ -50,7 +66,7 @@
 },
 "Symbol_Satchel.png":
 {
-	"frame": {"x":2,"y":73,"w":39,"h":34},
+	"frame": {"x":0,"y":67,"w":39,"h":34},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":39,"h":34},
@@ -61,8 +77,8 @@
 	"version": "1.0",
 	"image": "arenaIconAtlas.png",
 	"format": "RGBA8888",
-	"size": {"w":53,"h":109},
+	"size": {"w":53,"h":101},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:02b7905297beba2c9419c8a0f181f50d:b50150216dc215ef826aa33c8146f30c:ac8d287d51dac63d28268d603db80af4$"
+	"smartupdate": "$TexturePacker:SmartUpdate:3dae12a78b91d514cf684778435bb099:6451e5f27a99c7260057ec237628a066:ac8d287d51dac63d28268d603db80af4$"
 }
 }
