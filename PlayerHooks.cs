@@ -776,7 +776,6 @@ namespace PrimitiveArmory
 
                             break;
                         case Arrow arrow:
-
                             if (i == 1)
                             {
                                 int offGrasp = GetOppositeHand(i);
@@ -830,6 +829,7 @@ namespace PrimitiveArmory
         {
             int offGrasp = GetOppositeHand(grasp);
             PhysicalObject offObject;
+            
             try
             {
                 offObject = player.grasps[offGrasp].grabbed;
@@ -875,7 +875,6 @@ namespace PrimitiveArmory
             {
                 if (clubStats[playerNumber].swingDelay <= 0 && player.animation != Player.AnimationIndex.Flip && player.animation != Player.AnimationIndex.CrawlTurn && player.animation != Player.AnimationIndex.Roll)
                 {
-
                     player.room.PlaySound(SoundID.Slugcat_Throw_Spear, player.firstChunk);
                     thrownObject.firstChunk.vel.x = thrownObject.firstChunk.vel.x + (float)throwDir.x * 30f;
                     player.room.AddObject(new ExplosionSpikes(player.room, thrownObject.firstChunk.pos + new Vector2((float)player.rollDirection * -40f, 0f), 6, 5.5f, 4f, 4.5f, 21f, new Color(1f, 1f, 1f, 0.25f)));
@@ -955,16 +954,8 @@ namespace PrimitiveArmory
             if (thrownType == EnumExt_NewItems.Bow)
             {
                 int offGrasp = GetOppositeHand(grasp);
-                PhysicalObject offObject;
-                try
-                {
-                    offObject = player.grasps[offGrasp].grabbed;
-                }
-                catch
-                {
-                    offObject = null;
-                }
-                
+                PhysicalObject offObject = GetOppositeObject(player, grasp);
+
                 return;
             }
 

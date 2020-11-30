@@ -86,6 +86,7 @@ namespace PrimitiveArmory
             spinning = true;
         }
 
+        #region drawLogic
         public override void InitiateSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam)
         {
             sLeaser.sprites = new FSprite[2];
@@ -154,5 +155,6 @@ namespace PrimitiveArmory
             sLeaser.sprites[0].color = color;
             sLeaser.sprites[1].color = color;
         }
+        #endregion
     }
 }

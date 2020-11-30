@@ -49,7 +49,7 @@ namespace PrimitiveArmory
                 if (moonConvo.describeItem == EnumExt_NewItems.BowDialogue)
                 {
                     moonConvo.events.Add(new Conversation.TextEvent(moonConvo, 10, moonConvo.Translate("It's a long, curved piece of some composite material,<LINE>with a thread wrapped around the ends.<LINE>Some form of spider silk, perhaps?"), 0));
-                    moonConvo.events.Add(new Conversation.TextEvent(moonConvo, 10, moonConvo.Translate("I remember some scavengers that passed by carrying a few of these on their back...<LINE> did they give you this, <PlayerName>?"), 0));
+                    moonConvo.events.Add(new Conversation.TextEvent(moonConvo, 10, moonConvo.Translate("I remember some scavengers that passed by carrying a few of these on their back...<LINE>did they give you this, <PlayerName>?"), 0));
                 }
                 if (moonConvo.describeItem == EnumExt_NewItems.ArrowDialogue)
                 {

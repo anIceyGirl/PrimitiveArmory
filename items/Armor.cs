@@ -90,6 +90,7 @@ namespace PrimitiveArmory
             }
         }
 
+        #region drawLogic
         public virtual void InitiateSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam)
         {
         }
@@ -114,5 +115,6 @@ namespace PrimitiveArmory
                 newContatiner.AddChild(sLeaser.sprites[i]);
             }
         }
+        #endregion
     }
 }
