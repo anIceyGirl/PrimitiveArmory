@@ -120,7 +120,7 @@ namespace PrimitiveArmory
 
             int drawState = Mathf.RoundToInt(Mathf.Lerp(1, 8, drawProgress));
             
-            sLeaser.sprites[1].element.name = "BowStringA" + drawState.ToString();
+            sLeaser.sprites[1].element = Futile.atlasManager.GetElementWithName("BowStringA" + drawState.ToString());
 
             if (mode != Weapon.Mode.OnBack)
             {

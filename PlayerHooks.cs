@@ -15,6 +15,8 @@ namespace PrimitiveArmory
         public static int maxCombo = 2; // The maximum combo a player can attain.
         public static float comboCancelMultiplier = 2.5f;
 
+        public static float maxDrawTime = 60.0f;
+
         public struct ClubState
         {
             public int swingTimer;
@@ -516,11 +518,11 @@ namespace PrimitiveArmory
 
             if (bowStats[playerNumber].isDrawing)
             {
-                bowStats[playerNumber].drawTime += bowStats[playerNumber].drawSpeed;
+                bowStats[playerNumber].drawTime = Mathf.Clamp(bowStats[playerNumber].drawTime + bowStats[playerNumber].drawSpeed, 0.0f, maxDrawTime);
             }
             else
             {
-                bowStats[playerNumber].drawTime = 0;
+                bowStats[playerNumber].drawTime = 0.0f;
             }
 
             if (globalStats[playerNumber].animTimer > 0)
@@ -750,6 +752,7 @@ namespace PrimitiveArmory
 
                             (player.grasps[i].grabbed as Weapon).setRotation = vector;
                             (player.grasps[i].grabbed as Weapon).rotationSpeed = 0f;
+                            (player.grasps[i].grabbed as Bow).drawProgress = bowStats[playerNumber].drawTime / maxDrawTime;
 
                             if (i == 0)
                             {
@@ -766,7 +769,6 @@ namespace PrimitiveArmory
                                 }
                                 else if (offObject == null)
                                 {
-
                                     (player.graphicsModule as PlayerGraphics).hands[offGrasp].reachingForObject = true;
                                     (player.graphicsModule as PlayerGraphics).hands[offGrasp].absoluteHuntPos = player.grasps[i].grabbed.firstChunk.pos;
                                 }
