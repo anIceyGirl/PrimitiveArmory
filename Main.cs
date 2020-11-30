@@ -64,6 +64,7 @@ namespace PrimitiveArmory
             PlayerHooks.Patch();
             DataManager.Patch();
             ItemSpawner.Patch();
+            MoonHooks.Patch();
 
             Debug.Log("PrimitiveArmory Hooking Complete!");
         }

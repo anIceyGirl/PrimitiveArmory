@@ -11,47 +11,49 @@ namespace PrimitiveArmory
         public static void Patch()
         {
             On.SLOracleBehaviorHasMark.TypeOfMiscItem += MoonText;
-            On.SLOracleBehaviorHasMark.MoonConversation.AddEvents += MoonConversation_AddEvents;
+            On.SLOracleBehaviorHasMark.MoonConversation.AddEvents += MoonConvoExtended;
         }
 
-        private static SLOracleBehaviorHasMark.MiscItemType MoonText(On.SLOracleBehaviorHasMark.orig_TypeOfMiscItem orig, SLOracleBehaviorHasMark self, PhysicalObject testItem)
+        private static SLOracleBehaviorHasMark.MiscItemType MoonText(On.SLOracleBehaviorHasMark.orig_TypeOfMiscItem orig, SLOracleBehaviorHasMark moonConvo, PhysicalObject testItem)
         {
+            AbstractPhysicalObject.AbstractObjectType itemType = testItem.abstractPhysicalObject.type;
 
-            if (testItem.abstractPhysicalObject.type == EnumExt_NewItems.Club)
+            if (itemType == EnumExt_NewItems.Club)
             {
                 return EnumExt_NewItems.ClubDialogue;
             }
 
-            if (testItem.abstractPhysicalObject.type == EnumExt_NewItems.Bow)
+            if (itemType == EnumExt_NewItems.Bow)
             {
                 return EnumExt_NewItems.BowDialogue;
             }
 
-            if (testItem.abstractPhysicalObject.type == EnumExt_NewItems.Arrow)
+            if (itemType == EnumExt_NewItems.Arrow)
             {
                 return EnumExt_NewItems.ArrowDialogue;
             }
 
-            return orig(self, testItem);
+            return orig(moonConvo, testItem);
         }
 
-        private static void MoonConversation_AddEvents(On.SLOracleBehaviorHasMark.MoonConversation.orig_AddEvents orig, SLOracleBehaviorHasMark.MoonConversation self)
+        private static void MoonConvoExtended(On.SLOracleBehaviorHasMark.MoonConversation.orig_AddEvents orig, SLOracleBehaviorHasMark.MoonConversation moonConvo)
         {
-            orig(self);
-			if (self.id == Conversation.ID.Moon_Misc_Item)
+            orig(moonConvo);
+			if (moonConvo.id == Conversation.ID.Moon_Misc_Item)
             {
-                if (self.describeItem == EnumExt_NewItems.ClubDialogue)
+                if (moonConvo.describeItem == EnumExt_NewItems.ClubDialogue)
                 {
-                    self.events.Add(new Conversation.TextEvent(self, 10, self.Translate(""), 0));
+                    moonConvo.events.Add(new Conversation.TextEvent(moonConvo, 10, moonConvo.Translate("It's the bone of a large creature, carved into the shape of a club."), 0));
+                    moonConvo.events.Add(new Conversation.TextEvent(moonConvo, 10, moonConvo.Translate("I can imagine using this could cause quite a bit of havoc,<LINE>so please don't swing it around me."), 0));
                 }
-                if (self.describeItem == EnumExt_NewItems.BowDialogue)
+                if (moonConvo.describeItem == EnumExt_NewItems.BowDialogue)
                 {
-                    self.events.Add(new Conversation.TextEvent(self, 10, self.Translate("It's a long, curved piece of some composite material,<LINE>with a thread wrapped around the ends.<LINE>Some form of spider silk, perhaps?"), 0));
-                    self.events.Add(new Conversation.TextEvent(self, 10, self.Translate("I remember some scavengers that passed by carrying a few of these on their back...<LINE> did they give you this, <PlayerName>?"), 0));
+                    moonConvo.events.Add(new Conversation.TextEvent(moonConvo, 10, moonConvo.Translate("It's a long, curved piece of some composite material,<LINE>with a thread wrapped around the ends.<LINE>Some form of spider silk, perhaps?"), 0));
+                    moonConvo.events.Add(new Conversation.TextEvent(moonConvo, 10, moonConvo.Translate("I remember some scavengers that passed by carrying a few of these on their back...<LINE> did they give you this, <PlayerName>?"), 0));
                 }
-                if (self.describeItem == EnumExt_NewItems.ArrowDialogue)
+                if (moonConvo.describeItem == EnumExt_NewItems.ArrowDialogue)
                 {
-                    self.events.Add(new Conversation.TextEvent(self, 10, self.Translate(""), 0));
+                    moonConvo.events.Add(new Conversation.TextEvent(moonConvo, 10, moonConvo.Translate("This is a large needle with feathers attached at one end<LINE> and a piece of sharpened rock attached to ther other."), 0));
                 }
 			}
 		}
