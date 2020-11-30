@@ -106,6 +106,7 @@ namespace PrimitiveArmory
             room.PlaySound(SoundID.Slugcat_Throw_Spear, base.firstChunk);
         }
 
+        #region drawLogic
         public override void InitiateSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam)
         {
             sLeaser.sprites = new FSprite[1];
@@ -159,5 +160,6 @@ namespace PrimitiveArmory
             color = palette.blackColor;
             sLeaser.sprites[0].color = color;
         }
+        #endregion
     }
 }
