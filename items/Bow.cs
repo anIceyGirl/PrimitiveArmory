@@ -12,7 +12,7 @@ namespace PrimitiveArmory
 
         public int stillCounter;
 
-        public int drawProgress;
+        public float drawProgress;
 
         public override bool HeavyWeapon => true;
 
@@ -24,6 +24,7 @@ namespace PrimitiveArmory
             base.airFriction = 0.999f;
             base.gravity = 0.9f;
             bounce = 0.4f;
+            drawProgress = 0.0f;
             surfaceFriction = 0.4f;
             collisionLayer = 2;
             base.waterFriction = 0.98f;
@@ -117,7 +118,11 @@ namespace PrimitiveArmory
                 sLeaser.sprites[i].rotation = Custom.AimFromOneVectorToAnother(new Vector2(0f, 0f), v);
             }
 
-            if(mode != Weapon.Mode.OnBack)
+            int drawState = Mathf.RoundToInt(Mathf.Lerp(1, 8, drawProgress));
+            
+            sLeaser.sprites[1].element.name = "BowStringA" + drawState.ToString();
+
+            if (mode != Weapon.Mode.OnBack)
             {
                 sLeaser.sprites[0].anchorY = 0.1f;
                 sLeaser.sprites[1].anchorY = -0.55f;

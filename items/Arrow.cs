@@ -115,7 +115,48 @@ namespace PrimitiveArmory
         public override void Update(bool eu)
         {
             base.Update(eu);
-
+			soundLoop.sound = SoundID.None;
+			if (base.firstChunk.vel.magnitude > 5f)
+			{
+				if (base.mode == Mode.Thrown)
+				{
+					soundLoop.sound = SoundID.Spear_Thrown_Through_Air_LOOP;
+				}
+				else if (base.mode == Mode.Free)
+				{
+					soundLoop.sound = SoundID.Spear_Spinning_Through_Air_LOOP;
+				}
+				soundLoop.Volume = Mathf.InverseLerp(5f, 15f, base.firstChunk.vel.magnitude);
+			}
+			soundLoop.Update();
+			lastPivotAtTip = pivotAtTip;
+			pivotAtTip = base.mode == Mode.Thrown || base.mode == Mode.StuckInCreature;
+			if (addPoles && room.readyForAI)
+			{
+				if (abstractArrow.stuckInWallCycles >= 0)
+				{
+					room.GetTile(stuckInWall.Value).horizontalBeam = true;
+					for (int i = -1; i < 2; i += 2)
+					{
+						if (!room.GetTile(stuckInWall.Value + new Vector2(20f * (float)i, 0f)).Solid)
+						{
+							room.GetTile(stuckInWall.Value + new Vector2(20f * (float)i, 0f)).horizontalBeam = true;
+						}
+					}
+				}
+				else
+				{
+					room.GetTile(stuckInWall.Value).verticalBeam = true;
+					for (int j = -1; j < 2; j += 2)
+					{
+						if (!room.GetTile(stuckInWall.Value + new Vector2(0f, 20f * (float)j)).Solid)
+						{
+							room.GetTile(stuckInWall.Value + new Vector2(0f, 20f * (float)j)).verticalBeam = true;
+						}
+					}
+				}
+				addPoles = false;
+			}
 
 			switch (base.mode)
 			{
@@ -308,6 +349,31 @@ namespace PrimitiveArmory
 			SetRandomSpin();
 			return false;
 		}
+
+		public override void RecreateSticksFromAbstract()
+		{
+			for (int i = 0; i < abstractPhysicalObject.stuckObjects.Count; i++)
+			{
+				if (abstractPhysicalObject.stuckObjects[i] is AbstractPhysicalObject.AbstractSpearStick && (abstractPhysicalObject.stuckObjects[i] as AbstractPhysicalObject.AbstractSpearStick).Spear == abstractPhysicalObject && (abstractPhysicalObject.stuckObjects[i] as AbstractPhysicalObject.AbstractSpearStick).LodgedIn.realizedObject != null)
+				{
+					AbstractPhysicalObject.AbstractSpearStick abstractSpearStick = abstractPhysicalObject.stuckObjects[i] as AbstractPhysicalObject.AbstractSpearStick;
+					stuckInObject = abstractSpearStick.LodgedIn.realizedObject;
+					stuckInChunkIndex = abstractSpearStick.chunk;
+					stuckBodyPart = abstractSpearStick.bodyPart;
+					stuckRotation = abstractSpearStick.angle;
+					ChangeMode(Mode.StuckInCreature);
+				}
+				else if (abstractPhysicalObject.stuckObjects[i] is AbstractPhysicalObject.AbstractSpearAppendageStick && (abstractPhysicalObject.stuckObjects[i] as AbstractPhysicalObject.AbstractSpearAppendageStick).Spear == abstractPhysicalObject && (abstractPhysicalObject.stuckObjects[i] as AbstractPhysicalObject.AbstractSpearAppendageStick).LodgedIn.realizedObject != null)
+				{
+					AbstractPhysicalObject.AbstractSpearAppendageStick abstractSpearAppendageStick = abstractPhysicalObject.stuckObjects[i] as AbstractPhysicalObject.AbstractSpearAppendageStick;
+					stuckInObject = abstractSpearAppendageStick.LodgedIn.realizedObject;
+					stuckInAppendage = new Appendage.Pos(stuckInObject.appendages[abstractSpearAppendageStick.appendage], abstractSpearAppendageStick.prevSeg, abstractSpearAppendageStick.distanceToNext);
+					stuckRotation = abstractSpearAppendageStick.angle;
+					ChangeMode(Mode.StuckInCreature);
+				}
+			}
+		}
+
 		public void LodgeInCreature(SharedPhysics.CollisionResult result, bool eu)
 		{
 			stuckInObject = result.obj;
@@ -345,6 +411,27 @@ namespace PrimitiveArmory
 				{
 					room.AddObject(new WaterDrip(result.collisionPoint, -base.firstChunk.vel * Random.value * 0.5f + Custom.DegToVec(360f * Random.value) * base.firstChunk.vel.magnitude * Random.value * 0.5f, waterColor: false));
 				}
+			}
+		}
+
+		public virtual void TryImpaleSmallCreature(Creature smallCrit)
+		{
+			int num = 0;
+			int num2 = 0;
+			for (int i = 0; i < abstractPhysicalObject.stuckObjects.Count; i++)
+			{
+				if (abstractPhysicalObject.stuckObjects[i] is AbstractPhysicalObject.ImpaledOnSpearStick)
+				{
+					if ((abstractPhysicalObject.stuckObjects[i] as AbstractPhysicalObject.ImpaledOnSpearStick).onSpearPosition == num2)
+					{
+						num2++;
+					}
+					num++;
+				}
+			}
+			if (num <= 5 && num2 < 5)
+			{
+				new AbstractPhysicalObject.ImpaledOnSpearStick(abstractPhysicalObject, smallCrit.abstractCreature, 0, num2);
 			}
 		}
 
