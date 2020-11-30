@@ -118,10 +118,7 @@ namespace PrimitiveArmory
             TabList[tabNum].AddItems(TextBoxID);
         }
 
-        public override bool Configuable()
-        {
-            return true;
-        }
+        public override bool Configuable() { return true; }
 
         public string RandomTabHeader(bool isError = false)
         {                      
