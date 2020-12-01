@@ -44,7 +44,6 @@ namespace PrimitiveArmory
                         // + "\nAnonymous aka \"That guy who suggested mosquitos\", for the concept of the water balloon mosquito";
                     string nothingHereYet = "There's nothing here yet...\n:(";
                     string knownIssues = "Known issues:"
-                        + "\nClub swinging is a bit glitchy when you first pick a club up, but going\nthrough a shortcut fixes it."
                         + "\nKilling creatures with the club do not register as a kill in Arena mode.";
 
                     for (int i = 0; i < this.Tabs.Length; i++)
