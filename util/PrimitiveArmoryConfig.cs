@@ -9,7 +9,6 @@ namespace PrimitiveArmory
 {
     public class PrimitiveArmoryConfig : OptionInterface
     {
-
         public PrimitiveArmoryConfig() : base(Main.instance)
         {
             mod = Main.instance;
@@ -34,7 +33,6 @@ namespace PrimitiveArmory
                     this.Tabs[4] = new OpTab("Known Issues");
 
                     Debug.Log("Setting splash text...");
-                    int date = DateTime.Now.DayOfYear; 
                     string splash = RandomTabHeader();
 
                     Debug.Log("Setting tab text...");
