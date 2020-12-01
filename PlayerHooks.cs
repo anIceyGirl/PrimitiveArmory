@@ -15,7 +15,7 @@ namespace PrimitiveArmory
         public static int maxCombo = 2; // The maximum combo a player can attain.
         public static float comboCancelMultiplier = 2.5f;
 
-        public static float maxDrawTime = 60.0f;
+        public static float maxDrawTime = 40.0f;
 
         public struct ClubState
         {
@@ -461,10 +461,10 @@ namespace PrimitiveArmory
         {
             int playerNumber = player.playerState.playerNumber;
 
-            Vector2 aimDir = ((!player.room.world.game.rainWorld.options.controls[playerNumber].gamePad) ? new Vector2(player.input[playerNumber].x, player.input[playerNumber].y).normalized : player.input[playerNumber].analogueDir);
-            if (aimDir.magnitude > 0.5f)
+            Vector2 vector = ((!player.room.world.game.rainWorld.options.controls[0].gamePad) ? new Vector2(player.input[0].x, player.input[0].y).normalized : player.input[0].analogueDir);
+            if (vector.magnitude > 0.5f)
             {
-                bowStats[playerNumber].aimDir = aimDir.normalized;
+                bowStats[playerNumber].aimDir = vector.normalized;
             }
 
             orig(player, eu);
@@ -618,10 +618,10 @@ namespace PrimitiveArmory
                 }
                 catch
                 {
-                    return;
+                    objectChecked = null;
                 }
 
-                if (player.input[playerNumber].thrw && objectChecked.abstractPhysicalObject.type == EnumExt_NewItems.Bow)
+                if (player.input[playerNumber].thrw && objectChecked != null && objectChecked.abstractPhysicalObject.type == EnumExt_NewItems.Bow)
                 {
                     playerInput[playerNumber] = player.input[0];
                     player.input[0].x = 0;
@@ -752,7 +752,6 @@ namespace PrimitiveArmory
 
                             (player.grasps[i].grabbed as Weapon).setRotation = vector;
                             (player.grasps[i].grabbed as Weapon).rotationSpeed = 0f;
-                            (player.grasps[i].grabbed as Bow).drawProgress = bowStats[playerNumber].drawTime / maxDrawTime;
 
                             if (i == 0)
                             {
@@ -764,6 +763,7 @@ namespace PrimitiveArmory
                                     offObject.firstChunk.pos = player.grasps[i].grabbed.firstChunk.pos;
                                     (player.graphicsModule as PlayerGraphics).hands[offGrasp].reachingForObject = true;
                                     (player.graphicsModule as PlayerGraphics).hands[offGrasp].absoluteHuntPos = player.grasps[offGrasp].grabbed.firstChunk.pos;
+                                    (player.grasps[i].grabbed as Bow).drawProgress = bowStats[playerNumber].drawTime / maxDrawTime;
 
                                     (offObject as Weapon).setRotation = -vector;
                                 }
@@ -771,6 +771,7 @@ namespace PrimitiveArmory
                                 {
                                     (player.graphicsModule as PlayerGraphics).hands[offGrasp].reachingForObject = true;
                                     (player.graphicsModule as PlayerGraphics).hands[offGrasp].absoluteHuntPos = player.grasps[i].grabbed.firstChunk.pos;
+                                    (player.grasps[i].grabbed as Bow).drawProgress = bowStats[playerNumber].drawTime / maxDrawTime;
                                 }
                             }
 
@@ -955,6 +956,11 @@ namespace PrimitiveArmory
             {
                 int offGrasp = GetOppositeHand(grasp);
                 PhysicalObject offObject = GetOppositeObject(player, grasp);
+
+                if (offObject != null && offObject.abstractPhysicalObject.type != EnumExt_NewItems.Arrow)
+                {
+                    orig(player, offGrasp, eu);
+                }
 
                 return;
             }
