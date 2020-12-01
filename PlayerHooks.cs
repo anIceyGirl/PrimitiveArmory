@@ -15,7 +15,7 @@ namespace PrimitiveArmory
         public static int maxCombo = 2; // The maximum combo a player can attain.
         public static float comboCancelMultiplier = 2.5f;
 
-        public static float maxDrawTime = 60.0f;
+        public static float maxDrawTime = 35.0f;
 
         public struct ClubState
         {
@@ -32,6 +32,7 @@ namespace PrimitiveArmory
             public bool isDrawing;
             public bool released;
             public Vector2 aimDir;
+            public Vector2 lastAimDir;
         }
 
         public struct GlobalState
@@ -422,6 +423,7 @@ namespace PrimitiveArmory
             {
                 drawTime = 0.0f,
                 aimDir = new Vector2(0, 0),
+                lastAimDir = bowStats[playerNumber].aimDir,
                 isDrawing = false,
                 released = false
             };
@@ -461,7 +463,12 @@ namespace PrimitiveArmory
         {
             int playerNumber = player.playerState.playerNumber;
 
-            bowStats[playerNumber].aimDir = GetAimDir(player, playerNumber);
+            bowStats[playerNumber].aimDir = GetAimDir(player).normalized;
+
+            if (bowStats[playerNumber].aimDir.magnitude > 0.25f)
+            {
+                bowStats[playerNumber].lastAimDir = bowStats[playerNumber].aimDir;
+            }
 
             orig(player, eu);
 
@@ -745,10 +752,10 @@ namespace PrimitiveArmory
 
                             if (bowStats[playerNumber].isDrawing)
                             {
-                                vector = -GetAimDir(player, playerNumber);
+                                vector = -bowStats[playerNumber].lastAimDir;
 
                                 (player.graphicsModule as PlayerGraphics).hands[i].reachingForObject = true;
-                                player.grasps[i].grabbed.firstChunk.MoveFromOutsideMyUpdate(eu, player.mainBodyChunk.pos + GetAimDir(player, playerNumber) * 20f);
+                                player.grasps[i].grabbed.firstChunk.MoveFromOutsideMyUpdate(eu, player.mainBodyChunk.pos + bowStats[playerNumber].lastAimDir * 20f);
                                 (player.graphicsModule as PlayerGraphics).LookAtPoint(player.grasps[i].grabbed.firstChunk.pos, 10000.0f);
                                 (player.graphicsModule as PlayerGraphics).hands[i].absoluteHuntPos = player.grasps[i].grabbed.firstChunk.pos;
                             }
@@ -763,18 +770,20 @@ namespace PrimitiveArmory
 
                                 if (offObject != null && offObject.abstractPhysicalObject.type == EnumExt_NewItems.Arrow)
                                 {
-                                    (player.grasps[i].grabbed as Bow).drawProgress = bowStats[playerNumber].drawTime / maxDrawTime;
+                                    player.grasps[offGrasp].grabbed.firstChunk.MoveFromOutsideMyUpdate(eu, player.grasps[0].grabbed.firstChunk.pos + ((player.grasps[i].grabbed as Weapon).rotation * Mathf.Lerp(-1, 8, (player.grasps[i].grabbed as Bow).drawProgress)));
+                                    (player.graphicsModule as PlayerGraphics).hands[offGrasp].reachingForObject = true;
+                                    (player.graphicsModule as PlayerGraphics).hands[offGrasp].absoluteHuntPos = player.grasps[0].grabbed.firstChunk.pos + ((player.grasps[i].grabbed as Weapon).rotation * Mathf.Lerp(10, 20, (player.grasps[i].grabbed as Bow).drawProgress));
+                                    (player.grasps[offGrasp].grabbed as Weapon).ChangeOverlap((player.grasps[i].grabbed as Weapon).inFrontOfObjects == 1);
+                                    (player.grasps[i].grabbed as Bow).drawProgress = Mathf.Pow(bowStats[playerNumber].drawTime / maxDrawTime, 2);
 
                                     (offObject as Weapon).setRotation = -vector;
                                 }
                                 else if (offObject == null)
                                 {
                                     (player.graphicsModule as PlayerGraphics).hands[offGrasp].reachingForObject = true;
-                                    (player.graphicsModule as PlayerGraphics).hands[offGrasp].absoluteHuntPos = player.grasps[i].grabbed.firstChunk.pos;
-                                    (player.grasps[i].grabbed as Bow).drawProgress = bowStats[playerNumber].drawTime / maxDrawTime;
+                                    (player.graphicsModule as PlayerGraphics).hands[offGrasp].absoluteHuntPos = player.grasps[0].grabbed.firstChunk.pos + ((player.grasps[i].grabbed as Weapon).rotation * Mathf.Lerp(10, 20, (player.grasps[i].grabbed as Bow).drawProgress));
+                                    (player.grasps[i].grabbed as Bow).drawProgress = Mathf.Pow(bowStats[playerNumber].drawTime / maxDrawTime, 2);
                                 }
-
-                                
                             }
 
                             break;
@@ -786,11 +795,6 @@ namespace PrimitiveArmory
 
                                 if (offObject != null && offObject.abstractPhysicalObject.type == EnumExt_NewItems.Bow)
                                 {
-                                    player.grasps[i].grabbed.firstChunk.MoveFromOutsideMyUpdate(eu, player.grasps[0].grabbed.firstChunk.pos);
-                                    (player.graphicsModule as PlayerGraphics).hands[i].reachingForObject = true;
-                                    (player.graphicsModule as PlayerGraphics).hands[i].absoluteHuntPos = player.grasps[i].grabbed.firstChunk.pos;
-                                    (player.grasps[i].grabbed as Weapon).ChangeOverlap((offObject as Weapon).inFrontOfObjects >= 1);
-
                                     break;
                                 }
                             }
@@ -815,7 +819,6 @@ namespace PrimitiveArmory
                             (player.grasps[i].grabbed as Weapon).rotationSpeed = 0f;
 
                             break;
-
                     }
                 }
             }
@@ -968,20 +971,15 @@ namespace PrimitiveArmory
                     orig(player, offGrasp, eu);
                 }
                 
-
                 return;
             }
 
             orig(player, grasp, eu);
         }
 
-        public static void ThrownSpearPatch(On.Player.orig_ThrownSpear orig, Player player, Spear spear)
+        public static Vector2 GetAimDir(Player player)
         {
-            orig(player, spear);
-        }
-
-        public static Vector2 GetAimDir(Player player, int playerNumber)
-        {
+            int playerNumber = player.playerState.playerNumber;
             Vector2 result = playerInput[playerNumber].analogueDir;
 
             if (result.x != 0f || result.y != 0f)
@@ -996,6 +994,19 @@ namespace PrimitiveArmory
             }
 
             return new Vector2(0f, 0f);
+        }
+
+        public static float ReleaseStrengthOnFire(Player player)
+        {
+            int playerNumber = player.playerState.playerNumber;
+
+            if (bowStats[playerNumber].drawTime / maxDrawTime > 0.1f)
+            {
+
+            }
+
+
+            return 0.01f;
         }
     }
 }

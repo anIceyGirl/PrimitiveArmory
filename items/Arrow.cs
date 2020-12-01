@@ -46,7 +46,8 @@ namespace PrimitiveArmory
 				Normal,
 				Fire,
 				Explosive,
-				Electric
+				Electric,
+				Flash
             }
 
 			public int stuckInWallCycles;
@@ -66,6 +67,7 @@ namespace PrimitiveArmory
                     1 => ArrowType.Fire,
                     2 => ArrowType.Explosive,
                     3 => ArrowType.Electric,
+					4 => ArrowType.Flash,
                     _ => ArrowType.Normal,
                 };
             }
