@@ -643,10 +643,7 @@ namespace PrimitiveArmory
         {
             int playerNumber = spear.owner.playerState.playerNumber;
 
-            if (globalStats[playerNumber].backSlot.backItem is Weapon)
-            {
-                return;
-            }
+            if (globalStats[playerNumber].backSlot.backItem is Weapon) return;
 
             orig(spear, spr);
         }
@@ -855,6 +852,7 @@ namespace PrimitiveArmory
                     {
                         return Player.ObjectGrabability.CantGrab;
                     }
+
                     return Player.ObjectGrabability.BigOneHand;
             }
 
@@ -957,10 +955,11 @@ namespace PrimitiveArmory
                 int offGrasp = GetOppositeHand(grasp);
                 PhysicalObject offObject = GetOppositeObject(player, grasp);
 
-                if (offObject != null && offObject.abstractPhysicalObject.type != EnumExt_NewItems.Arrow)
+                if (offObject != null && offObject.abstractPhysicalObject.type != EnumExt_NewItems.Arrow) 
                 {
                     orig(player, offGrasp, eu);
                 }
+                
 
                 return;
             }

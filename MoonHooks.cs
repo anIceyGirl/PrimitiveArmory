@@ -53,7 +53,7 @@ namespace PrimitiveArmory
                 }
                 if (moonConvo.describeItem == EnumExt_NewItems.ArrowDialogue)
                 {
-                    moonConvo.events.Add(new Conversation.TextEvent(moonConvo, 10, moonConvo.Translate("This is a large needle with feathers attached at one end<LINE> and a piece of sharpened rock attached to ther other."), 0));
+                    moonConvo.events.Add(new Conversation.TextEvent(moonConvo, 10, moonConvo.Translate("This is a large needle with feathers attached at one end<LINE>and a piece of sharpened rock attached to ther other."), 0));
                 }
 			}
 		}
