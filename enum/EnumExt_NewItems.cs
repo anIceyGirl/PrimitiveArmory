@@ -2,6 +2,7 @@
 {
     public static class EnumExt_NewItems
     {
+        #region AbstractItems
         public static AbstractPhysicalObject.AbstractObjectType Club;
         public static AbstractPhysicalObject.AbstractObjectType BlowGun;
         public static AbstractPhysicalObject.AbstractObjectType Dart;
@@ -11,8 +12,9 @@
         public static AbstractPhysicalObject.AbstractObjectType Arrow;
         public static AbstractPhysicalObject.AbstractObjectType LizardSkull;
         public static AbstractPhysicalObject.AbstractObjectType Shield;
+        #endregion
 
-
+        #region ItemDialogue
         public static SLOracleBehaviorHasMark.MiscItemType ClubDialogue;
         public static SLOracleBehaviorHasMark.MiscItemType BlowGunDialogue;
         public static SLOracleBehaviorHasMark.MiscItemType DartDialogue;
@@ -27,8 +29,9 @@
 
         public static SLOracleBehaviorHasMark.MiscItemType LizardSkullDialogue;
         public static SLOracleBehaviorHasMark.MiscItemType ShieldDialogue;
+        #endregion
 
-
+        #region Unlocks
         public static MultiplayerUnlocks.SandboxUnlockID ClubUnlock;
         public static MultiplayerUnlocks.SandboxUnlockID BlowGunUnlock;
         public static MultiplayerUnlocks.SandboxUnlockID DartUnlock;
@@ -43,5 +46,6 @@
 
         public static MultiplayerUnlocks.SandboxUnlockID LizardSkullUnlock;
         public static MultiplayerUnlocks.SandboxUnlockID ShieldUnlock;
+        #endregion
     }
 }
