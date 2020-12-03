@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace PrimitiveArmory
 {
-    public class Arrow : Weapon, IDrawable
+    public class Arrow : Weapon
 	{
 		public bool spinning;
 
@@ -27,7 +27,7 @@ namespace PrimitiveArmory
 
 		public int stuckBodyPart;
 
-		public bool alwaysStickInWalls;
+		public bool alwaysStickInWalls => true;
 
 		public int pinToWallCounter;
 
@@ -58,7 +58,7 @@ namespace PrimitiveArmory
 
 			public bool stuckInWall => stuckInWallCycles != 0;
 
-			public AbstractArrow(World world, Arrow realizedObject, WorldCoordinate pos, EntityID ID, int arrowType = 0)
+			public AbstractArrow(World world, Arrow realizedObject, WorldCoordinate pos, EntityID ID, int arrowType)
 				: base(world, EnumExt_NewItems.Arrow, realizedObject, pos, ID)
 			{
                 this.arrowType = arrowType switch
@@ -70,7 +70,8 @@ namespace PrimitiveArmory
 					4 => ArrowType.Flash,
                     _ => ArrowType.Normal,
                 };
-            }
+			}
+
 			public void StuckInWallTick(int ticks)
 			{
 				if (stuckInWallCycles > 0)
@@ -100,12 +101,12 @@ namespace PrimitiveArmory
 			base.bodyChunks[0] = new BodyChunk(this, 0, new Vector2(0f, 0f), 5f, 0.07f);
 			bodyChunkConnections = new BodyChunkConnection[0];
 			base.airFriction = 0.999f;
-			base.gravity = 0.9f;
-			bounce = 0.4f;
-			surfaceFriction = 0.4f;
+			base.gravity = 0.75f;
+			bounce = 0.1f;
+			surfaceFriction = 0.1f;
 			collisionLayer = 2;
 			base.waterFriction = 0.98f;
-			base.buoyancy = 0.4f;
+			base.buoyancy = 1.0f;
 			pivotAtTip = false;
 			lastPivotAtTip = false;
 			stuckBodyPart = -1;
@@ -177,7 +178,7 @@ namespace PrimitiveArmory
 						{
 							spinning = false;
 							rotationSpeed = 0f;
-							rotation = Custom.DegToVec(Mathf.Lerp(-90, 90f, Random.value) + 180f);
+							rotation = Custom.DegToVec(Mathf.Lerp(-50f, 50f, Random.value) + 180f);
 							base.firstChunk.vel *= 0f;
 							room.PlaySound(SoundID.Spear_Stick_In_Ground, base.firstChunk);
 						}
@@ -189,36 +190,41 @@ namespace PrimitiveArmory
 					break;
 				case Mode.Thrown:
 					{
-						base.firstChunk.vel.y += 0.45f;
+						base.rotation = firstChunk.vel;
 						if (!Custom.DistLess(thrownPos, base.firstChunk.pos, 560f * Mathf.Max(1f, arrowDamageBonus)) || !(base.firstChunk.ContactPoint == throwDir) || room.GetTile(base.firstChunk.pos).Terrain != 0 || room.GetTile(base.firstChunk.pos + throwDir.ToVector2() * 20f).Terrain != Room.Tile.TerrainType.Solid || ((!Custom.DistLess(thrownPos, base.firstChunk.pos, 140f) && !alwaysStickInWalls))) 
 						{
 							break;
 						}
-						bool flag = true;
+
+						bool willStickIntoWall = true;
+
 						foreach (AbstractWorldEntity entity in room.abstractRoom.entities)
 						{
 							if (entity is AbstractArrow && (entity as AbstractArrow).realizedObject != null && ((entity as AbstractArrow).realizedObject as Weapon).mode == Mode.StuckInWall && entity.pos.Tile == abstractPhysicalObject.pos.Tile)
 							{
-								flag = false;
+								willStickIntoWall = false;
 								break;
 							}
 						}
-						if (flag)
+
+						if (willStickIntoWall)
 						{
 							for (int k = 0; k < room.roomSettings.placedObjects.Count; k++)
 							{
 								if (room.roomSettings.placedObjects[k].type == PlacedObject.Type.NoSpearStickZone && Custom.DistLess(room.MiddleOfTile(base.firstChunk.pos), room.roomSettings.placedObjects[k].pos, (room.roomSettings.placedObjects[k].data as PlacedObject.ResizableObjectData).Rad))
 								{
-									flag = false;
+									willStickIntoWall = false;
 									break;
 								}
 							}
 						}
-						if (flag)
+
+						if (willStickIntoWall)
 						{
 							stuckInWall = room.MiddleOfTile(base.firstChunk.pos);
 							vibrate = 10;
 							ChangeMode(Mode.StuckInWall);
+							rotation = lastRotation;
 							room.PlaySound(SoundID.Spear_Stick_In_Wall, base.firstChunk);
 							base.firstChunk.collideWithTerrain = false;
 						}
@@ -283,7 +289,6 @@ namespace PrimitiveArmory
 					base.firstChunk.pos = stuckInWall.Value;
 					base.firstChunk.vel *= 0f;
 					break;
-
 			}
 
 			for (int num = abstractPhysicalObject.stuckObjects.Count - 1; num >= 0; num--)
@@ -301,6 +306,102 @@ namespace PrimitiveArmory
 					}
 				}
 			}
+		}
+		
+		public override void PlaceInRoom(Room placeRoom)
+		{
+			base.PlaceInRoom(placeRoom);
+			if (abstractArrow.stuckInWall)
+			{
+				stuckInWall = placeRoom.MiddleOfTile(abstractPhysicalObject.pos.Tile);
+				ChangeMode(Mode.StuckInWall);
+			}
+		}
+
+		public override void ChangeMode(Mode newMode)
+		{
+			if (base.mode == Mode.StuckInCreature)
+			{
+				if (room != null)
+				{
+					room.PlaySound(SoundID.Spear_Dislodged_From_Creature, base.firstChunk);
+				}
+				PulledOutOfStuckObject();
+				ChangeOverlap(newOverlap: true);
+			}
+			else if (newMode == Mode.StuckInCreature)
+			{
+				ChangeOverlap(newOverlap: false);
+			}
+			
+			if (newMode != Mode.Thrown)
+			{
+				arrowDamageBonus = 1f;
+			}
+			
+			if (newMode == Mode.StuckInWall)
+			{
+				if (abstractArrow.stuckInWallCycles == 0)
+				{
+					abstractArrow.stuckInWallCycles = Random.Range(3, 7) * ((throwDir.y == 0) ? 1 : (-1));
+				}
+				for (int i = -1; i < 2; i += 2)
+				{
+					if (stuckInWall != null && (abstractArrow.stuckInWallCycles >= 0 && !room.GetTile(stuckInWall.Value + new Vector2(20f * (float)i, 0f)).Solid) || (abstractArrow.stuckInWallCycles < 0 && !room.GetTile(stuckInWall.Value + new Vector2(0f, 20f * (float)i)).Solid))
+					{
+						setRotation = ((abstractArrow.stuckInWallCycles < 0) ? new Vector2(0f, -i) : new Vector2(-i, 0f));
+						/*
+						if (!(this is ExplosiveSpear))
+						{
+							addPoles = true;
+						}*/
+						break;
+					}
+				}
+				if (setRotation.HasValue)
+				{
+					stuckInWall = room.MiddleOfTile(stuckInWall.Value) - setRotation.Value * 5f;
+				}
+				/*
+				if (this is ExplosiveSpear)
+				{
+					abstractArrow.stuckInWallCycles = 0;
+				}
+				*/
+				rotationSpeed = 0f;
+			}
+			
+			if (newMode != Mode.Free)
+			{
+				spinning = false;
+			}
+			
+			if (newMode != Mode.StuckInWall && newMode != Mode.StuckInCreature)
+			{
+				stuckInWall = null;
+			}
+
+			base.ChangeMode(newMode);
+		}
+
+		public void PulledOutOfStuckObject()
+		{
+			for (int i = 0; i < abstractPhysicalObject.stuckObjects.Count; i++)
+			{
+				if (abstractPhysicalObject.stuckObjects[i] is AbstractPhysicalObject.AbstractSpearStick && (abstractPhysicalObject.stuckObjects[i] as AbstractPhysicalObject.AbstractSpearStick).Spear == abstractPhysicalObject)
+				{
+					abstractPhysicalObject.stuckObjects[i].Deactivate();
+					break;
+				}
+				if (abstractPhysicalObject.stuckObjects[i] is AbstractPhysicalObject.AbstractSpearAppendageStick && (abstractPhysicalObject.stuckObjects[i] as AbstractPhysicalObject.AbstractSpearAppendageStick).Spear == abstractPhysicalObject)
+				{
+					abstractPhysicalObject.stuckObjects[i].Deactivate();
+					break;
+				}
+			}
+			stuckInObject = null;
+			stuckInAppendage = null;
+			stuckInChunkIndex = 0;
 		}
 
 		public override bool HitSomething(SharedPhysics.CollisionResult result, bool eu)
@@ -376,7 +477,13 @@ namespace PrimitiveArmory
 			}
 		}
 
-		public void LodgeInCreature(SharedPhysics.CollisionResult result, bool eu)
+        public override void Thrown(Creature thrownBy, Vector2 thrownPos, Vector2? firstFrameTraceFromPos, IntVector2 throwDir, float frc, bool eu)
+        {
+            base.Thrown(thrownBy, thrownPos, firstFrameTraceFromPos, throwDir, frc, eu);
+			room.PlaySound(SoundID.Slugcat_Throw_Spear, base.firstChunk);
+		}
+
+        public void LodgeInCreature(SharedPhysics.CollisionResult result, bool eu)
 		{
 			stuckInObject = result.obj;
 			ChangeMode(Mode.StuckInCreature);
@@ -396,7 +503,7 @@ namespace PrimitiveArmory
 					stuckRotation = Custom.Angle(throwDir.ToVector2(), stuckInChunk.Rotation);
 				}
 				base.firstChunk.MoveWithOtherObject(eu, stuckInChunk, new Vector2(0f, 0f));
-				Debug.Log("Add spear to creature chunk " + stuckInChunk.index);
+				Debug.Log("Add arrow to creature chunk " + stuckInChunk.index);
 				new AbstractPhysicalObject.AbstractSpearStick(abstractPhysicalObject, (result.obj as Creature).abstractCreature, stuckInChunkIndex, stuckBodyPart, stuckRotation);
 			}
 			else if (result.onAppendagePos != null)
@@ -404,7 +511,7 @@ namespace PrimitiveArmory
 				stuckInChunkIndex = 0;
 				stuckInAppendage = result.onAppendagePos;
 				stuckRotation = Custom.VecToDeg(rotation) - Custom.VecToDeg(stuckInAppendage.appendage.OnAppendageDirection(stuckInAppendage));
-				Debug.Log("Add spear to creature Appendage");
+				Debug.Log("Add arrow to creature Appendage");
 				new AbstractPhysicalObject.AbstractSpearAppendageStick(abstractPhysicalObject, (result.obj as Creature).abstractCreature, result.onAppendagePos.appendage.appIndex, result.onAppendagePos.prevSegment, result.onAppendagePos.distanceToNext, stuckRotation);
 			}
 			if (room.BeingViewed)
@@ -437,7 +544,8 @@ namespace PrimitiveArmory
 			}
 		}
 
-		public override void InitiateSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam)
+        #region drawLogic
+        public override void InitiateSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam)
 		{
 			sLeaser.sprites = new FSprite[1];
 			sLeaser.sprites[0] = new FSprite("Arrow")
@@ -481,5 +589,6 @@ namespace PrimitiveArmory
 			color = palette.blackColor;
 			sLeaser.sprites[0].color = color;
 		}
-	}
+        #endregion
+    }
 }

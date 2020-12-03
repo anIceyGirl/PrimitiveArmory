@@ -154,6 +154,8 @@ namespace PrimitiveArmory
                     self.stuckObjects[i].B.Realize();
                 }
             }
+
+            return;
         }
 
         private static IconSymbol.IconSymbolData SandboxIconPatch(On.MultiplayerUnlocks.orig_SymbolDataForSandboxUnlock orig, MultiplayerUnlocks.SandboxUnlockID unlockID)
@@ -178,32 +180,21 @@ namespace PrimitiveArmory
 
         private AbstractPhysicalObject AbstractFromStringPatch(On.SaveState.orig_AbstractPhysicalObjectFromString orig, World world, string objString)
         {
+            string[] objectData = Regex.Split(objString, "<oA>");
+            EntityID ID = EntityID.FromString(objectData[0]);
+            AbstractPhysicalObject.AbstractObjectType abstractObjectType = Custom.ParseEnum<AbstractPhysicalObject.AbstractObjectType>(objectData[1]);
+            WorldCoordinate pos = new WorldCoordinate(int.Parse(objectData[2].Split('.')[0]), int.Parse(objectData[2].Split('.')[1]), int.Parse(objectData[2].Split('.')[2]), int.Parse(objectData[2].Split('.')[3]));
+
+            if (abstractObjectType == EnumExt_NewItems.Arrow)
+            {
+                Arrow.AbstractArrow abstractArrow = new Arrow.AbstractArrow(world, null, pos, ID, int.Parse(objectData[4]));
+                abstractArrow.stuckInWallCycles = int.Parse(objectData[3]);
+                return abstractArrow;
+            }
+
             AbstractPhysicalObject result = orig(world, objString);
-            try
-            {
-                string[] objectData = Regex.Split(objString, "<oA>");
-                EntityID ID = EntityID.FromString(objectData[0]);
-                AbstractPhysicalObject.AbstractObjectType abstractObjectType = Custom.ParseEnum<AbstractPhysicalObject.AbstractObjectType>(objectData[1]);
-                WorldCoordinate pos = new WorldCoordinate(int.Parse(objectData[2].Split('.')[0]), int.Parse(objectData[2].Split('.')[1]), int.Parse(objectData[2].Split('.')[2]), int.Parse(objectData[2].Split('.')[3]));
 
-                if (abstractObjectType == EnumExt_NewItems.Arrow)
-                {
-                    Arrow.AbstractArrow abstractArrow = new Arrow.AbstractArrow(world, null, pos, ID, int.Parse(objectData[4]));
-                    abstractArrow.stuckInWallCycles = int.Parse(objectData[3]);
-                    return abstractArrow;
-                }
-
-                if (result == null)
-                {
-                    return null;
-                }
-
-                return result;
-            }
-            catch
-            {
-                return null;
-            }
+            return result;
         }
 
         public void StartupHooks(On.RainWorld.orig_Update orig, RainWorld self)
@@ -249,10 +240,16 @@ namespace PrimitiveArmory
             AbstractPhysicalObject result = null;
             try
             {
-                string[] array = Regex.Split(objString, "<oA>");
-                EntityID iD = EntityID.FromString(array[0]);
-                AbstractPhysicalObject.AbstractObjectType abstractObjectType = Custom.ParseEnum<AbstractPhysicalObject.AbstractObjectType>(array[1]);
-                WorldCoordinate pos = new WorldCoordinate(int.Parse(array[2].Split('.')[0]), int.Parse(array[2].Split('.')[1]), int.Parse(array[2].Split('.')[2]), int.Parse(array[2].Split('.')[3]));
+                string[] objectData = Regex.Split(objString, "<oA>");
+                EntityID ID = EntityID.FromString(objectData[0]);
+                AbstractPhysicalObject.AbstractObjectType abstractObjectType = Custom.ParseEnum<AbstractPhysicalObject.AbstractObjectType>(objectData[1]);
+                WorldCoordinate pos = new WorldCoordinate(int.Parse(objectData[2].Split('.')[0]), int.Parse(objectData[2].Split('.')[1]), int.Parse(objectData[2].Split('.')[2]), int.Parse(objectData[2].Split('.')[3]));
+
+                if (abstractObjectType == EnumExt_NewItems.Arrow)
+                {
+                    result = new Arrow.AbstractArrow(world, null, pos, ID, int.Parse(objectData[4]));
+                    (result as Arrow.AbstractArrow).stuckInWallCycles = int.Parse(objectData[3]);
+                }
             }
             catch
             {

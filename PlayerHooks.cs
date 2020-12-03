@@ -470,6 +470,29 @@ namespace PrimitiveArmory
                 bowStats[playerNumber].lastAimDir = bowStats[playerNumber].aimDir;
             }
 
+            if (!bowStats[playerNumber].isDrawing && bowStats[playerNumber].released)
+            {
+                PhysicalObject releasedObject = GetOppositeObject(player, 0);
+
+                if (releasedObject != null && releasedObject.abstractPhysicalObject.type == EnumExt_NewItems.Arrow)
+                {
+                    Vector2 launchDir = bowStats[playerNumber].aimDir;
+                    Vector2 thrownPos = player.firstChunk.pos + launchDir * 10f + new Vector2(0f, 4f);
+                    player.grasps[1].Release();
+                    (releasedObject as Arrow).Thrown(player, thrownPos, player.mainBodyChunk.pos - launchDir * 10f, new IntVector2(player.ThrowDirection, 0), Mathf.Lerp(1f, 1.5f, player.Adrenaline), eu);
+
+                    foreach (BodyChunk bodyChunk in releasedObject.bodyChunks)
+                    {
+                        bodyChunk.pos = player.mainBodyChunk.pos + bowStats[playerNumber].lastAimDir * 10f;
+                        bodyChunk.vel = bowStats[playerNumber].lastAimDir.normalized * 40f;
+                    }
+
+                    (releasedObject as Weapon).rotation = launchDir;
+                }
+
+                bowStats[playerNumber].released = false;
+            }
+
             orig(player, eu);
 
             if (globalStats[playerNumber].backSlot == null)
@@ -634,6 +657,7 @@ namespace PrimitiveArmory
                     player.input[x].analogueDir = input[x].analogueDir * 0f;
 
                     bowStats[playerNumber].isDrawing = true;
+                    bowStats[playerNumber].released = true;
                 }
                 else
                 {
@@ -974,6 +998,16 @@ namespace PrimitiveArmory
                 return;
             }
 
+            if (thrownType == EnumExt_NewItems.Arrow)
+            {
+                orig(player, grasp, eu);
+
+                thrownObject.firstChunk.vel *= 0.25f;
+                (thrownObject as Weapon).mode = Weapon.Mode.Free;
+
+                return;
+            }
+
             orig(player, grasp, eu);
         }
 
@@ -1006,7 +1040,7 @@ namespace PrimitiveArmory
             }
 
 
-            return 0.01f;
+            return 0.1f;
         }
     }
 }
