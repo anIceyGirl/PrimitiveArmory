@@ -75,7 +75,7 @@ namespace PrimitiveArmory
                 }
             }
 
-			public AbstractArrow(World world, Arrow realizedObject, WorldCoordinate pos, EntityID ID, int arrowType)
+			public AbstractArrow(World world, Arrow realizedObject, WorldCoordinate pos, EntityID ID, int arrowType = 0)
 				: base(world, EnumExt_NewItems.Arrow, realizedObject, pos, ID)
 			{
                 this.arrowType = arrowType switch
@@ -105,7 +105,9 @@ namespace PrimitiveArmory
 
 			public override string ToString()
 			{
-				return ID.ToString() + "<oA>" + type.ToString() + "<oA>" + pos.room + "." + pos.x + "." + pos.y + "." + pos.abstractNode + "<oA>" + stuckInWallCycles.ToString() + "<oA>" + arrowType.ToString() + "<oA>" + rotationX.ToString() + "." + rotationY.ToString();
+				int intArrowType = (int)arrowType;
+
+				return ID.ToString() + "<oA>" + type.ToString() + "<oA>" + pos.room + "." + pos.x + "." + pos.y + "." + pos.abstractNode + "<oA>" + stuckInWallCycles.ToString() + "<oA>" + intArrowType.ToString() + "<oA>" + rotationX.ToString() + "." + rotationY.ToString();
 			}
 		}
 

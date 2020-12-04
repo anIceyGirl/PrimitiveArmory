@@ -61,6 +61,7 @@ namespace PrimitiveArmory
             On.RegionState.AdaptWorldToRegionState += CustomRegionLoad;
             On.ArenaGameSession.SpawnItem += ArenaSpawnItemPatch;
             On.SandboxGameSession.SpawnEntity += SpawnEntityPatch;
+            // On.Player.Update += DebugSpawn;
 
             On.RainWorld.Start += RainWorld_Start;
 
@@ -100,16 +101,12 @@ namespace PrimitiveArmory
 
         private Color ItemSymbol_ColorForItem(On.ItemSymbol.orig_ColorForItem orig, AbstractPhysicalObject.AbstractObjectType itemType, int intData)
         {
-
-
             return orig(itemType, intData);
         }
 
         private void RainWorld_Start(On.RainWorld.orig_Start orig, RainWorld self)
         {
             orig(self);
-
-            DataManager.LogAllResources();
         }
 
         public static Main instance;
@@ -310,6 +307,22 @@ namespace PrimitiveArmory
             }
             orig(self);
         }
+        private void DebugSpawn(On.Player.orig_Update orig, Player self, bool eu)
+        {
+            orig(self, eu);
+            if (Input.GetKeyDown(KeyCode.C))
+            {
+                AbstractPhysicalObject abstractObject1 = new AbstractPhysicalObject(self.room.world, EnumExt_NewItems.Bow, null, self.abstractPhysicalObject.pos, self.room.game.GetNewID());
+                AbstractPhysicalObject abstractObject2 = new Arrow.AbstractArrow(self.room.world, null, self.abstractPhysicalObject.pos, self.room.game.GetNewID(), 0);
+                AbstractPhysicalObject abstractObject3 = new Arrow.AbstractArrow(self.room.world, null, self.abstractPhysicalObject.pos, self.room.game.GetNewID(), 0);
+                self.room.abstractRoom.AddEntity(abstractObject1);
+                self.room.abstractRoom.AddEntity(abstractObject2);
+                self.room.abstractRoom.AddEntity(abstractObject3);
+                abstractObject1.RealizeInRoom();
+                abstractObject2.RealizeInRoom();
+                abstractObject3.RealizeInRoom();
+            }
+        }
 
         private static AbstractPhysicalObject LoadCustomItem(World world, string objString)
         {
@@ -324,7 +337,7 @@ namespace PrimitiveArmory
 
                 if (abstractObjectType == EnumExt_NewItems.Arrow)
                 {
-                    Vector2 rotation = new Vector2(int.Parse(objectData[5].Split('.')[0]), int.Parse(objectData[5].Split('.')[1]));
+                    Vector2 rotation = new Vector2(float.Parse(objectData[5].Split('.')[0]), float.Parse(objectData[5].Split('.')[1]));
                     Arrow.AbstractArrow abstractArrow = new Arrow.AbstractArrow(world, null, pos, ID, int.Parse(objectData[4]));
                     abstractArrow.rotation = rotation;
                     abstractArrow.stuckInWallCycles = int.Parse(objectData[3]);
