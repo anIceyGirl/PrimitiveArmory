@@ -52,6 +52,7 @@ namespace PrimitiveArmory
             On.MultiplayerUnlocks.SymbolDataForSandboxUnlock += SandboxIconPatch;
             On.ItemSymbol.SpriteNameForItem += SpriteNameForItemPatch;
             On.ItemSymbol.ColorForItem += ItemSymbol_ColorForItem;
+            On.ItemSymbol.SymbolDataFromItem += ItemSymbol_SymbolDataFromItem;
 
             Debug.Log("Hooking Savestate (we'll probably crash here if we're running more than two patches without BepinEx)");
             On.SaveState.AbstractPhysicalObjectFromString += AbstractFromStringPatch;
@@ -60,7 +61,6 @@ namespace PrimitiveArmory
             On.RegionState.AdaptWorldToRegionState += CustomRegionLoad;
             On.ArenaGameSession.SpawnItem += ArenaSpawnItemPatch;
             On.SandboxGameSession.SpawnEntity += SpawnEntityPatch;
-            On.ItemSymbol.SymbolDataFromItem += ItemSymbol_SymbolDataFromItem;
 
             On.RainWorld.Start += RainWorld_Start;
 
