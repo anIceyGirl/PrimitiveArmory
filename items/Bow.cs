@@ -72,6 +72,7 @@ namespace PrimitiveArmory
                     break;
             }
         }
+
         public Vector2 StringAttachPos(float timeStacker)
         {
             return Vector2.Lerp(base.firstChunk.lastPos, base.firstChunk.pos, timeStacker) + (Vector2)Vector3.Slerp(lastRotation, rotation, timeStacker) * 15f;
