@@ -70,7 +70,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CreatureHooks.cs" />
-    <Compile Include="enum\EnumExt_Animation.cs" />
+    <Compile Include="enum\EnumExt_Sounds.cs" />
     <Compile Include="items\Arrow.cs" />
     <Compile Include="items\Bow.cs" />
     <Compile Include="items\ItemSpawner.cs" />
@@ -96,11 +96,24 @@
     <EmbeddedResource Include="resources\objectAtlas.txt" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="resources\BowDraw.wav" />
-    <EmbeddedResource Include="resources\BowFire.wav" />
-    <EmbeddedResource Include="resources\BowFire_Dry.wav" />
+    <EmbeddedResource Include="resources\Sounds.txt" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="resources\Bottle_Slosh_1.wav" />
+    <EmbeddedResource Include="resources\Bottle_Slosh_2.wav" />
+    <EmbeddedResource Include="resources\Bottle_Slosh_3.wav" />
+    <EmbeddedResource Include="resources\Bottle_Slosh_4.wav" />
+    <EmbeddedResource Include="resources\Bottle_Smash_1.wav" />
+    <EmbeddedResource Include="resources\Bottle_Smash_2.wav" />
+    <EmbeddedResource Include="resources\Bottle_Smash_3.wav" />
+    <EmbeddedResource Include="resources\Bottle_Smash_4.wav" />
+    <EmbeddedResource Include="resources\Bow_Draw.wav" />
+    <EmbeddedResource Include="resources\Bow_Fire.wav" />
+    <EmbeddedResource Include="resources\Bow_Fire_Dry.wav" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="resources\Slugcat_Bow_PickUp.wav" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy /Y "$(TargetPath)" "D:\ProgramFiles\SteamLibrary\steamapps\common\Rain World\Mods\$(TargetName).dll"

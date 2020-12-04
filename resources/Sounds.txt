@@ -1,0 +1,10 @@
+// Bows
+Slugcat_Bow_Pickup : Slugcat_Bow_Pickup/vol=0.3
+
+Weapon_Bow_Draw : Bow_Draw/vol=0.2
+Weapon_Bow_Fire : Bow_Fire/vol=0.3
+Weapon_Bow_FireDry : Bow_Fire_Dry/vol=0.25
+
+// Bottles
+Bottle_Slosh : Bottle_Slosh_1/vol=0.25, Bottle_Slosh_2/vol=0.25, Bottle_Slosh_3/vol=0.25, Bottle_Slosh_4/vol=0.25,
+Bottle_Smash : Bottle_Smash_1/vol=0.35, Bottle_Smash_2/vol=0.35, Bottle_Smash_3/vol=0.35, Bottle_Smash_4/vol=0.35,
