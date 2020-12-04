@@ -53,13 +53,13 @@ namespace PrimitiveArmory
             On.ItemSymbol.SpriteNameForItem += SpriteNameForItemPatch;
             On.ItemSymbol.ColorForItem += ItemSymbol_ColorForItem;
 
-            Debug.Log("Hooking Savestate (we'll probably crash here if we're running more than two patches without BepinEx)");
-            On.SaveState.AbstractPhysicalObjectFromString += AbstractFromStringPatch;
-            Debug.Log("We haven't crashed yet? Sick.");
+            // Debug.Log("Hooking Savestate (we'll probably crash here if we're running more than two patches without BepinEx)");
+            // On.SaveState.AbstractPhysicalObjectFromString += AbstractFromStringPatch;
+            // Debug.Log("We haven't crashed yet? Sick.");
 
             On.RegionState.AdaptWorldToRegionState += CustomRegionLoad;
             On.ArenaGameSession.SpawnItem += ArenaSpawnItemPatch;
-            On.SandboxGameSession.SpawnEntity += SandboxGameSession_SpawnEntity;
+            On.SandboxGameSession.SpawnEntity += SpawnEntityPatch;
 
             On.RainWorld.Start += RainWorld_Start;
 
@@ -200,7 +200,7 @@ namespace PrimitiveArmory
             orig(self, room, placedObj);
         }
 
-        private void SandboxGameSession_SpawnEntity(On.SandboxGameSession.orig_SpawnEntity orig, SandboxGameSession gameSession, ArenaBehaviors.SandboxEditor.PlacedIconData placedIconData)
+        private void SpawnEntityPatch(On.SandboxGameSession.orig_SpawnEntity orig, SandboxGameSession gameSession, ArenaBehaviors.SandboxEditor.PlacedIconData placedIconData)
         {
             IconSymbol.IconSymbolData data = placedIconData.data;
             WorldCoordinate pos = new WorldCoordinate(0, -1, -1, -1);
@@ -248,7 +248,9 @@ namespace PrimitiveArmory
 
             if (abstractObjectType == EnumExt_NewItems.Arrow)
             {
+                Vector2 rotation = new Vector2(int.Parse(objectData[5].Split('.')[0]), int.Parse(objectData[5].Split('.')[1]));
                 Arrow.AbstractArrow abstractArrow = new Arrow.AbstractArrow(world, null, pos, ID, int.Parse(objectData[4]));
+                abstractArrow.rotation = rotation;
                 abstractArrow.stuckInWallCycles = int.Parse(objectData[3]);
                 return abstractArrow;
             }
@@ -310,7 +312,9 @@ namespace PrimitiveArmory
 
                 if (abstractObjectType == EnumExt_NewItems.Arrow)
                 {
+                    Vector2 rotation = new Vector2(int.Parse(objectData[5].Split('.')[0]), int.Parse(objectData[5].Split('.')[1]));
                     Arrow.AbstractArrow abstractArrow = new Arrow.AbstractArrow(world, null, pos, ID, int.Parse(objectData[4]));
+                    abstractArrow.rotation = rotation;
                     abstractArrow.stuckInWallCycles = int.Parse(objectData[3]);
                     return abstractArrow;
                 }

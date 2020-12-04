@@ -58,6 +58,23 @@ namespace PrimitiveArmory
 
 			public bool stuckInWall => stuckInWallCycles != 0;
 
+			public float rotationX = 0;
+
+			public float rotationY = 0;
+
+			public Vector2 rotation
+            {
+				get
+                {
+					return new Vector2(rotationX, rotationY);
+                }
+				set
+                {
+					rotationX = value.x;
+					rotationY = value.y;
+                }
+            }
+
 			public AbstractArrow(World world, Arrow realizedObject, WorldCoordinate pos, EntityID ID, int arrowType)
 				: base(world, EnumExt_NewItems.Arrow, realizedObject, pos, ID)
 			{
@@ -88,7 +105,7 @@ namespace PrimitiveArmory
 
 			public override string ToString()
 			{
-				return ID.ToString() + "<oA>" + type.ToString() + "<oA>" + pos.room + "." + pos.x + "." + pos.y + "." + pos.abstractNode + "<oA>" + stuckInWallCycles.ToString() + "<oA>" + arrowType.ToString();
+				return ID.ToString() + "<oA>" + type.ToString() + "<oA>" + pos.room + "." + pos.x + "." + pos.y + "." + pos.abstractNode + "<oA>" + stuckInWallCycles.ToString() + "<oA>" + arrowType.ToString() + "<oA>" + rotationX.ToString() + "." + rotationY.ToString();
 			}
 		}
 
@@ -225,8 +242,8 @@ namespace PrimitiveArmory
 						{
 							stuckInWall = room.MiddleOfTile(base.firstChunk.pos);
 							vibrate = 10;
-							ChangeMode(Mode.StuckInWall);
 							rotation = lastRotation;
+							ChangeMode(Mode.StuckInWall);
 							room.PlaySound(SoundID.Spear_Stick_In_Wall, base.firstChunk);
 							base.firstChunk.collideWithTerrain = false;
 						}
@@ -341,6 +358,11 @@ namespace PrimitiveArmory
 				arrowDamageBonus = 1f;
 			}
 
+			if (mode == Mode.Thrown && newMode == Mode.StuckInWall)
+			{
+				abstractArrow.rotation = rotation;
+			}
+
 			if (newMode == Mode.StuckInWall)
 			{
 				if (abstractArrow.stuckInWallCycles == 0)
@@ -351,7 +373,6 @@ namespace PrimitiveArmory
 				{
 					if (stuckInWall != null && (abstractArrow.stuckInWallCycles >= 0 && !room.GetTile(stuckInWall.Value + new Vector2(20f * (float)i, 0f)).Solid) || (abstractArrow.stuckInWallCycles < 0 && !room.GetTile(stuckInWall.Value + new Vector2(0f, 20f * (float)i)).Solid))
 					{
-						setRotation = ((abstractArrow.stuckInWallCycles < 0) ? new Vector2(0f, -i) : new Vector2(-i, 0f));
 						/*
 						if (!(this is ExplosiveSpear))
 						{
