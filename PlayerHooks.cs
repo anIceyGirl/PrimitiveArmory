@@ -425,6 +425,7 @@ namespace PrimitiveArmory
                 drawTime = 0.0f,
                 aimDir = new Vector2(0, 0),
                 lastAimDir = bowStats[playerNumber].aimDir,
+                controlLocked = 0,
                 isDrawing = false,
                 released = false
             };
@@ -474,11 +475,10 @@ namespace PrimitiveArmory
             if (!bowStats[playerNumber].isDrawing && bowStats[playerNumber].released)
             {
                 PhysicalObject releasedObject = GetOppositeObject(player, 0);
-                bowStats[playerNumber].controlLocked = 10;
 
                 if (releasedObject != null && releasedObject.abstractPhysicalObject.type == EnumExt_NewItems.Arrow)
                 {
-
+                    bowStats[playerNumber].controlLocked = 10;
                     Vector2 launchDir = bowStats[playerNumber].aimDir;
                     Vector2 thrownPos = player.firstChunk.pos + launchDir * 10f + new Vector2(0f, 4f);
                     player.grasps[1].Release();
@@ -1038,17 +1038,19 @@ namespace PrimitiveArmory
             return new Vector2(0f, 0f);
         }
 
-        public static float ReleaseStrengthOnFire(Player player)
+        public static float FireStrength(Player player)
         {
             int playerNumber = player.playerState.playerNumber;
+            float drawProgress = bowStats[playerNumber].drawTime / maxDrawTime;
 
-            if (bowStats[playerNumber].drawTime / maxDrawTime > 0.1f)
+            float x = 0.1f;
+
+            if (drawProgress > 0.1f)
             {
-
+                
             }
 
-
-            return 0.1f;
+            return x;
         }
     }
 }

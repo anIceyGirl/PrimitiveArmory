@@ -53,13 +53,14 @@ namespace PrimitiveArmory
             On.ItemSymbol.SpriteNameForItem += SpriteNameForItemPatch;
             On.ItemSymbol.ColorForItem += ItemSymbol_ColorForItem;
 
-            // Debug.Log("Hooking Savestate (we'll probably crash here if we're running more than two patches without BepinEx)");
-            // On.SaveState.AbstractPhysicalObjectFromString += AbstractFromStringPatch;
-            // Debug.Log("We haven't crashed yet? Sick.");
+            Debug.Log("Hooking Savestate (we'll probably crash here if we're running more than two patches without BepinEx)");
+            On.SaveState.AbstractPhysicalObjectFromString += AbstractFromStringPatch;
+            Debug.Log("We haven't crashed yet? Sick.");
 
             On.RegionState.AdaptWorldToRegionState += CustomRegionLoad;
             On.ArenaGameSession.SpawnItem += ArenaSpawnItemPatch;
             On.SandboxGameSession.SpawnEntity += SpawnEntityPatch;
+            On.ItemSymbol.SymbolDataFromItem += ItemSymbol_SymbolDataFromItem;
 
             On.RainWorld.Start += RainWorld_Start;
 
@@ -206,7 +207,7 @@ namespace PrimitiveArmory
             WorldCoordinate pos = new WorldCoordinate(0, -1, -1, -1);
             pos.x = Mathf.RoundToInt(placedIconData.pos.x / 20f);
             pos.y = Mathf.RoundToInt(placedIconData.pos.y / 20f);
-            EntityID entityID = ((!gameSession.GameTypeSetup.saveCreatures) ? gameSession.game.GetNewID() : placedIconData.ID);
+            EntityID entityID = (!gameSession.GameTypeSetup.saveCreatures) ? gameSession.game.GetNewID() : placedIconData.ID;
 
             if (data.itemType == EnumExt_NewItems.Arrow)
             {
@@ -238,33 +239,36 @@ namespace PrimitiveArmory
             return orig(unlockID);
         }
 
+        private IconSymbol.IconSymbolData? ItemSymbol_SymbolDataFromItem(On.ItemSymbol.orig_SymbolDataFromItem orig, AbstractPhysicalObject item)
+        {
+            AbstractPhysicalObject.AbstractObjectType type = item.type;
+
+            if (type == EnumExt_NewItems.Arrow)
+            {
+                if ((item as Arrow.AbstractArrow).stuckInWall)
+                {
+                    return null;
+                }
+                return new IconSymbol.IconSymbolData?(new IconSymbol.IconSymbolData(CreatureTemplate.Type.StandardGroundCreature, type, (int)(item as Arrow.AbstractArrow).arrowType));
+            }
+
+            return orig(item);
+        }
+
         private AbstractPhysicalObject AbstractFromStringPatch(On.SaveState.orig_AbstractPhysicalObjectFromString orig, World world, string objString)
         {
             Debug.Log(objString);
-            try
+
+            AbstractPhysicalObject result = LoadCustomItem(world, objString);
+
+            if (result != null)
             {
-                string[] objectData = Regex.Split(objString, "<oA>");
-                EntityID ID = EntityID.FromString(objectData[0]);
-                AbstractPhysicalObject.AbstractObjectType abstractObjectType = Custom.ParseEnum<AbstractPhysicalObject.AbstractObjectType>(objectData[1]);
-                WorldCoordinate pos = new WorldCoordinate(int.Parse(objectData[2].Split('.')[0]), int.Parse(objectData[2].Split('.')[1]), int.Parse(objectData[2].Split('.')[2]), int.Parse(objectData[2].Split('.')[3]));
-
-                if (abstractObjectType == EnumExt_NewItems.Arrow)
-                {
-                    Vector2 rotation = new Vector2(int.Parse(objectData[5].Split('.')[0]), int.Parse(objectData[5].Split('.')[1]));
-                    Arrow.AbstractArrow abstractArrow = new Arrow.AbstractArrow(world, null, pos, ID, int.Parse(objectData[4]));
-                    abstractArrow.rotation = rotation;
-                    abstractArrow.stuckInWallCycles = int.Parse(objectData[3]);
-                    return abstractArrow;
-                }
+                return result;
             }
-            catch
+            else
             {
-                return null;
+                return orig(world, objString);
             }
-
-            AbstractPhysicalObject result = orig(world, objString);
-
-            return result;
         }
 
         public void StartupHooks(On.RainWorld.orig_Update orig, RainWorld self)
