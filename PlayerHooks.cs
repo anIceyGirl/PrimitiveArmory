@@ -29,6 +29,7 @@ namespace PrimitiveArmory
         {
             public float drawSpeed;
             public float drawTime;
+            public int controlLocked;
             public bool isDrawing;
             public bool released;
             public Vector2 aimDir;
@@ -473,9 +474,11 @@ namespace PrimitiveArmory
             if (!bowStats[playerNumber].isDrawing && bowStats[playerNumber].released)
             {
                 PhysicalObject releasedObject = GetOppositeObject(player, 0);
+                bowStats[playerNumber].controlLocked = 10;
 
                 if (releasedObject != null && releasedObject.abstractPhysicalObject.type == EnumExt_NewItems.Arrow)
                 {
+
                     Vector2 launchDir = bowStats[playerNumber].aimDir;
                     Vector2 thrownPos = player.firstChunk.pos + launchDir * 10f + new Vector2(0f, 4f);
                     player.grasps[1].Release();
@@ -530,6 +533,11 @@ namespace PrimitiveArmory
             if (clubStats[playerNumber].swingTimer > 0)
             {
                 clubStats[playerNumber].swingTimer--;
+            }
+
+            if (bowStats[playerNumber].controlLocked > 0)
+            {
+                bowStats[playerNumber].controlLocked--;
             }
 
             if (clubStats[playerNumber].swingDelay > 0)
@@ -647,7 +655,7 @@ namespace PrimitiveArmory
                     objectChecked = null;
                 }
 
-                if (player.input[playerNumber].thrw && objectChecked != null && objectChecked.abstractPhysicalObject.type == EnumExt_NewItems.Bow)
+                if ((player.input[playerNumber].thrw && objectChecked != null && objectChecked.abstractPhysicalObject.type == EnumExt_NewItems.Bow) || bowStats[playerNumber].controlLocked > 0)
                 {
                     playerInput[playerNumber] = player.input[0];
                     player.input[0].x = 0;

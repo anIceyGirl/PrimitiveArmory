@@ -241,18 +241,25 @@ namespace PrimitiveArmory
         private AbstractPhysicalObject AbstractFromStringPatch(On.SaveState.orig_AbstractPhysicalObjectFromString orig, World world, string objString)
         {
             Debug.Log(objString);
-            string[] objectData = Regex.Split(objString, "<oA>");
-            EntityID ID = EntityID.FromString(objectData[0]);
-            AbstractPhysicalObject.AbstractObjectType abstractObjectType = Custom.ParseEnum<AbstractPhysicalObject.AbstractObjectType>(objectData[1]);
-            WorldCoordinate pos = new WorldCoordinate(int.Parse(objectData[2].Split('.')[0]), int.Parse(objectData[2].Split('.')[1]), int.Parse(objectData[2].Split('.')[2]), int.Parse(objectData[2].Split('.')[3]));
-
-            if (abstractObjectType == EnumExt_NewItems.Arrow)
+            try
             {
-                Vector2 rotation = new Vector2(int.Parse(objectData[5].Split('.')[0]), int.Parse(objectData[5].Split('.')[1]));
-                Arrow.AbstractArrow abstractArrow = new Arrow.AbstractArrow(world, null, pos, ID, int.Parse(objectData[4]));
-                abstractArrow.rotation = rotation;
-                abstractArrow.stuckInWallCycles = int.Parse(objectData[3]);
-                return abstractArrow;
+                string[] objectData = Regex.Split(objString, "<oA>");
+                EntityID ID = EntityID.FromString(objectData[0]);
+                AbstractPhysicalObject.AbstractObjectType abstractObjectType = Custom.ParseEnum<AbstractPhysicalObject.AbstractObjectType>(objectData[1]);
+                WorldCoordinate pos = new WorldCoordinate(int.Parse(objectData[2].Split('.')[0]), int.Parse(objectData[2].Split('.')[1]), int.Parse(objectData[2].Split('.')[2]), int.Parse(objectData[2].Split('.')[3]));
+
+                if (abstractObjectType == EnumExt_NewItems.Arrow)
+                {
+                    Vector2 rotation = new Vector2(int.Parse(objectData[5].Split('.')[0]), int.Parse(objectData[5].Split('.')[1]));
+                    Arrow.AbstractArrow abstractArrow = new Arrow.AbstractArrow(world, null, pos, ID, int.Parse(objectData[4]));
+                    abstractArrow.rotation = rotation;
+                    abstractArrow.stuckInWallCycles = int.Parse(objectData[3]);
+                    return abstractArrow;
+                }
+            }
+            catch
+            {
+                return null;
             }
 
             AbstractPhysicalObject result = orig(world, objString);

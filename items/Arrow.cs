@@ -333,6 +333,7 @@ namespace PrimitiveArmory
 			if (abstractArrow.stuckInWall)
 			{
 				stuckInWall = placeRoom.MiddleOfTile(abstractPhysicalObject.pos.Tile);
+				rotation = abstractArrow.rotation;
 				ChangeMode(Mode.StuckInWall);
 			}
 		}
@@ -356,11 +357,6 @@ namespace PrimitiveArmory
 			if (newMode != Mode.Thrown)
 			{
 				arrowDamageBonus = 1f;
-			}
-
-			if (mode == Mode.Thrown && newMode == Mode.StuckInWall)
-			{
-				abstractArrow.rotation = rotation;
 			}
 
 			if (newMode == Mode.StuckInWall)
