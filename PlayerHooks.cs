@@ -478,19 +478,20 @@ namespace PrimitiveArmory
 
                 if (releasedObject != null && releasedObject.abstractPhysicalObject.type == EnumExt_NewItems.Arrow)
                 {
+                    Arrow arrow = releasedObject as Arrow;
                     bowStats[playerNumber].controlLocked = 10;
                     Vector2 launchDir = bowStats[playerNumber].aimDir;
                     Vector2 thrownPos = player.firstChunk.pos + launchDir * 10f + new Vector2(0f, 4f);
                     player.grasps[1].Release();
-                    (releasedObject as Arrow).Thrown(player, thrownPos, player.mainBodyChunk.pos - launchDir * 10f, new IntVector2(player.ThrowDirection, 0), Mathf.Lerp(1f, 1.5f, player.Adrenaline), eu);
+                    arrow.Thrown(player, thrownPos, player.mainBodyChunk.pos - launchDir * 10f, new IntVector2(player.ThrowDirection, 0), Mathf.Lerp(1f, 1.5f, player.Adrenaline), eu);
 
-                    foreach (BodyChunk bodyChunk in releasedObject.bodyChunks)
+                    foreach (BodyChunk bodyChunk in arrow.bodyChunks)
                     {
                         bodyChunk.pos = player.mainBodyChunk.pos + bowStats[playerNumber].lastAimDir * 10f;
                         bodyChunk.vel = bowStats[playerNumber].lastAimDir.normalized * 40f;
                     }
 
-                    (releasedObject as Weapon).rotation = launchDir;
+                    arrow.rotation = launchDir;
                 }
 
                 bowStats[playerNumber].released = false;

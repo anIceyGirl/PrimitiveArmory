@@ -96,23 +96,23 @@
     <EmbeddedResource Include="resources\objectAtlas.txt" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="resources\Sounds.txt" />
+    <EmbeddedResource Include="resources\sfx\Sounds.txt" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="resources\Bottle_Slosh_1.wav" />
-    <EmbeddedResource Include="resources\Bottle_Slosh_2.wav" />
-    <EmbeddedResource Include="resources\Bottle_Slosh_3.wav" />
-    <EmbeddedResource Include="resources\Bottle_Slosh_4.wav" />
-    <EmbeddedResource Include="resources\Bottle_Smash_1.wav" />
-    <EmbeddedResource Include="resources\Bottle_Smash_2.wav" />
-    <EmbeddedResource Include="resources\Bottle_Smash_3.wav" />
-    <EmbeddedResource Include="resources\Bottle_Smash_4.wav" />
-    <EmbeddedResource Include="resources\Bow_Draw.wav" />
-    <EmbeddedResource Include="resources\Bow_Fire.wav" />
-    <EmbeddedResource Include="resources\Bow_Fire_Dry.wav" />
+    <EmbeddedResource Include="resources\sfx\Bottle_Slosh_1.wav" />
+    <EmbeddedResource Include="resources\sfx\Bottle_Slosh_2.wav" />
+    <EmbeddedResource Include="resources\sfx\Bottle_Slosh_3.wav" />
+    <EmbeddedResource Include="resources\sfx\Bottle_Slosh_4.wav" />
+    <EmbeddedResource Include="resources\sfx\Bottle_Smash_1.wav" />
+    <EmbeddedResource Include="resources\sfx\Bottle_Smash_2.wav" />
+    <EmbeddedResource Include="resources\sfx\Bottle_Smash_3.wav" />
+    <EmbeddedResource Include="resources\sfx\Bottle_Smash_4.wav" />
+    <EmbeddedResource Include="resources\sfx\Bow_Draw.wav" />
+    <EmbeddedResource Include="resources\sfx\Bow_Fire.wav" />
+    <EmbeddedResource Include="resources\sfx\Bow_Fire_Dry.wav" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="resources\Slugcat_Bow_PickUp.wav" />
+    <EmbeddedResource Include="resources\sfx\Slugcat_Bow_PickUp.wav" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

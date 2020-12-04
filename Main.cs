@@ -144,6 +144,7 @@ namespace PrimitiveArmory
             }
 
             orig(self);
+            return;
 
             StuckRealize:
             for (int i = 0; i < self.stuckObjects.Count; i++)
@@ -193,8 +194,8 @@ namespace PrimitiveArmory
 
             if (abstractObjectType == EnumExt_NewItems.Arrow)
             {
-                Arrow.AbstractArrow item4 = new Arrow.AbstractArrow(room.world, null, room.GetWorldCoordinate(placedObj.pos), self.game.GetNewID(), arrowType);
-                room.abstractRoom.entities.Add(item4);
+                Arrow.AbstractArrow item = new Arrow.AbstractArrow(room.world, null, room.GetWorldCoordinate(placedObj.pos), self.game.GetNewID(), arrowType);
+                room.abstractRoom.entities.Add(item);
                 return;
             }
 
