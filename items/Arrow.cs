@@ -70,6 +70,8 @@ namespace PrimitiveArmory
 					4 => ArrowType.Flash,
                     _ => ArrowType.Normal,
                 };
+
+				this.type = EnumExt_NewItems.Arrow;
 			}
 
 			public void StuckInWallTick(int ticks)
@@ -338,7 +340,7 @@ namespace PrimitiveArmory
 			{
 				arrowDamageBonus = 1f;
 			}
-			
+
 			if (newMode == Mode.StuckInWall)
 			{
 				if (abstractArrow.stuckInWallCycles == 0)

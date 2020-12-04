@@ -58,6 +58,8 @@ namespace PrimitiveArmory
             Debug.Log("We haven't crashed yet? Sick.");
 
             On.RegionState.AdaptWorldToRegionState += CustomRegionLoad;
+            On.ArenaGameSession.SpawnItem += ArenaSpawnItemPatch;
+            On.SandboxGameSession.SpawnEntity += SandboxGameSession_SpawnEntity;
 
             On.RainWorld.Start += RainWorld_Start;
 
@@ -158,6 +160,64 @@ namespace PrimitiveArmory
             return;
         }
 
+        private void ArenaSpawnItemPatch(On.ArenaGameSession.orig_SpawnItem orig, ArenaGameSession self, Room room, PlacedObject placedObj)
+        {
+            AbstractPhysicalObject.AbstractObjectType abstractObjectType = AbstractPhysicalObject.AbstractObjectType.Rock;
+            int arrowType = 0;
+            if ((placedObj.data as PlacedObject.MultiplayerItemData).type == EnumExt_NewItems.ArrowData)
+            {
+                abstractObjectType = EnumExt_NewItems.Arrow;
+                arrowType = 0;
+            }
+            if ((placedObj.data as PlacedObject.MultiplayerItemData).type == EnumExt_NewItems.FireArrowData)
+            {
+                abstractObjectType = EnumExt_NewItems.Arrow;
+                arrowType = 1;
+            }
+            if ((placedObj.data as PlacedObject.MultiplayerItemData).type == EnumExt_NewItems.ExplosiveArrowData)
+            {
+                abstractObjectType = EnumExt_NewItems.Arrow;
+                arrowType = 2;
+            }
+            if ((placedObj.data as PlacedObject.MultiplayerItemData).type == EnumExt_NewItems.ElectricArrowData)
+            {
+                abstractObjectType = EnumExt_NewItems.Arrow;
+                arrowType = 3;
+            }
+            if ((placedObj.data as PlacedObject.MultiplayerItemData).type == EnumExt_NewItems.FlashArrowData)
+            {
+                abstractObjectType = EnumExt_NewItems.Arrow;
+                arrowType = 4;
+            }
+
+            if (abstractObjectType == EnumExt_NewItems.Arrow)
+            {
+                Arrow.AbstractArrow item4 = new Arrow.AbstractArrow(room.world, null, room.GetWorldCoordinate(placedObj.pos), self.game.GetNewID(), arrowType);
+                room.abstractRoom.entities.Add(item4);
+                return;
+            }
+
+            orig(self, room, placedObj);
+        }
+
+        private void SandboxGameSession_SpawnEntity(On.SandboxGameSession.orig_SpawnEntity orig, SandboxGameSession gameSession, ArenaBehaviors.SandboxEditor.PlacedIconData placedIconData)
+        {
+            IconSymbol.IconSymbolData data = placedIconData.data;
+            WorldCoordinate pos = new WorldCoordinate(0, -1, -1, -1);
+            pos.x = Mathf.RoundToInt(placedIconData.pos.x / 20f);
+            pos.y = Mathf.RoundToInt(placedIconData.pos.y / 20f);
+            EntityID entityID = ((!gameSession.GameTypeSetup.saveCreatures) ? gameSession.game.GetNewID() : placedIconData.ID);
+
+            if (data.itemType == EnumExt_NewItems.Arrow)
+            {
+                gameSession.game.world.GetAbstractRoom(0).AddEntity(new Arrow.AbstractArrow(gameSession.game.world, null, pos, entityID, data.intData));
+
+                return;
+            }
+
+            orig(gameSession, placedIconData);
+        }
+
         private static IconSymbol.IconSymbolData SandboxIconPatch(On.MultiplayerUnlocks.orig_SymbolDataForSandboxUnlock orig, MultiplayerUnlocks.SandboxUnlockID unlockID)
         {
             if (unlockID == EnumExt_NewItems.ClubUnlock)
@@ -180,6 +240,7 @@ namespace PrimitiveArmory
 
         private AbstractPhysicalObject AbstractFromStringPatch(On.SaveState.orig_AbstractPhysicalObjectFromString orig, World world, string objString)
         {
+            Debug.Log(objString);
             string[] objectData = Regex.Split(objString, "<oA>");
             EntityID ID = EntityID.FromString(objectData[0]);
             AbstractPhysicalObject.AbstractObjectType abstractObjectType = Custom.ParseEnum<AbstractPhysicalObject.AbstractObjectType>(objectData[1]);
@@ -221,6 +282,7 @@ namespace PrimitiveArmory
             for (int i = 0; i < self.savedObjects.Count; i++)
             {
                 AbstractPhysicalObject abstractPhysicalObject = LoadCustomItem(self.world, self.savedObjects[i]);
+                
                 if (abstractPhysicalObject != null)
                 {
                     self.savedObjects[i] = null;
@@ -238,6 +300,7 @@ namespace PrimitiveArmory
         private static AbstractPhysicalObject LoadCustomItem(World world, string objString)
         {
             AbstractPhysicalObject result = null;
+            Debug.Log(objString);
             try
             {
                 string[] objectData = Regex.Split(objString, "<oA>");
@@ -247,8 +310,9 @@ namespace PrimitiveArmory
 
                 if (abstractObjectType == EnumExt_NewItems.Arrow)
                 {
-                    result = new Arrow.AbstractArrow(world, null, pos, ID, int.Parse(objectData[4]));
-                    (result as Arrow.AbstractArrow).stuckInWallCycles = int.Parse(objectData[3]);
+                    Arrow.AbstractArrow abstractArrow = new Arrow.AbstractArrow(world, null, pos, ID, int.Parse(objectData[4]));
+                    abstractArrow.stuckInWallCycles = int.Parse(objectData[3]);
+                    return abstractArrow;
                 }
             }
             catch

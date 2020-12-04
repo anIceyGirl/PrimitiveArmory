@@ -38,7 +38,8 @@ namespace PrimitiveArmory
                     Debug.Log("Setting tab text...");
                     string changelog = "v0.0.2: \nPre-release";
                     string credits = "Bee & Garrakax, for putting up with my cruddy code"
-                        + "\nSedric AKA the Budgie Gamer, for the idea of the bow & arrow";
+                        + "\nSedric AKA the Budgie Gamer, for the idea of the bow & arrow"
+                        + "\nSlime_Cubed, for helping me out a bunch with getting arrows to work properly";
                         // + "\nAnonymous aka \"That guy who suggested mosquitos\", for the concept of the water balloon mosquito";
                     string nothingHereYet = "There's nothing here yet...\n:(";
                     string knownIssues = "Known issues:"

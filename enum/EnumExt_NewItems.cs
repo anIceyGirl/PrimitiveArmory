@@ -26,6 +26,7 @@
         public static SLOracleBehaviorHasMark.MiscItemType FireArrowDialogue;
         public static SLOracleBehaviorHasMark.MiscItemType ExplosiveArrowDialogue;
         public static SLOracleBehaviorHasMark.MiscItemType ElectricArrowDialogue;
+        public static SLOracleBehaviorHasMark.MiscItemType FlashArrowDialogue;
 
         public static SLOracleBehaviorHasMark.MiscItemType LizardSkullDialogue;
         public static SLOracleBehaviorHasMark.MiscItemType ShieldDialogue;
@@ -43,9 +44,18 @@
         public static MultiplayerUnlocks.SandboxUnlockID FireArrowUnlock;
         public static MultiplayerUnlocks.SandboxUnlockID ExplosiveArrowUnlock;
         public static MultiplayerUnlocks.SandboxUnlockID ElectricArrowUnlock;
+        public static MultiplayerUnlocks.SandboxUnlockID FlashArrowUnlock;
 
         public static MultiplayerUnlocks.SandboxUnlockID LizardSkullUnlock;
         public static MultiplayerUnlocks.SandboxUnlockID ShieldUnlock;
+        #endregion
+
+        #region MultiplayerItemData
+        public static PlacedObject.MultiplayerItemData.Type ArrowData;
+        public static PlacedObject.MultiplayerItemData.Type FireArrowData;
+        public static PlacedObject.MultiplayerItemData.Type ExplosiveArrowData;
+        public static PlacedObject.MultiplayerItemData.Type ElectricArrowData;
+        public static PlacedObject.MultiplayerItemData.Type FlashArrowData;
         #endregion
     }
 }
