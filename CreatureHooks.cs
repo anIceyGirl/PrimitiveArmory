@@ -7,8 +7,6 @@ using UnityEngine;
 
 namespace PrimitiveArmory
 {
-
-
     public class CreatureHooks
     {
         public static Dictionary<Creature, CreatureState> critterState;
