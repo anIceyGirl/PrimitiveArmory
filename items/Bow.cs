@@ -73,11 +73,6 @@ namespace PrimitiveArmory
             }
         }
 
-        public Vector2 StringAttachPos(float timeStacker)
-        {
-            return Vector2.Lerp(base.firstChunk.lastPos, base.firstChunk.pos, timeStacker) + (Vector2)Vector3.Slerp(lastRotation, rotation, timeStacker) * 15f;
-        }
-
         public override void SetRandomSpin()
         {
             if (room != null)
@@ -85,6 +80,12 @@ namespace PrimitiveArmory
                 rotationSpeed = ((!(Random.value < 0.5f)) ? 1f : (-1f)) * Mathf.Lerp(50f, 150f, Random.value) * Mathf.Lerp(0.05f, 1f, room.gravity);
             }
             spinning = true;
+        }
+
+        public override void Grabbed(Creature.Grasp grasp)
+        {
+            base.Grabbed(grasp);
+            room.PlaySound(SoundID.Slugcat_Pick_Up_Spear, firstChunk);
         }
 
         #region drawLogic

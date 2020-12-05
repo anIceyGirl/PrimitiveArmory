@@ -488,7 +488,7 @@ namespace PrimitiveArmory
                     foreach (BodyChunk bodyChunk in arrow.bodyChunks)
                     {
                         bodyChunk.pos = player.mainBodyChunk.pos + bowStats[playerNumber].lastAimDir * 10f;
-                        bodyChunk.vel = bowStats[playerNumber].lastAimDir.normalized * 40f;
+                        bodyChunk.vel = (bowStats[playerNumber].lastAimDir.normalized) * (40f * GetFireStrength(player));
                     }
 
                     arrow.rotation = launchDir;
@@ -557,7 +557,7 @@ namespace PrimitiveArmory
             }
             else
             {
-                bowStats[playerNumber].drawTime = 0.0f;
+                bowStats[playerNumber].drawTime = Mathf.Clamp(bowStats[playerNumber].drawTime - (bowStats[playerNumber].drawSpeed * 3.0f), 0.0f, maxDrawTime);
             }
 
             if (globalStats[playerNumber].animTimer > 0)
@@ -1039,19 +1039,15 @@ namespace PrimitiveArmory
             return new Vector2(0f, 0f);
         }
 
-        public static float FireStrength(Player player)
+        public static float GetFireStrength(Player player)
         {
             int playerNumber = player.playerState.playerNumber;
-            float drawProgress = bowStats[playerNumber].drawTime / maxDrawTime;
 
-            float x = 0.1f;
+            float drawProgress = (float)(bowStats[playerNumber].drawTime / maxDrawTime);
 
-            if (drawProgress > 0.1f)
-            {
-                
-            }
+            drawProgress = Mathf.Clamp((float)Math.Round(drawProgress, 3), 0.2f, 1.0f);
 
-            return x;
+            return drawProgress;
         }
     }
 }
