@@ -99,10 +99,6 @@
     <EmbeddedResource Include="resources\sfx\Sounds.txt" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="resources\sfx\Bottle_Slosh_1.wav" />
-    <EmbeddedResource Include="resources\sfx\Bottle_Slosh_2.wav" />
-    <EmbeddedResource Include="resources\sfx\Bottle_Slosh_3.wav" />
-    <EmbeddedResource Include="resources\sfx\Bottle_Slosh_4.wav" />
     <EmbeddedResource Include="resources\sfx\Bottle_Smash_1.wav" />
     <EmbeddedResource Include="resources\sfx\Bottle_Smash_2.wav" />
     <EmbeddedResource Include="resources\sfx\Bottle_Smash_3.wav" />
@@ -113,6 +109,12 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="resources\sfx\Slugcat_Bow_PickUp.wav" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="resources\sfx\Bottle_Slosh_1.wav" />
+    <EmbeddedResource Include="resources\sfx\Bottle_Slosh_2.wav" />
+    <EmbeddedResource Include="resources\sfx\Bottle_Slosh_3.wav" />
+    <EmbeddedResource Include="resources\sfx\Bottle_Slosh_4.wav" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
