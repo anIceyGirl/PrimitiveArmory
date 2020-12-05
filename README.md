@@ -2,7 +2,7 @@
 
 Adding new items and weapons to Rain World!
 
-The primary goal of this mod is to introduce a small suite of new items to Rain World. Items like bows and arrows, clubs, basic shields... basically, anything you'd see in tribal warfare with a dash of the bio-industrial technology aspect of Rain World you all know and love.
+The primary goal of this mod is to introduce a suite of new items to Rain World. Items like bows and arrows, clubs, basic shields... basically, anything you'd see in tribal warfare with a dash of the bio-industrial technology aspect of Rain World you all know and love.
 
 ## INSTALLATION
 You will need either Partiality or Bepinex, as well as a legally acquired copy of Rain World.  
@@ -31,7 +31,11 @@ You will also need CustomAssets, EnumExtender, Config Machine, and Sandbox Unloc
 
 ## Known issues  
 If you find a bug, please let me know about it through the [issues tab.](https://github.com/Penguixia/PrimitiveArmory/issues)  
-- Launching the game with two or more patch mods installed will crash the game. This is an issue with Partiality, unfortunately, and I'm unable to do anything to fix it. Use Bepinex instead.
+- Launching the game with two or more patch mods installed _will_ crash the game. This is an issue with Partiality, unfortunately, and I'm unable to do anything to fix it. Use Bepinex instead.
+
+## Credits
+- Fyre AKA Sphinx of Black Quartz, for their assistance.
+- Slime_Cubed and Garrakx, for a bunch of help getting arrows to work properly.
 
 ## Licensing
 	MIT License
