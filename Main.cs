@@ -326,7 +326,6 @@ namespace PrimitiveArmory
 
         private static AbstractPhysicalObject LoadCustomItem(World world, string objString)
         {
-            AbstractPhysicalObject result = null;
             Debug.Log(objString);
             try
             {
@@ -346,9 +345,9 @@ namespace PrimitiveArmory
             }
             catch
             {
-                result = null;
+                return null;
             }
-            return result;
+            return null;
         }
 
         public string Translate(string text)
