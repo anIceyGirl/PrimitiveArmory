@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RWCustom;
+﻿using RWCustom;
 using UnityEngine;
 
 namespace PrimitiveArmory
@@ -36,6 +32,10 @@ namespace PrimitiveArmory
 		public float arrowDamageBonus = 1f;
 
 		public int stillCounter;
+
+		public int stillFlyingCounter;
+
+		public static int maxFlyingCount = 1200;
 
 		public AbstractArrow abstractArrow => abstractPhysicalObject as AbstractArrow;
 
@@ -134,6 +134,7 @@ namespace PrimitiveArmory
 			base.firstChunk.loudness = 7f;
 			tailPos = base.firstChunk.pos;
 			soundLoop = new ChunkDynamicSoundLoop(base.firstChunk);
+			stillFlyingCounter = maxFlyingCount;
 		}
 
         public override void Update(bool eu)
@@ -153,6 +154,7 @@ namespace PrimitiveArmory
 				soundLoop.Volume = Mathf.InverseLerp(5f, 15f, base.firstChunk.vel.magnitude);
 			}
 			soundLoop.Update();
+
 			lastPivotAtTip = pivotAtTip;
 			pivotAtTip = base.mode == Mode.Thrown || base.mode == Mode.StuckInCreature;
 			if (addPoles && room.readyForAI)
@@ -342,6 +344,15 @@ namespace PrimitiveArmory
 
 		public override void ChangeMode(Mode newMode)
 		{
+			if (mode == Mode.Thrown && newMode == Mode.Free && firstChunk.vel.magnitude > 7.5f)
+            {
+				if (stillFlyingCounter > 0)
+                {
+					stillFlyingCounter--;
+					return;
+				}
+            }
+
 			if (base.mode == Mode.StuckInCreature)
 			{
 				if (room != null)
@@ -359,6 +370,11 @@ namespace PrimitiveArmory
 			if (newMode != Mode.Thrown)
 			{
 				arrowDamageBonus = 1f;
+				base.gravity = 0.75f;
+			}
+			else
+            {
+				base.gravity = 0.65f;
 			}
 
 			if (newMode == Mode.StuckInWall)
@@ -464,6 +480,7 @@ namespace PrimitiveArmory
 				{
 					abstractPhysicalObject.world.game.GetArenaGameSession.PlayerLandSpear(thrownBy as Player, stuckInObject as Creature);
 				}
+				stillFlyingCounter = 0;
 				return true;
 			}
 			room.PlaySound(SoundID.Spear_Bounce_Off_Creauture_Shell, base.firstChunk);

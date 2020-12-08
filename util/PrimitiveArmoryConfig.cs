@@ -36,11 +36,6 @@ namespace PrimitiveArmory
                     string splash = RandomTabHeader();
 
                     Debug.Log("Setting tab text...");
-                    string changelog = "v0.0.2: \nPre-release";
-                    string credits = "Bee & Garrakax, for putting up with my cruddy code"
-                        + "\nSedric AKA the Budgie Gamer, for the idea of the bow & arrow"
-                        + "\nSlime_Cubed, for helping me out a bunch with getting arrows to work properly";
-                        // + "\nAnonymous aka \"That guy who suggested mosquitos\", for the concept of the water balloon mosquito";
                     string nothingHereYet = "There's nothing here yet...\n:(";
                     string knownIssues = "Known issues:"
                         + "\nKilling creatures with the club do not register as a kill in Arena mode.";
@@ -54,7 +49,7 @@ namespace PrimitiveArmory
                     ToggleItemsTab(this.Tabs, 0);
                     BigTextTab(this.Tabs, 1, nothingHereYet, FLabelAlignment.Center);
                     BigTextTab(this.Tabs, 2, nothingHereYet, FLabelAlignment.Center);
-                    BigTextTab(this.Tabs, 3, credits + "\n\n" + changelog);
+                    BigTextTab(this.Tabs, 3, Main.credits + "\n\n" + Main.changelog);
                     BigTextTab(this.Tabs, 4, knownIssues);
                 }
                 else

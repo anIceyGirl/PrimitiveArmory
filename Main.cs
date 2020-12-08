@@ -22,12 +22,18 @@ namespace PrimitiveArmory
         public static bool CustomResources => EnumExt && enabled && customResources;
 
         public static bool jollyCoop = false;
+        public static string changelog = "v0.0.2: \nPre-release" + 
+            "\n\n v0.1.4: \nAdded the bow, arrow, and quiver.";
+        public static string credits = "Bee & Garrakax, for putting up with my cruddy code"
+            + "\nSedric AKA the Budgie Gamer, for the idea of the bow & arrow"
+            + "\nSlime_Cubed, for helping me out a bunch with getting arrows to work properly";
+        // + "\nAnonymous aka \"That guy who suggested mosquitos\", for the concept of the water balloon mosquito";
 
         public Main()
         {
             instance = this;
             this.ModID = "Primitive Armory";
-            this.Version = "v0.1.3";
+            this.Version = "v0.1.4";
             this.author = "Icey";
         }
 
@@ -59,16 +65,17 @@ namespace PrimitiveArmory
             Debug.Log("We haven't crashed yet? Sick.");
 
             On.RegionState.AdaptWorldToRegionState += CustomRegionLoad;
-            On.ArenaGameSession.SpawnItem += ArenaSpawnItemPatch;
+            // On.ArenaGameSession.SpawnItem += ArenaSpawnItemPatch;
             On.SandboxGameSession.SpawnEntity += SpawnEntityPatch;
             // On.Player.Update += DebugSpawn;
 
             On.RainWorld.Start += RainWorld_Start;
 
             PlayerHooks.Patch();
-            DataManager.Patch();
             ItemSpawner.Patch();
             MoonHooks.Patch();
+            DataManager.Patch();
+            // AudioManager.Patch();
 
             Debug.Log("PrimitiveArmory Hooking Complete!");
         }
@@ -92,8 +99,15 @@ namespace PrimitiveArmory
                     0 => "Symbol_Arrow",
                     1 => "Symbol_FireArrow",
                     2 => "Symbol_ExplosiveArrow",
+                    3 => "Symbol_ElectricArrow",
+                    4 => "Symbol_FlashArrow",
                     _ => "Symbol_Arrow"
                 };
+            }
+
+            if (itemType == EnumExt_NewItems.Quiver)
+            {
+                return "Symbol_Quiver";
             }
 
             return orig.Invoke(itemType, intData);
@@ -101,6 +115,19 @@ namespace PrimitiveArmory
 
         private Color ItemSymbol_ColorForItem(On.ItemSymbol.orig_ColorForItem orig, AbstractPhysicalObject.AbstractObjectType itemType, int intData)
         {
+
+            if (itemType == EnumExt_NewItems.Arrow)
+            {
+                return intData switch
+                {
+                    0 => Menu.Menu.MenuRGB(Menu.Menu.MenuColors.MediumGrey),
+                    1 => new Color(1f, 146f / 255f, 27f / 85f),
+                    2 => new Color(46f / 51f, 14f / 255f, 14f / 255f),
+                    3 => new Color(1f, 0.6f, 0f),
+                    4 => new Color(11f / 15f, 58f / 85f, 1f),
+                    _ => Menu.Menu.MenuRGB(Menu.Menu.MenuColors.MediumGrey)
+                };
+            }
             return orig(itemType, intData);
         }
 
@@ -135,10 +162,20 @@ namespace PrimitiveArmory
 
             if (self.type == EnumExt_NewItems.Arrow)
             {
-                self.realizedObject = new Arrow(self, self.world);
+                Arrow.AbstractArrow arrow = self as Arrow.AbstractArrow;
+                arrow.realizedObject = new Arrow(arrow, arrow.world);
 
                 goto StuckRealize;
             }
+
+            
+            if (self.type == EnumExt_NewItems.Quiver)
+            {
+                self.realizedObject = new Quiver(self, self.world);
+
+                goto StuckRealize;
+            }
+            
 
             orig(self);
             return;
@@ -219,20 +256,16 @@ namespace PrimitiveArmory
 
         private static IconSymbol.IconSymbolData SandboxIconPatch(On.MultiplayerUnlocks.orig_SymbolDataForSandboxUnlock orig, MultiplayerUnlocks.SandboxUnlockID unlockID)
         {
-            if (unlockID == EnumExt_NewItems.ClubUnlock)
-            {
-                return new IconSymbol.IconSymbolData(CreatureTemplate.Type.StandardGroundCreature, EnumExt_NewItems.Club, 0);
-            }
+            if (unlockID == EnumExt_NewItems.ClubUnlock) return new IconSymbol.IconSymbolData(CreatureTemplate.Type.StandardGroundCreature, EnumExt_NewItems.Club, 0);
+            if (unlockID == EnumExt_NewItems.BowUnlock) return new IconSymbol.IconSymbolData(CreatureTemplate.Type.StandardGroundCreature, EnumExt_NewItems.Bow, 0);
 
-            if (unlockID == EnumExt_NewItems.BowUnlock)
-            {
-                return new IconSymbol.IconSymbolData(CreatureTemplate.Type.StandardGroundCreature, EnumExt_NewItems.Bow, 0);
-            }
+            if (unlockID == EnumExt_NewItems.ArrowUnlock) return new IconSymbol.IconSymbolData(CreatureTemplate.Type.StandardGroundCreature, EnumExt_NewItems.Arrow, 0);
+            if (unlockID == EnumExt_NewItems.FireArrowUnlock) return new IconSymbol.IconSymbolData(CreatureTemplate.Type.StandardGroundCreature, EnumExt_NewItems.Arrow, 1);
+            if (unlockID == EnumExt_NewItems.ExplosiveArrowUnlock) return new IconSymbol.IconSymbolData(CreatureTemplate.Type.StandardGroundCreature, EnumExt_NewItems.Arrow, 2);
+            if (unlockID == EnumExt_NewItems.ElectricArrowUnlock) return new IconSymbol.IconSymbolData(CreatureTemplate.Type.StandardGroundCreature, EnumExt_NewItems.Arrow, 3);
+            if (unlockID == EnumExt_NewItems.FlashArrowUnlock) return new IconSymbol.IconSymbolData(CreatureTemplate.Type.StandardGroundCreature, EnumExt_NewItems.Arrow, 4);
 
-            if (unlockID == EnumExt_NewItems.ArrowUnlock)
-            {
-                return new IconSymbol.IconSymbolData(CreatureTemplate.Type.StandardGroundCreature, EnumExt_NewItems.Arrow, 0);
-            }
+            if (unlockID == EnumExt_NewItems.QuiverUnlock) return new IconSymbol.IconSymbolData(CreatureTemplate.Type.StandardGroundCreature, EnumExt_NewItems.Quiver, 0);
 
             return orig(unlockID);
         }
@@ -286,6 +319,11 @@ namespace PrimitiveArmory
             SandboxUnlockCore.Main.items.Add(EnumExt_NewItems.ClubUnlock);
             SandboxUnlockCore.Main.items.Add(EnumExt_NewItems.BowUnlock);
             SandboxUnlockCore.Main.items.Add(EnumExt_NewItems.ArrowUnlock);
+            // SandboxUnlockCore.Main.items.Add(EnumExt_NewItems.FireArrowUnlock);
+            // SandboxUnlockCore.Main.items.Add(EnumExt_NewItems.ExplosiveArrowUnlock);
+            // SandboxUnlockCore.Main.items.Add(EnumExt_NewItems.ElectricArrowUnlock);
+            // SandboxUnlockCore.Main.items.Add(EnumExt_NewItems.FlashArrowUnlock);
+            SandboxUnlockCore.Main.items.Add(EnumExt_NewItems.QuiverUnlock);
         }
 
         private static void CustomRegionLoad(On.RegionState.orig_AdaptWorldToRegionState orig, RegionState self)
@@ -306,22 +344,6 @@ namespace PrimitiveArmory
                 }
             }
             orig(self);
-        }
-        private void DebugSpawn(On.Player.orig_Update orig, Player self, bool eu)
-        {
-            orig(self, eu);
-            if (Input.GetKeyDown(KeyCode.C))
-            {
-                AbstractPhysicalObject abstractObject1 = new AbstractPhysicalObject(self.room.world, EnumExt_NewItems.Bow, null, self.abstractPhysicalObject.pos, self.room.game.GetNewID());
-                AbstractPhysicalObject abstractObject2 = new Arrow.AbstractArrow(self.room.world, null, self.abstractPhysicalObject.pos, self.room.game.GetNewID(), 0);
-                AbstractPhysicalObject abstractObject3 = new Arrow.AbstractArrow(self.room.world, null, self.abstractPhysicalObject.pos, self.room.game.GetNewID(), 0);
-                self.room.abstractRoom.AddEntity(abstractObject1);
-                self.room.abstractRoom.AddEntity(abstractObject2);
-                self.room.abstractRoom.AddEntity(abstractObject3);
-                abstractObject1.RealizeInRoom();
-                abstractObject2.RealizeInRoom();
-                abstractObject3.RealizeInRoom();
-            }
         }
 
         private static AbstractPhysicalObject LoadCustomItem(World world, string objString)

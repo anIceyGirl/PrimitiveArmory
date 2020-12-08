@@ -32,6 +32,7 @@ namespace PrimitiveArmory
             public int controlLocked;
             public bool isDrawing;
             public bool released;
+            public float arrowLethality;
             public Vector2 aimDir;
             public Vector2 lastAimDir;
         }
@@ -401,7 +402,7 @@ namespace PrimitiveArmory
             playerInput = new Player.InputPackage[totalPlayerNum];
         }
 
-        public static void PlayerPatch(On.Player.orig_ctor orig, Player player, AbstractCreature abstractCreature, World world)
+        private static void PlayerPatch(On.Player.orig_ctor orig, Player player, AbstractCreature abstractCreature, World world)
         {
             orig(player, abstractCreature, world);
 
@@ -443,25 +444,29 @@ namespace PrimitiveArmory
                 case SlugcatStats.Name.White:
                     globalStats[playerNumber].meleeSkill = 1f;
                     globalStats[playerNumber].rangedSkill = 1f;
+                    bowStats[playerNumber].arrowLethality = 1f;
                     break;
                 case SlugcatStats.Name.Red:
                     globalStats[playerNumber].meleeSkill = 1.25f;
                     globalStats[playerNumber].rangedSkill = 0.8f;
+                    bowStats[playerNumber].arrowLethality = 1.5f;
                     break;
                 case SlugcatStats.Name.Yellow:
                     globalStats[playerNumber].meleeSkill = 0.75f;
                     globalStats[playerNumber].rangedSkill = 1.45f;
+                    bowStats[playerNumber].arrowLethality = 0.8f;
                     break;
                 default:
                     globalStats[playerNumber].meleeSkill = 1f;
                     globalStats[playerNumber].rangedSkill = 1f;
+                    bowStats[playerNumber].arrowLethality = 1f;
                     break;
             }
 
             bowStats[playerNumber].drawSpeed = globalStats[playerNumber].rangedSkill * 1f;
         }
 
-        public static void PlayerUpdatePatch(On.Player.orig_Update orig, Player player, bool eu)
+        private static void PlayerUpdatePatch(On.Player.orig_Update orig, Player player, bool eu)
         {
             int playerNumber = player.playerState.playerNumber;
 
@@ -491,6 +496,12 @@ namespace PrimitiveArmory
                         bodyChunk.vel = (bowStats[playerNumber].lastAimDir.normalized) * (40f * GetFireStrength(player));
                     }
 
+                    player.bodyChunks[0].vel -= launchDir * 3f;
+                    player.bodyChunks[1].vel -= launchDir * 4.5f;
+
+                    arrow.arrowDamageBonus = (1f * GetFireStrength(player)) * bowStats[playerNumber].arrowLethality;
+
+                    arrow.stillFlyingCounter = Arrow.maxFlyingCount;
                     arrow.rotation = launchDir;
                 }
 
@@ -884,7 +895,7 @@ namespace PrimitiveArmory
             return offObject;
         }
 
-        public static Player.ObjectGrabability GrababilityPatch(On.Player.orig_Grabability orig, Player player, PhysicalObject obj)
+        private static Player.ObjectGrabability GrababilityPatch(On.Player.orig_Grabability orig, Player player, PhysicalObject obj)
         {
             // code that runs before game code
 
@@ -999,7 +1010,7 @@ namespace PrimitiveArmory
                 int offGrasp = GetOppositeHand(grasp);
                 PhysicalObject offObject = GetOppositeObject(player, grasp);
 
-                if (offObject != null && offObject.abstractPhysicalObject.type != EnumExt_NewItems.Arrow) 
+                if (offObject != null && !(offObject is Armor) && offObject.abstractPhysicalObject.type != EnumExt_NewItems.Arrow) 
                 {
                     orig(player, offGrasp, eu);
                 }
@@ -1014,6 +1025,11 @@ namespace PrimitiveArmory
                 thrownObject.firstChunk.vel *= 0.25f;
                 (thrownObject as Weapon).mode = Weapon.Mode.Free;
 
+                return;
+            }
+
+            if (thrownType == EnumExt_NewItems.Quiver)
+            {
                 return;
             }
 

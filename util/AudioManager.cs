@@ -10,7 +10,6 @@ namespace PrimitiveArmory
 {
     public class AudioManager
 	{
-
 		public static string[] sfx = new string[]
 		{
 			"Bottle_Slosh_1.wav",
@@ -25,20 +24,21 @@ namespace PrimitiveArmory
 			"Bow_Fire.wav",
 			"Bow_Fire_Dry.wav",
 			"Slugcat_Bow_Pickup.wav",
-			"Slugcat_Bow_Pickup.wav",
-			"Armor_Heavy_Move_1",
-			"Armor_Heavy_Move_2",
-			"Armor_Heavy_Move_3",
-			"Armor_Heavy_Move_4",
-			"Armor_Heavy_Move_5",
-			"Armor_Heavy_Move_6",
-			"Armor_Heavy_Shuffle_1",
-			"Armor_Heavy_Shuffle_2",
-			"Armor_Heavy_Shuffle_3",
-			"Armor_Heavy_Shuffle_4",
-			"Armor_Light_Move_1",
-			"Armor_Light_Move_2",
-			"Armor_Light_Move_3"
+			"Slugcat_Blunt_Pickup.wav",
+			"Slugcat_Tool_Pickup.wav",
+			"Armor_Heavy_Move_1.wav",
+			"Armor_Heavy_Move_2.wav",
+			"Armor_Heavy_Move_3.wav",
+			"Armor_Heavy_Move_4.wav",
+			"Armor_Heavy_Move_5.wav",
+			"Armor_Heavy_Move_6.wav",
+			"Armor_Heavy_Shuffle_1.wav",
+			"Armor_Heavy_Shuffle_2.wav",
+			"Armor_Heavy_Shuffle_3.wav",
+			"Armor_Heavy_Shuffle_4.wav",
+			"Armor_Light_Move_1.wav",
+			"Armor_Light_Move_2.wav",
+			"Armor_Light_Move_3.wav"
 		};
 
 		public static void Patch()
@@ -94,8 +94,6 @@ namespace PrimitiveArmory
 
 				System.IO.File.WriteAllBytes(path + Path.DirectorySeparatorChar + sfx[i], array);
 				System.IO.File.WriteAllBytes(path + Path.DirectorySeparatorChar + sfx[i] + ".meta", emptyByte);
-
-				manifestResourceStream.Close();
 			}
 		}
 	}

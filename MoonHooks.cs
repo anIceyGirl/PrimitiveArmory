@@ -30,6 +30,8 @@ namespace PrimitiveArmory
 
             if (itemType == EnumExt_NewItems.Arrow)
             {
+                Arrow arrow = testItem as Arrow;
+
                 return EnumExt_NewItems.ArrowDialogue;
             }
 

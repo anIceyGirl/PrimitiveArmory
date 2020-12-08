@@ -1,120 +1,50 @@
-﻿using UnityEngine;
-using RWCustom;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using UnityEngine;
 
 namespace PrimitiveArmory
 {
-    public abstract class Armor : PlayerCarryableItem, IDrawable
+    public class Armor : Weapon
     {
         public enum ArmorSlot
         {
-            Head,
             Body,
+            Head,
             Accessory
         }
 
-        public enum Mode
+        public enum ArmorMode
         {
-            Equipped,
+            Free,
             Carried,
-            Free
+            Equipped
         }
 
-        public Creature equippedBy;
+        public ArmorSlot armorSlot;
 
-        public Vector2 rotation;
-        public Vector2 lastRotation;
-        public float rotationSpeed;
+        public ArmorMode armorMode;
 
-        public DynamicSoundLoop soundLoop;
-
-        public Mode mode
+        public Armor(AbstractPhysicalObject abstractPhysicalObject, World world) : base(abstractPhysicalObject, world)
         {
-            get;
-            set;
+
         }
 
-        public ArmorSlot armorSlot
+        public override void AddToContainer(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, FContainer newContatiner)
         {
-            get;
-            set;
+            base.AddToContainer(sLeaser, rCam, newContatiner);
         }
 
-        public bool isEquipped;
-
-        public int inFrontOfObjects;
-
-        public Armor(AbstractPhysicalObject abstractPhysicalObject, World world) : base(abstractPhysicalObject)
+        public override void DrawSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
         {
-            mode = Mode.Free;
-            isEquipped = false;
-            rotation = Custom.DegToVec(Random.value * 360f);
-            lastRotation = rotation;
-            inFrontOfObjects = -1;
-            equippedBy = null;
-            rotationSpeed = 0f;
-            inFrontOfObjects = -1;
+            base.DrawSprites(sLeaser, rCam, timeStacker, camPos);
         }
 
-        public override void NewRoom(Room newRoom)
+        public override void InitiateSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam)
         {
-            base.NewRoom(newRoom);
-            inFrontOfObjects = -1;
+            base.InitiateSprites(sLeaser, rCam);
         }
-        public override void Grabbed(Creature.Grasp grasp)
-        {
-            ChangeMode(Mode.Carried);
-            base.Grabbed(grasp);
-        }
-
-        public void ChangeOverlap(bool newOverlap)
-        {
-            if (inFrontOfObjects != (newOverlap ? 1 : 0) && room != null)
-            {
-                for (int i = 0; i < room.game.cameras.Length; i++)
-                {
-                    room.game.cameras[i].MoveObjectToContainer(this, room.game.cameras[i].ReturnFContainer((!newOverlap) ? "Background" : "Items"));
-                }
-                inFrontOfObjects = (newOverlap ? 1 : 0);
-            }
-        }
-
-        public virtual void ChangeMode(Mode newMode)
-        {
-            if (newMode != mode)
-            {
-                base.firstChunk.collideWithObjects = newMode != Mode.Carried;
-                base.firstChunk.collideWithTerrain = newMode == Mode.Free;
-                base.firstChunk.goThroughFloors = true;
-
-                mode = newMode;
-            }
-        }
-
-        #region drawLogic
-        public virtual void InitiateSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam)
-        {
-        }
-
-        public virtual void DrawSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
-        {
-        }
-
-        public virtual void ApplyPalette(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, RoomPalette palette)
-        {
-        }
-
-        public virtual void AddToContainer(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, FContainer newContatiner)
-        {
-            if (newContatiner == null)
-            {
-                newContatiner = rCam.ReturnFContainer("Items");
-            }
-            for (int i = sLeaser.sprites.Length - 1; i >= 0; i--)
-            {
-                sLeaser.sprites[i].RemoveFromContainer();
-                newContatiner.AddChild(sLeaser.sprites[i]);
-            }
-        }
-        #endregion
     }
 }
