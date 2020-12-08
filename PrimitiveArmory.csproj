@@ -74,14 +74,15 @@
     <Compile Include="items\Arrow.cs" />
     <Compile Include="items\Bow.cs" />
     <Compile Include="items\ItemSpawner.cs" />
+    <Compile Include="items\Armor.cs" />
     <Compile Include="items\Quiver.cs" />
     <Compile Include="MoonHooks.cs" />
+    <Compile Include="util\AudioManager.cs" />
     <Compile Include="util\DataManager.cs" />
     <Compile Include="util\DynamicHooks.cs" />
     <Compile Include="util\Exceptions.cs" />
     <Compile Include="util\PrimitiveArmoryConfig.cs" />
     <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="items\Armor.cs" />
     <Compile Include="PlayerHooks.cs" />
     <Compile Include="items\Club.cs" />
     <Compile Include="enum\EnumExt_NewItems.cs" />
@@ -115,6 +116,25 @@
     <EmbeddedResource Include="resources\sfx\Bottle_Slosh_2.wav" />
     <EmbeddedResource Include="resources\sfx\Bottle_Slosh_3.wav" />
     <EmbeddedResource Include="resources\sfx\Bottle_Slosh_4.wav" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="resources\sfx\Slugcat_Blunt_Pickup.wav" />
+    <EmbeddedResource Include="resources\sfx\Slugcat_Tool_Pickup.wav" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="resources\sfx\Armor_Heavy_Move_1.wav" />
+    <Content Include="resources\sfx\Armor_Heavy_Move_2.wav" />
+    <Content Include="resources\sfx\Armor_Heavy_Move_3.wav" />
+    <Content Include="resources\sfx\Armor_Heavy_Move_4.wav" />
+    <Content Include="resources\sfx\Armor_Heavy_Move_5.wav" />
+    <Content Include="resources\sfx\Armor_Heavy_Move_6.wav" />
+    <Content Include="resources\sfx\Armor_Heavy_Shuffle_1.wav" />
+    <Content Include="resources\sfx\Armor_Heavy_Shuffle_2.wav" />
+    <Content Include="resources\sfx\Armor_Heavy_Shuffle_3.wav" />
+    <Content Include="resources\sfx\Armor_Heavy_Shuffle_4.wav" />
+    <Content Include="resources\sfx\Armor_Light_Move_1.wav" />
+    <Content Include="resources\sfx\Armor_Light_Move_2.wav" />
+    <Content Include="resources\sfx\Armor_Light_Move_3.wav" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

@@ -1,6 +1,8 @@
-// Bows
 Slugcat_Bow_Pickup/vol=0.3 : Slugcat_Bow_Pickup
+Slugcat_Blunt_Pickup/vol=0.3 : Slugcat_Blunt_Pickup
+Slugcat_Tool_Pickup/vol=0.3 : Slugcat_Tool_Pickup
 
+// Bows
 Weapon_Bow_Draw/vol=0.2 : Bow_Draw
 Weapon_Bow_Fire/vol=0.3 : Bow_Fire
 Weapon_Bow_FireDry/vol=0.25 : Bow_Fire_Dry
