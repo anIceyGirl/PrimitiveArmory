@@ -95,46 +95,34 @@
     <EmbeddedResource Include="resources\arenaIconAtlas.txt" />
     <EmbeddedResource Include="resources\objectAtlas.png" />
     <EmbeddedResource Include="resources\objectAtlas.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="resources\sfx\Sounds.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="resources\sfx\Bottle_Smash_1.wav" />
-    <EmbeddedResource Include="resources\sfx\Bottle_Smash_2.wav" />
-    <EmbeddedResource Include="resources\sfx\Bottle_Smash_3.wav" />
-    <EmbeddedResource Include="resources\sfx\Bottle_Smash_4.wav" />
-    <EmbeddedResource Include="resources\sfx\Bow_Draw.wav" />
-    <EmbeddedResource Include="resources\sfx\Bow_Fire.wav" />
-    <EmbeddedResource Include="resources\sfx\Bow_Fire_Dry.wav" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="resources\sfx\Slugcat_Bow_PickUp.wav" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="resources\sfx\Bottle_Slosh_1.wav" />
-    <EmbeddedResource Include="resources\sfx\Bottle_Slosh_2.wav" />
-    <EmbeddedResource Include="resources\sfx\Bottle_Slosh_3.wav" />
-    <EmbeddedResource Include="resources\sfx\Bottle_Slosh_4.wav" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="resources\sfx\Slugcat_Blunt_Pickup.wav" />
-    <EmbeddedResource Include="resources\sfx\Slugcat_Tool_Pickup.wav" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="resources\sfx\Armor_Heavy_Move_1.wav" />
-    <EmbeddedResource Include="resources\sfx\Armor_Heavy_Move_2.wav" />
-    <EmbeddedResource Include="resources\sfx\Armor_Heavy_Move_3.wav" />
-    <EmbeddedResource Include="resources\sfx\Armor_Heavy_Move_4.wav" />
-    <EmbeddedResource Include="resources\sfx\Armor_Heavy_Move_5.wav" />
-    <EmbeddedResource Include="resources\sfx\Armor_Heavy_Move_6.wav" />
-    <EmbeddedResource Include="resources\sfx\Armor_Heavy_Shuffle_1.wav" />
-    <EmbeddedResource Include="resources\sfx\Armor_Heavy_Shuffle_2.wav" />
-    <EmbeddedResource Include="resources\sfx\Armor_Heavy_Shuffle_3.wav" />
-    <EmbeddedResource Include="resources\sfx\Armor_Heavy_Shuffle_4.wav" />
-    <EmbeddedResource Include="resources\sfx\Armor_Light_Move_1.wav" />
-    <EmbeddedResource Include="resources\sfx\Armor_Light_Move_2.wav" />
-    <EmbeddedResource Include="resources\sfx\Armor_Light_Move_3.wav" />
+    <Content Include="resources\sfx\Armor_Heavy_Move_1.wav" />
+    <Content Include="resources\sfx\Armor_Heavy_Move_2.wav" />
+    <Content Include="resources\sfx\Armor_Heavy_Move_3.wav" />
+    <Content Include="resources\sfx\Armor_Heavy_Move_4.wav" />
+    <Content Include="resources\sfx\Armor_Heavy_Move_5.wav" />
+    <Content Include="resources\sfx\Armor_Heavy_Move_6.wav" />
+    <Content Include="resources\sfx\Armor_Heavy_Shuffle_1.wav" />
+    <Content Include="resources\sfx\Armor_Heavy_Shuffle_2.wav" />
+    <Content Include="resources\sfx\Armor_Heavy_Shuffle_3.wav" />
+    <Content Include="resources\sfx\Armor_Heavy_Shuffle_4.wav" />
+    <Content Include="resources\sfx\Armor_Light_Move_1.wav" />
+    <Content Include="resources\sfx\Armor_Light_Move_2.wav" />
+    <Content Include="resources\sfx\Armor_Light_Move_3.wav" />
+    <Content Include="resources\sfx\Bottle_Slosh_1.wav" />
+    <Content Include="resources\sfx\Bottle_Slosh_2.wav" />
+    <Content Include="resources\sfx\Bottle_Slosh_3.wav" />
+    <Content Include="resources\sfx\Bottle_Slosh_4.wav" />
+    <Content Include="resources\sfx\Bottle_Smash_1.wav" />
+    <Content Include="resources\sfx\Bottle_Smash_2.wav" />
+    <Content Include="resources\sfx\Bottle_Smash_3.wav" />
+    <Content Include="resources\sfx\Bottle_Smash_4.wav" />
+    <Content Include="resources\sfx\Bow_Draw.wav" />
+    <Content Include="resources\sfx\Bow_Fire.wav" />
+    <Content Include="resources\sfx\Bow_Fire_Dry.wav" />
+    <Content Include="resources\sfx\Slugcat_Blunt_Pickup.wav" />
+    <Content Include="resources\sfx\Slugcat_Bow_PickUp.wav" />
+    <Content Include="resources\sfx\Slugcat_Tool_Pickup.wav" />
+    <Content Include="resources\sfx\Sounds.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
