@@ -2,11 +2,24 @@ Slugcat_Bow_Pickup/vol=0.3 : Slugcat_Bow_Pickup
 Slugcat_Blunt_Pickup/vol=0.3 : Slugcat_Blunt_Pickup
 Slugcat_Tool_Pickup/vol=0.3 : Slugcat_Tool_Pickup
 
+
 // Bows
 Weapon_Bow_Draw/vol=0.2 : Bow_Draw
 Weapon_Bow_Fire/vol=0.3 : Bow_Fire
+Weapon_Arrow_Loose/vol=0.2 : Bow_Loose_1, Bow_Loose_2, Bow_Loose_3, Bow_Loose_4
 Weapon_Bow_FireDry/vol=0.25 : Bow_Fire_Dry
+
 
 // Bottles
 Bottle_Slosh/vol=0.25 : Bottle_Slosh_1, Bottle_Slosh_2, Bottle_Slosh_3, Bottle_Slosh_4
 Bottle_Smash/vol=0.35 : Bottle_Smash_1, Bottle_Smash_2, Bottle_Smash_3, Bottle_Smash_4
+
+
+// Armor
+Armor_Equip/vol=0.2 : Armor_Equip_1, Armor_Equip_2, Armor_Equip_3, Armor_Equip_4, Armor_Equip_5, Armor_Equip_6
+Armor_Equip_Light/vol=0.25 : Armor_Equip_Light_1, Armor_Equip_Light_2, Armor_Equip_Light_3, Armor_Equip_Light_4, Armor_Equip_Light_5, Armor_Equip_Light_6  
+Armor_Equip_Heavy/vol=0.25 : Armor_Equip_Heavy_1, Armor_Equip_Heavy_2, Armor_Equip_Heavy_3, Armor_Equip_Heavy_4, Armor_Equip_Heavy_5, Armor_Equip_Heavy_6 
+
+Armor_Light_Move/vol=0.2 : Armor_Light_Move_1, Armor_Light_Move_2, Armor_Light_Move_3
+Armor_Heavy_Move/vol=0.2 : Armor_Heavy_Move_1, Armor_Heavy_Move_2, Armor_Heavy_Move_3, Armor_Heavy_Move_4, Armor_Heavy_Move_5, Armor_Heavy_Move_6
+Armor_Heavy_Shuffle/vol=0.2 : Armor_Heavy_Shuffle_1, Armor_Heavy_Shuffle_2, Armor_Heavy_Shuffle_3, Armor_Heavy_Shuffle_4
