@@ -344,7 +344,7 @@ namespace PrimitiveArmory
             // SandboxUnlockCore.Main.items.Add(EnumExt_NewItems.ExplosiveArrowUnlock);
             // SandboxUnlockCore.Main.items.Add(EnumExt_NewItems.ElectricArrowUnlock);
             // SandboxUnlockCore.Main.items.Add(EnumExt_NewItems.FlashArrowUnlock);
-            SandboxUnlockCore.Main.items.Add(EnumExt_NewItems.QuiverUnlock);
+            // SandboxUnlockCore.Main.items.Add(EnumExt_NewItems.QuiverUnlock);
         }
 
         private static void CustomRegionLoad(On.RegionState.orig_AdaptWorldToRegionState orig, RegionState self)
