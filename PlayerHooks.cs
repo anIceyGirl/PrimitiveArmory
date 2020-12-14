@@ -23,6 +23,7 @@ namespace PrimitiveArmory
             public int swingDelay;
             public int comboCount;
             public int comboCooldown;
+            public bool firstHit;
         }
 
         public struct BowState
@@ -32,6 +33,7 @@ namespace PrimitiveArmory
             public int controlLocked;
             public bool isDrawing;
             public bool released;
+            public bool useAlternateAim;
             public float arrowLethality;
             public Vector2 aimDir;
             public Vector2 lastAimDir;
@@ -418,7 +420,8 @@ namespace PrimitiveArmory
                 swingDelay = 0,
                 swingTimer = 0,
                 comboCount = 0,
-                comboCooldown = 0
+                comboCooldown = 0,
+                firstHit = false
             };
 
             bowStats[playerNumber] = new BowState
@@ -449,12 +452,12 @@ namespace PrimitiveArmory
                 case SlugcatStats.Name.Red:
                     globalStats[playerNumber].meleeSkill = 1.25f;
                     globalStats[playerNumber].rangedSkill = 0.8f;
-                    bowStats[playerNumber].arrowLethality = 1.5f;
+                    bowStats[playerNumber].arrowLethality = 1.15f;
                     break;
                 case SlugcatStats.Name.Yellow:
                     globalStats[playerNumber].meleeSkill = 0.75f;
                     globalStats[playerNumber].rangedSkill = 1.45f;
-                    bowStats[playerNumber].arrowLethality = 0.8f;
+                    bowStats[playerNumber].arrowLethality = 0.85f;
                     break;
                 default:
                     globalStats[playerNumber].meleeSkill = 1f;
@@ -472,10 +475,7 @@ namespace PrimitiveArmory
 
             bowStats[playerNumber].aimDir = GetAimDir(player).normalized;
 
-            if (bowStats[playerNumber].aimDir.magnitude > 0.25f)
-            {
-                bowStats[playerNumber].lastAimDir = bowStats[playerNumber].aimDir;
-            }
+            if (bowStats[playerNumber].aimDir.magnitude > 0.4f) bowStats[playerNumber].lastAimDir = bowStats[playerNumber].aimDir;
 
             if (!bowStats[playerNumber].isDrawing && bowStats[playerNumber].released)
             {
@@ -502,7 +502,7 @@ namespace PrimitiveArmory
                     arrow.arrowDamageBonus = (1f * GetFireStrength(player)) * bowStats[playerNumber].arrowLethality;
 
                     arrow.stillFlyingCounter = Arrow.maxFlyingCount;
-                    arrow.rotation = launchDir;
+                    arrow.rotation = launchDir.normalized;
                 }
 
                 bowStats[playerNumber].released = false;
@@ -510,10 +510,10 @@ namespace PrimitiveArmory
 
             orig(player, eu);
 
-            if (globalStats[playerNumber].backSlot == null)
-            {
-                globalStats[playerNumber].backSlot = new BackSlot(player);
-            }
+            if (globalStats[playerNumber].backSlot == null) globalStats[playerNumber].backSlot = new BackSlot(player);
+            if (globalStats[playerNumber].headSlot == null) globalStats[playerNumber].headSlot = new EquippedArmor(player, Armor.ArmorSlot.Head);
+            if (globalStats[playerNumber].bodySlot == null) globalStats[playerNumber].bodySlot = new EquippedArmor(player, Armor.ArmorSlot.Body);
+            if (globalStats[playerNumber].accessorySlot == null) globalStats[playerNumber].accessorySlot = new EquippedArmor(player, Armor.ArmorSlot.Accessory);
 
             if (player.input[0].pckp && !globalStats[playerNumber].backSlot.interactionLocked && ((CanPutWeaponToBack(player, (player.grasps[0]?.grabbed as Weapon)) || CanPutWeaponToBack(player, (player.grasps[1]?.grabbed as Weapon))) || CanRetrieveWeaponFromBack(player)) && player.CanPutSpearToBack)
             {
@@ -542,24 +542,93 @@ namespace PrimitiveArmory
                 player.spearOnBack.increment = false;
             }
 
-            if (clubStats[playerNumber].swingTimer > 0)
+            for (int i = 0; i < 2; i++)
             {
-                clubStats[playerNumber].swingTimer--;
+                if (player.grasps[i] == null) continue;
+
+                PhysicalObject usedObject = player.grasps[i].grabbed;
+
+                switch (usedObject)
+                {
+                    case Club club:
+
+                        Vector2 clubTip = (usedObject.firstChunk.pos + (usedObject as Weapon).rotation * 50f);
+
+                        SharedPhysics.CollisionResult collisionResult = SharedPhysics.TraceProjectileAgainstBodyChunks((usedObject as SharedPhysics.IProjectileTracer), player.room, usedObject.firstChunk.pos, ref clubTip, 10f, player.collisionLayer, player, true);
+
+                        if (collisionResult.obj != null && clubStats[playerNumber].firstHit)
+                        {
+                            clubStats[playerNumber].firstHit = false;
+                            bool arenaHit = false;
+                            if (usedObject.abstractPhysicalObject.world.game.IsArenaSession && usedObject.abstractPhysicalObject.world.game.GetArenaGameSession.GameTypeSetup.spearHitScore != 0 && player != null && collisionResult.obj is Creature)
+                            {
+                                arenaHit = true;
+                                if ((collisionResult.obj as Creature).State is HealthState && ((collisionResult.obj as Creature).State as HealthState).health <= 0f)
+                                {
+                                    arenaHit = false;
+                                }
+                                else if (!((collisionResult.obj as Creature).State is HealthState) && (collisionResult.obj as Creature).State.dead)
+                                {
+                                    arenaHit = false;
+                                }
+                            }
+
+                            if (collisionResult.obj is Creature)
+                            {
+                                player.room.socialEventRecognizer.WeaponAttack(usedObject as Club, player, collisionResult.obj as Creature, hit: true);
+                                player.room.PlaySound(SoundID.Rock_Hit_Creature, collisionResult.chunk);
+
+                                bool iKilledThis = false;
+
+                                if (((collisionResult.obj as Creature).State as HealthState).health > 0f)
+                                {
+                                    iKilledThis = true;
+                                }
+
+                                (collisionResult.obj as Creature).Violence(usedObject.firstChunk, (usedObject as Weapon).rotation * usedObject.firstChunk.mass * 2f, collisionResult.chunk, collisionResult.onAppendagePos, Creature.DamageType.Blunt, globalStats[playerNumber].meleeSkill * 0.6f, 20f);
+
+                                if (((collisionResult.obj as Creature).State as HealthState).health <= 0f && iKilledThis)
+                                {
+                                    player.room.socialEventRecognizer.Killing(player, collisionResult.obj as Creature);
+                                }
+
+                                if (arenaHit)
+                                {
+                                    usedObject.abstractPhysicalObject.world.game.GetArenaGameSession.PlayerLandSpear(player, collisionResult.obj as Creature);
+                                }
+                            }
+                            else
+                            {
+                                player.room.PlaySound(SoundID.Rock_Hit_Wall, collisionResult.chunk);
+                            }
+                        }
+
+                        break;
+                }
             }
 
-            if (bowStats[playerNumber].controlLocked > 0)
-            {
-                bowStats[playerNumber].controlLocked--;
-            }
-
-            if (clubStats[playerNumber].swingDelay > 0)
-            {
-                clubStats[playerNumber].swingDelay--;
-            }
+            if (clubStats[playerNumber].swingTimer > 0) clubStats[playerNumber].swingTimer--;
+            if (bowStats[playerNumber].controlLocked > 0) bowStats[playerNumber].controlLocked--;
+            if (clubStats[playerNumber].swingDelay > 0) clubStats[playerNumber].swingDelay--;
 
             if (clubStats[playerNumber].comboCooldown > 0)
             {
                 clubStats[playerNumber].comboCooldown--;
+                
+                if (clubStats[playerNumber].comboCooldown == 0)
+                {
+                    clubStats[playerNumber].comboCount = 0;
+                }
+            }
+
+            if (globalStats[playerNumber].animTimer > 0)
+            {
+                globalStats[playerNumber].animTimer--;
+
+                if (globalStats[playerNumber].animTimer == 0 && clubStats[playerNumber].firstHit)
+                {
+                    clubStats[playerNumber].firstHit = false;
+                }
             }
 
             if (bowStats[playerNumber].isDrawing)
@@ -569,16 +638,6 @@ namespace PrimitiveArmory
             else
             {
                 bowStats[playerNumber].drawTime = Mathf.Clamp(bowStats[playerNumber].drawTime - (bowStats[playerNumber].drawSpeed * 3.0f), 0.0f, maxDrawTime);
-            }
-
-            if (globalStats[playerNumber].animTimer > 0)
-            {
-                globalStats[playerNumber].animTimer--;
-            }
-
-            if (clubStats[playerNumber].comboCooldown == 1)
-            {
-                clubStats[playerNumber].comboCount = 0;
             }
         }
 
@@ -610,6 +669,7 @@ namespace PrimitiveArmory
             }
         }
 
+        #region Backslot Logic
         public static bool CanIStashThis(Weapon weapon)
         {
             switch (weapon)
@@ -650,6 +710,16 @@ namespace PrimitiveArmory
             return globalStats[playerNumber].backSlot.HasAWeapon && activeHand > -1;
         }
 
+        private static void SpearToBackPatch(On.Player.SpearOnBack.orig_SpearToBack orig, Player.SpearOnBack spear, Spear spr)
+        {
+            int playerNumber = spear.owner.playerState.playerNumber;
+
+            if (globalStats[playerNumber].backSlot.backItem is Weapon) return;
+
+            orig(spear, spr);
+        }
+        #endregion
+
         private static void CheckInputPatch(On.Player.orig_checkInput orig, Player player)
         {
             int playerNumber = player.playerState.playerNumber;
@@ -686,15 +756,6 @@ namespace PrimitiveArmory
             }
         }
 
-        private static void SpearToBackPatch(On.Player.SpearOnBack.orig_SpearToBack orig, Player.SpearOnBack spear, Spear spr)
-        {
-            int playerNumber = spear.owner.playerState.playerNumber;
-
-            if (globalStats[playerNumber].backSlot.backItem is Weapon) return;
-
-            orig(spear, spr);
-        }
-
         private static void DeathPatch(On.Player.orig_Die orig, Player player)
         {
             int playerNumber = player.playerState.playerNumber;
@@ -714,17 +775,11 @@ namespace PrimitiveArmory
 
             int playerNumber = player.playerState.playerNumber;
 
-            if (globalStats[playerNumber].backSlot != null)
-            {
-                globalStats[playerNumber].backSlot.GraphicsModuleUpdated(actuallyViewed, eu);
-            }
+            if (globalStats[playerNumber].backSlot != null) globalStats[playerNumber].backSlot.GraphicsModuleUpdated(actuallyViewed, eu);
 
             for (int i = 0; i < 2; i++)
             {
-                if (player.grasps[i] == null)
-                {
-                    continue;
-                }
+                if (player.grasps[i] == null) continue;
 
                 if (actuallyViewed)
                 {
@@ -863,6 +918,28 @@ namespace PrimitiveArmory
                             (player.grasps[i].grabbed as Weapon).rotationSpeed = 0f;
 
                             break;
+                        case Quiver quiver:
+
+                            player.grasps[i].grabbed.firstChunk.vel = (player.graphicsModule as PlayerGraphics).hands[i].vel;
+                            player.grasps[i].grabbed.firstChunk.MoveFromOutsideMyUpdate(eu, (player.graphicsModule as PlayerGraphics).hands[i].pos);
+
+                            if (player.bodyMode == Player.BodyModeIndex.Crawl)
+                            {
+                                vector = Custom.DirVec(player.bodyChunks[1].pos, Vector2.Lerp(player.grasps[i].grabbed.bodyChunks[0].pos, player.bodyChunks[0].pos, 0.8f));
+                            }
+
+                            if (player.animation == Player.AnimationIndex.ClimbOnBeam)
+                            {
+                                vector.y = Mathf.Abs(vector.y);
+                                vector = Vector3.Slerp(vector, Custom.DirVec(player.bodyChunks[1].pos, player.bodyChunks[0].pos), 0.75f);
+                            }
+
+                            vector = Vector3.Slerp(vector, Custom.DegToVec((80f + Mathf.Cos((float)(player.animationFrame + ((!player.leftFoot) ? 3 : 9)) / 12f * 2f * (float)Math.PI) * 4f * (player.graphicsModule as PlayerGraphics).spearDir) * (player.graphicsModule as PlayerGraphics).spearDir), Mathf.Abs((player.graphicsModule as PlayerGraphics).spearDir));
+
+                            (player.grasps[i].grabbed as Weapon).setRotation = -vector;
+                            (player.grasps[i].grabbed as Weapon).rotationSpeed = 0f;
+
+                            break;
                     }
                 }
             }
@@ -937,6 +1014,7 @@ namespace PrimitiveArmory
                     player.bodyChunks[1].vel -= throwDir.ToVector2() * 3f;
                     // animTimer
                     clubStats[playerNumber].comboCooldown = 30;
+                    clubStats[playerNumber].firstHit = true;
 
                     globalStats[playerNumber].animTimer = swingTime;
 
@@ -950,56 +1028,6 @@ namespace PrimitiveArmory
                     {
                         clubStats[playerNumber].swingDelay = swingTime;
                         clubStats[playerNumber].comboCount++;
-                    }
-
-                    Vector2 clubTip = (thrownObject.firstChunk.pos + (thrownObject as Weapon).rotation * 50f);
-
-                    SharedPhysics.CollisionResult collisionResult = SharedPhysics.TraceProjectileAgainstBodyChunks((thrownObject as SharedPhysics.IProjectileTracer), player.room, thrownObject.firstChunk.pos, ref clubTip, 10f, player.collisionLayer, player, true);
-
-                    if (collisionResult.obj != null)
-                    { 
-                        bool arenaHit = false;
-                        if (thrownObject.abstractPhysicalObject.world.game.IsArenaSession && thrownObject.abstractPhysicalObject.world.game.GetArenaGameSession.GameTypeSetup.spearHitScore != 0 && player != null && collisionResult.obj is Creature)
-                        {
-                            arenaHit = true;
-                            if ((collisionResult.obj as Creature).State is HealthState && ((collisionResult.obj as Creature).State as HealthState).health <= 0f)
-                            {
-                                arenaHit = false;
-                            }
-                            else if (!((collisionResult.obj as Creature).State is HealthState) && (collisionResult.obj as Creature).State.dead)
-                            {
-                                arenaHit = false;
-                            }
-                        }
-
-                        if (collisionResult.obj is Creature)
-                        {
-                            player.room.socialEventRecognizer.WeaponAttack(thrownObject as Club, player, collisionResult.obj as Creature, hit : true);
-                            player.room.PlaySound(SoundID.Rock_Hit_Creature, collisionResult.chunk);
-
-                            bool iKilledThis = false;
-
-                            if (((collisionResult.obj as Creature).State as HealthState).health > 0f)
-                            {
-                                iKilledThis = true;
-                            }
-
-                            (collisionResult.obj as Creature).Violence(thrownObject.firstChunk, (thrownObject as Weapon).rotation * thrownObject.firstChunk.mass * 2f, collisionResult.chunk, collisionResult.onAppendagePos, Creature.DamageType.Blunt, globalStats[playerNumber].meleeSkill* 0.6f, 20f);
-
-                            if (((collisionResult.obj as Creature).State as HealthState).health <= 0f && iKilledThis)
-                            {
-                                player.room.socialEventRecognizer.Killing(player, collisionResult.obj as Creature);
-                            }
-
-                            if (arenaHit)
-                            {
-                                thrownObject.abstractPhysicalObject.world.game.GetArenaGameSession.PlayerLandSpear(player, collisionResult.obj as Creature);
-                            }
-                        }
-                        else
-                        {
-                            player.room.PlaySound(SoundID.Rock_Hit_Wall, collisionResult.chunk);
-                        }
                     }
                 }
                 return;
