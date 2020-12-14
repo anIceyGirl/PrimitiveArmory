@@ -30,7 +30,7 @@ namespace PrimitiveArmory
             surfaceFriction = 0.4f;
             collisionLayer = 2;
             base.waterFriction = 0.98f;
-            base.buoyancy = 0.4f;
+            base.buoyancy = 1.1f;
             spinning = false;
             pivotAtTip = false;
             lastPivotAtTip = false;

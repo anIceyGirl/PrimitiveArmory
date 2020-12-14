@@ -9,6 +9,11 @@ namespace PrimitiveArmory
 {
     public class Armor : Weapon
     {
+
+        public bool spinning;
+
+        public int stillCounter;
+
         public enum ArmorSlot
         {
             Body,
