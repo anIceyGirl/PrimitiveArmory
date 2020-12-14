@@ -87,8 +87,6 @@ namespace PrimitiveArmory
 					4 => ArrowType.Flash,
                     _ => ArrowType.Normal,
                 };
-
-				this.type = EnumExt_NewItems.Arrow;
 			}
 
 			public void StuckInWallTick(int ticks)
@@ -119,8 +117,8 @@ namespace PrimitiveArmory
 			: base(abstractPhysicalObject, world)
 		{
 			base.bodyChunks = new BodyChunk[1];
-			base.bodyChunks[0] = new BodyChunk(this, 0, new Vector2(0f, 0f), 5f, 0.07f);
-			bodyChunkConnections = new BodyChunkConnection[0];
+			base.bodyChunks[0] = new BodyChunk(this, 0, new Vector2(0f, 0f), 5f, 0.035f);
+			base.bodyChunkConnections = new BodyChunkConnection[0];
 			base.airFriction = 0.999f;
 			base.gravity = 0.75f;
 			bounce = 0.1f;
@@ -129,6 +127,7 @@ namespace PrimitiveArmory
 			base.waterFriction = 0.98f;
 			base.buoyancy = 1.0f;
 			pivotAtTip = false;
+			spinning = true;
 			lastPivotAtTip = false;
 			stuckBodyPart = -1;
 			base.firstChunk.loudness = 7f;
@@ -137,7 +136,7 @@ namespace PrimitiveArmory
 			stillFlyingCounter = maxFlyingCount;
 		}
 
-        public override void Update(bool eu)
+		public override void Update(bool eu)
         {
             base.Update(eu);
 			soundLoop.sound = SoundID.None;
@@ -157,6 +156,9 @@ namespace PrimitiveArmory
 
 			lastPivotAtTip = pivotAtTip;
 			pivotAtTip = base.mode == Mode.Thrown || base.mode == Mode.StuckInCreature;
+
+
+
 			if (addPoles && room.readyForAI)
 			{
 				if (abstractArrow.stuckInWallCycles >= 0)
@@ -201,7 +203,7 @@ namespace PrimitiveArmory
 						{
 							spinning = false;
 							rotationSpeed = 0f;
-							rotation = Custom.DegToVec(Mathf.Lerp(-50f, 50f, Random.value) + 180f);
+							rotation = Custom.DegToVec(Mathf.Lerp(-45, 45f, Random.value) + 180f);
 							base.firstChunk.vel *= 0f;
 							room.PlaySound(SoundID.Spear_Stick_In_Ground, base.firstChunk);
 						}
@@ -213,7 +215,7 @@ namespace PrimitiveArmory
 					break;
 				case Mode.Thrown:
 					{
-						base.rotation = firstChunk.vel;
+						base.rotation = firstChunk.vel.normalized;
 						if (!Custom.DistLess(thrownPos, base.firstChunk.pos, 560f * Mathf.Max(1f, arrowDamageBonus)) || !(base.firstChunk.ContactPoint == throwDir) || room.GetTile(base.firstChunk.pos).Terrain != 0 || room.GetTile(base.firstChunk.pos + throwDir.ToVector2() * 20f).Terrain != Room.Tile.TerrainType.Solid || ((!Custom.DistLess(thrownPos, base.firstChunk.pos, 140f) && !alwaysStickInWalls))) 
 						{
 							break;
@@ -314,23 +316,32 @@ namespace PrimitiveArmory
 					break;
 			}
 
-			for (int num = abstractPhysicalObject.stuckObjects.Count - 1; num >= 0; num--)
+			for (int i = abstractPhysicalObject.stuckObjects.Count - 1; i >= 0; i--)
 			{
-				if (abstractPhysicalObject.stuckObjects[num] is AbstractPhysicalObject.ImpaledOnSpearStick)
+				if (abstractPhysicalObject.stuckObjects[i] is AbstractPhysicalObject.ImpaledOnSpearStick)
 				{
-					if (abstractPhysicalObject.stuckObjects[num].B.realizedObject != null && (abstractPhysicalObject.stuckObjects[num].B.realizedObject.slatedForDeletetion || abstractPhysicalObject.stuckObjects[num].B.realizedObject.grabbedBy.Count > 0))
+					if (abstractPhysicalObject.stuckObjects[i].B.realizedObject != null && (abstractPhysicalObject.stuckObjects[i].B.realizedObject.slatedForDeletetion || abstractPhysicalObject.stuckObjects[i].B.realizedObject.grabbedBy.Count > 0))
 					{
-						abstractPhysicalObject.stuckObjects[num].Deactivate();
+						abstractPhysicalObject.stuckObjects[i].Deactivate();
 					}
-					else if (abstractPhysicalObject.stuckObjects[num].B.realizedObject != null && abstractPhysicalObject.stuckObjects[num].B.realizedObject.room == room)
+					else if (abstractPhysicalObject.stuckObjects[i].B.realizedObject != null && abstractPhysicalObject.stuckObjects[i].B.realizedObject.room == room)
 					{
-						abstractPhysicalObject.stuckObjects[num].B.realizedObject.firstChunk.MoveFromOutsideMyUpdate(eu, base.firstChunk.pos + rotation * Custom.LerpMap((abstractPhysicalObject.stuckObjects[num] as AbstractPhysicalObject.ImpaledOnSpearStick).onSpearPosition, 0f, 4f, 15f, -15f));
-						abstractPhysicalObject.stuckObjects[num].B.realizedObject.firstChunk.vel *= 0f;
+						abstractPhysicalObject.stuckObjects[i].B.realizedObject.firstChunk.MoveFromOutsideMyUpdate(eu, base.firstChunk.pos + rotation * Custom.LerpMap((abstractPhysicalObject.stuckObjects[i] as AbstractPhysicalObject.ImpaledOnSpearStick).onSpearPosition, 0f, 4f, 15f, -15f));
+						abstractPhysicalObject.stuckObjects[i].B.realizedObject.firstChunk.vel *= 0f;
 					}
 				}
 			}
 		}
-		
+
+		public override void SetRandomSpin()
+		{
+			if (room != null)
+			{
+				rotationSpeed = ((!(Random.value < 0.5f)) ? 1f : (-1f)) * Mathf.Lerp(50f, 150f, Random.value) * Mathf.Lerp(0.05f, 1f, room.gravity);
+			}
+			spinning = true;
+		}
+
 		public override void PlaceInRoom(Room placeRoom)
 		{
 			base.PlaceInRoom(placeRoom);
@@ -383,18 +394,19 @@ namespace PrimitiveArmory
 				{
 					abstractArrow.stuckInWallCycles = Random.Range(3, 7) * ((throwDir.y == 0) ? 1 : (-1));
 				}
+				/*
 				for (int i = -1; i < 2; i += 2)
 				{
 					if (stuckInWall != null && (abstractArrow.stuckInWallCycles >= 0 && !room.GetTile(stuckInWall.Value + new Vector2(20f * (float)i, 0f)).Solid) || (abstractArrow.stuckInWallCycles < 0 && !room.GetTile(stuckInWall.Value + new Vector2(0f, 20f * (float)i)).Solid))
 					{
-						/*
+						
 						if (!(this is ExplosiveSpear))
 						{
 							addPoles = true;
-						}*/
+						}
 						break;
 					}
-				}
+				}*/
 				if (setRotation.HasValue)
 				{
 					stuckInWall = room.MiddleOfTile(stuckInWall.Value) - setRotation.Value * 5f;
@@ -408,10 +420,12 @@ namespace PrimitiveArmory
 				rotationSpeed = 0f;
 			}
 			
+			/*
 			if (newMode != Mode.Free)
 			{
 				spinning = false;
 			}
+			*/
 			
 			if (newMode != Mode.StuckInWall && newMode != Mode.StuckInCreature)
 			{
