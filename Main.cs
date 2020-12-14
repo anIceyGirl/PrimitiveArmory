@@ -302,6 +302,27 @@ namespace PrimitiveArmory
             }
         }
 
+        public static void DebugSpawn(On.Player.orig_Update orig, Player self, bool eu)
+        {
+            orig(self, eu);
+
+            if (Input.GetKeyDown(KeyCode.F5))
+            {
+                Debug.Log("Spawning bow");
+                AbstractPhysicalObject abstractBow = new AbstractPhysicalObject(self.room.world, EnumExt_NewItems.Bow, null, self.abstractCreature.pos, self.room.game.GetNewID());
+                self.room.abstractRoom.AddEntity(abstractBow);
+                abstractBow.RealizeInRoom();
+            }
+
+            if (Input.GetKeyDown(KeyCode.F6))
+            {
+                Debug.Log("Spawning generic arrow");
+                Arrow.AbstractArrow abstractArrow = new Arrow.AbstractArrow(self.room.world, null, self.abstractCreature.pos, self.room.game.GetNewID(), 0);
+                self.room.abstractRoom.AddEntity(abstractArrow);
+                abstractArrow.RealizeInRoom();
+            }
+        }
+
         public void StartupHooks(On.RainWorld.orig_Update orig, RainWorld self)
         {
             orig(self);
