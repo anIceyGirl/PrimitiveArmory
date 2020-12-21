@@ -2,6 +2,8 @@
 
 Adding new items and weapons to Rain World!
 
+[Trello Board](https://trello.com/b/hnOcYuNG/primitive-armory)
+
 The primary goal of this mod is to introduce a suite of new items to Rain World. Items like bows and arrows, clubs, basic shields... basically, anything you'd see in tribal warfare with a dash of the bio-industrial technology aspect of Rain World you all know and love.
 
 ## INSTALLATION
